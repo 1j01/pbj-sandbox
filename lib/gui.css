@@ -1,0 +1,243 @@
+
+#gui-overlay {
+	position: absolute;
+	left: 0; top: 0; bottom: 0; right: 0;
+	margin: 0; padding: 0; border: 0;
+	overflow: hidden;
+	pointer-events: none;
+	font-family: Arial, Helvetica, sans-serif;
+}
+#gui-overlay .modal {
+	pointer-events: all;
+}
+
+.modal.closing, .modal.closing * {
+	pointer-events: none !important;
+}
+.modal * {
+	outline: none;
+	border: none;
+	cursor: default;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-transition: all .2s ease-in-out;
+	-moz-transition: all .2s ease-in-out;
+	-o-transition: all .2s ease-in-out;
+	transition: all .2s ease-in-out;
+}
+.modal ::-moz-focus-inner {
+	border: 0;
+}
+
+.modal textarea,
+.modal input,
+.modal p {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+	cursor: auto;
+}
+.modal.dragging textarea,
+.modal.dragging input {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: default;
+}
+.modal {
+	-webkit-transition: opacity .5s ease-in-out;
+	-moz-transition: opacity .5s ease-in-out;
+	-o-transition: opacity .5s ease-in-out;
+	transition: opacity .5s ease-in-out;
+	position: absolute;
+	background: #000;
+	background: rgba(0,0,0,0.3);
+	color: white;
+	opacity: 0.8;
+	outline: 1px solid rgba(255,255,255,0.4);
+	no-outline-offset: 4px;
+	no-box-shadow: 0 0 1px 4px rgba(0,0,0,0.5);
+	padding: 4px;
+}
+.modal:hover, .modal.dragging {
+	opacity: 1;
+}
+.modal.dragging {
+	-webkit-transition: opacity .8s ease;
+	-moz-transition: opacity .8s ease;
+	-o-transition: opacity .8s ease;
+	transition: opacity .8s ease;
+}
+.modal .content {
+	background: #000;
+	background: rgba(0,0,0,0.9);
+	color: #AAA;
+}
+.modal .content.resizable {
+	resize: both;
+}
+.modal .content.resizable * {
+	resize: default;
+}
+.modal .titlebar {
+	background: #000;
+	background: rgba(0,0,0,0.5);
+	cursor: move;
+	border-bottom: 1px solid rgba(255,255,255,0.4);
+}
+.modal .title {
+	cursor: move;
+	color: #CCC;
+	font-weight: lighter;
+}
+.modal:hover .titlebar {
+	background: #000;
+	background: rgba(0,0,0,0.7);
+}
+.modal .titlebar.titlebar.titlebar:hover,
+.modal.dragging .titlebar.titlebar.titlebar {
+	background: rgb(66,66,66);
+	background: rgba(55,55,55,0.8);
+	color: #FFF;
+}
+.modal .close-x {
+	cursor: pointer;
+	font-size: 1.1em;
+	line-height: 0.25em;
+	float: right;
+	width: 0.5em;
+	height: 0.5em;
+	color: gray;
+	color: rgba(255,255,255,0.5);
+	opacity: 0;
+	padding: 5px 5px 0 0;
+}
+.modal:hover .close-x {
+	opacity: 0.5;
+	color: gray;
+	color: rgba(255,255,255,0.5);
+}
+.modal .close-x.close-x.close-x.close-x:hover {
+	opacity: 1;
+	color: #FFF;
+}
+.modal .close-x.close-x.close-x.close-x:active {
+	color: gray;
+	color: rgba(255,255,255,0.5);
+}
+.modal .close-x:after {
+	content: "×";
+}
+.modal p,
+.modal .padded{padding:5px;line-height:1.8em;}
+.modal p{margin:0}
+
+.modal button,
+.modal .button,
+.modal input[type="submit"]{
+	background: #000;
+	background: rgba(0,0,0,0.1);
+	color: #CCC;
+	border: 0;
+	cursor: pointer;
+	-webkit-transition-duration: .1s;
+	-moz-transition-duration: .1s;
+	-o-transition-duration: .1s;
+	outline: 1px solid rgba(255,255,255,0.4);
+}
+.modal button:hover,
+.modal .button:hover,
+.modal input[type="submit"]:hover {
+	background: #555;
+	background: rgba(255,255,255,0.2);
+	color: white;
+}
+.modal button:active,
+.modal .button:active,
+.modal input[type="submit"]:active {
+	background: #333;
+	background: rgba(255,255,255,0.1);
+	color: #FFF;
+}
+.modal input, 
+.modal textarea {
+	color: #FFF;
+	background: #000;
+	box-shadow: 0 0 10px 1px rgba(0,155,255,0);
+	outline: solid 1px rgba(255,255,255,0.3);
+}
+.modal input:focus,
+.modal textarea:focus {
+	box-shadow: 0 0 10px 1px rgba(0,155,255,0.9);
+	outline: solid 1px rgba(255,255,255,0.3);
+	outline-offset: 0;
+}
+.modal input::-webkit-outer-spin-button,
+.modal input::-webkit-inner-spin-button {
+	background: black;
+	color: white;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+.modal input[type="number"]{width:40px}
+.modal input[type="checkbox"]{
+	background:#000;
+	-webkit-appearance:none;
+	-moz-appearance:none;
+	width:12px;height:12px;
+	line-height: 10px;
+	vertical-align: top;
+}
+.modal input[type="checkbox"]:checked{
+	box-shadow: 0 0 5px #0CF;
+}
+.modal input[type="checkbox"]::after{
+	content: "x";
+	color: rgb(0,155,255);
+	opacity: 0;
+}
+.modal input[type="checkbox"]:checked::after{
+	content: "✓";
+	color: rgb(0,155,255);
+	opacity: 1;
+}
+.modal textarea{
+	-webkit-transition: outline, box-shadow .2s ease;
+	-moz-transition: outline, box-shadow .2s ease;
+	-o-transition: outline, box-shadow .2s ease;
+	transition: outline, box-shadow .2s ease;
+}
+.modal ::selection {
+	background: blue;
+	background: rgba(0,200,255,0.5);
+}
+.modal ::-moz-selection {
+	background: blue;
+	background: rgba(0,200,255,0.5);
+}
+.modal ul,
+.modal ol {
+	list-style:none;
+	margin: 0;
+	padding: 0;
+}
+
+
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+	background: black;
+	display: block;
+}
+::-webkit-scrollbar-thumb {
+	background: rgba(255,255,255,0.1);
+	border: 1px solid rgba(255,255,255,0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(255,255,255,0.2);
+	border: 1px solid rgba(255,255,255,0.3);
+}
