@@ -1,5 +1,5 @@
-<!doctype html><html><head><title>PBPhysics2d</title><meta charset="utf-8">
-<style>body,html{width:100%;height:100%;padding:0;margin:0;border:0;overflow:hidden}</style>
+<!doctype html><html><head><title>Point Based Physics 2D</title><meta charset="utf-8">
+<style>body,html{width:100%;height:100%;padding:0;margin:0;border:0;overflow:hidden}button{margin:2px;padding:4px;vertical-align:bottom}h3{margin:0;margin-top:5px}</style>
 <link rel="stylesheet" href="lib/gui.css"/>
 <script src="lib/gui.js"></script>
 </head><body><script>
@@ -59,10 +59,10 @@ function main(){
 		if(!keys[e.keyCode]){
 			console.log(String.fromCharCode(e.keyCode)+": ",e.keyCode);
 			switch(String.fromCharCode(e.keyCode)){
-				case "P"://undo (+=redo)
+				case "P"://pause/play
 					play=!play;
 					break;
-				case "Z"://undo (+=redo)
+				case "Z"://undo (+shift=redo)
 					if(e.shiftKey){redo();}else
 					undo();
 					break;
@@ -701,12 +701,12 @@ Math.sign = function(val) {
 };
 function guiStuff(){
 	var ops=new Modal().position("left top").title("Options").content(
-		"<label><input type='checkbox' id='coll'/>Collision</label>"
+		"<label><input type='checkbox' id='coll'/>(Poor) Collision</label>"
 		+"<br><label><input type='checkbox' id='terrain'/>\"Terrain\"</label>"
 		+"<br><label><input type='checkbox' id='ac'/>AutoConnect</label>"
 		+"<br><label>Gravity: <input type='number' id='grav' value="+gravity+" step=0.05 min=-50 max=50/></label>"
-		+"<br><b>Windows:</b>"
-		+"<br><button id='resz'>Resizable Window</button>"
+		+"<h3>Windows:</h3>"
+		+"<button id='resz'>Resizable Window</button>"
 		+"<br><button id='help'>Help</button>"
 		+"<button id='todo'>Todo</button>");
 
@@ -738,44 +738,37 @@ function guiStuff(){
 	};
 	ops.$("#todo").onclick=function(){
 		new Modal().title("Todo").content(
-			"Todo:"
-			+"<li>Pause/Play</li>"
-			+"<li>Connector (precision connector)</li>"
-			+"<li>Glue (non-precision connector)</li>"
-			+"<li></li>"
-			+"<br>Fix Collision:"
-			+"<li>self collision</li>"
+			"<li>Precise connector tool</li>"
+			+"<br>Fix collision:"
+			+"<li>with self</li>"
+			+"<li>with the corners of windows</li>"
 			+"<li>occasional no clip</li>"
-			+"<li>collision with windows</li>"
-			+"<li></li>"
-			+"<br>Hold Space and mouse over points to connect them."
-			+"<br>Right Click to drag them."
-			+"<br>Shift+Left Click to create static points."
 		).position("top right");
 	};
 	ops.$("#help").onclick=function(){
 		new Modal().title("Help").content(
 			"<p>Left Click to use the selected tool."
 			+"<br>Right Click to drag points."
-			+"<br>Use the glue tool or hold space to connect them."
-			+"<br>Shift+Left Click with the create points tool to make static points."
-			+"<br>Toggle the 'terrain' to regenerate it."
-			+"<br>Press '<kbd>P</kbd>' to pause."
+			+"<br>Use the glue tool or hold space near some points to connect them."
+			+"<br>Shift+Left Click (with the create points tool) to make static points."
+			+"<br>Toggle the 'terrain' to regenerate it. It only looks anything like terrain if you check AutoConnect"
+			+"<br>Press <kbd>P</kbd> to pause/unpause."
+			+"<br>Press <kbd>Z</kbd> to undo to a previous state and <kbd>Y</kbd> to redo."
 		).position("top");
 	};
 	ops.$("#resz").onclick=function(){
 		new Modal().position("center").title("Resizable").content("Windows are collidable.").resizable();
 	};
 	var tools=new Modal().position("left").title("Tools").content(
-		"<b>Basic:</b>"
-		+"<br><button id='create-points'>Create Points</button>"
+		"<h3>Basic:</h3>"
+		+"<button id='create-points'>Create Points</button>"
 		+"<br><button id='remove-points'>Remove Points</button>"
-		+"<br><b>Precision:</b>"
-		+"<br><button id='selection'>Selection</button>"
-		+"<br><button id='connector'>Connector</button>"
-		+"<br><b>Batch:</b>"
-		+"<br><button id='create-points-fast'>Create Points Quickly</button>"
-		+"<br><button id='glue'>Glue (non-precice connector)</button>"
+		+"<h3>Precision:</h3>"
+		+"<button id='selection'>Selection</button>"
+		+"<br><button id='connector' disabled>Precise Connector</button>"
+		+"<h3>Batch:</h3>"
+		+"<button id='create-points-fast'>Create Points Quickly</button>"
+		+"<br><button id='glue'>Glue (Connector)</button>"
 		+"<br><button id='rope'>Rope</button>"
 	);
 	var toolbuttons=tools.$$("button");
@@ -788,8 +781,8 @@ function guiStuff(){
 				tb.style.background="";
 				tb.style.color="";
 			}
-			this.style.background="rgba(100,100,100,0.5)";
-			this.style.color="#FFF";
+			this.style.background="rgba(50,100,100,0.5)";
+			this.style.color="#DFF";
 		};
 		if(tool==tb.id){
 			tb.onclick();
@@ -800,4 +793,5 @@ function guiStuff(){
 main();
 guiStuff();
 
-</script><script type="text/javascript" src="/kc.js"></script></body></html>
+</script>
+</body></html>

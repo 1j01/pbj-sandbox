@@ -22,10 +22,10 @@
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	-webkit-transition: all .2s ease-in-out;
-	-moz-transition: all .2s ease-in-out;
-	-o-transition: all .2s ease-in-out;
-	transition: all .2s ease-in-out;
+	-webkit-transition: opacity .2s, color .2s, background .2s;
+	-moz-transition: opacity .2s, color .2s, background .2s;
+	-o-transition: opacity .2s, color .2s, background .2s;
+	transition: opacity .2s, color .2s, background .2s;
 }
 .modal ::-moz-focus-inner {
 	border: 0;
@@ -79,6 +79,7 @@
 }
 .modal .content.resizable {
 	resize: both;
+	overflow:scroll;
 }
 .modal .content.resizable * {
 	resize: default;
@@ -150,8 +151,11 @@
 	outline: 1px solid rgba(255,255,255,0.4);
 }
 .modal button:hover,
+.modal button:focus,
 .modal .button:hover,
-.modal input[type="submit"]:hover {
+.modal .button:focus,
+.modal input[type="submit"]:hover,
+.modal input[type="submit"]:focus {
 	background: #555;
 	background: rgba(255,255,255,0.2);
 	color: white;
@@ -162,6 +166,9 @@
 	background: #333;
 	background: rgba(255,255,255,0.1);
 	color: #FFF;
+}
+[disabled] {
+	opacity: 0.5;
 }
 .modal input, 
 .modal textarea {
