@@ -682,7 +682,7 @@ function rope(x1, y1, x2, y2, seg, force) {
 	}
 }
 function areConnected(p1, p2, depth) {
-	return false;
+	return false; // TODO I guess? except I'm not planning on trying to get collision working
 }
 function distance(x1, y1, x2, y2) {
 	return Math.sqrt(sqrDistance(x1, y1, x2, y2));
@@ -692,13 +692,9 @@ function sqrDistance(x1, y1, x2, y2) {
 }
 function r() { return Math.random() * 2 - 1; }
 
-Math.sign = function (val) {
-	return val > 0 ? 1 : val < 0 ? -1 : 0;
-};
-
 function guiStuff() {
 	var ops = new Modal().position("left top").title("Options").content(
-		"<label><input type='checkbox' id='coll'/>(Poor) Collision</label>"
+		"<label><input type='checkbox' id='coll'/>Poor, Broken Collision</label>"
 		+ "<br><label><input type='checkbox' id='terrain'/>\"Terrain\"</label>"
 		+ "<br><label><input type='checkbox' id='ac'/>AutoConnect</label>"
 		+ "<br><label>Gravity: <input type='number' id='grav' value=" + gravity + " step=0.05 min=-50 max=50/></label>"
@@ -734,23 +730,26 @@ function guiStuff() {
 		gravity = Number(this.value);
 	};
 	ops.$("#todo").onclick = function () {
-		new Modal().title("Todo").content(
-			"<li>Precise connector tool</li>"
-			+ "<br>Fix collision:"
+		new Modal().title("Todo").content(""
+			+ "<li>Use a library for serializing with support for references</li>"
+			+ "<li>Precise connector tool</li>"
+			+ "<li>Rope tool</li>"
+			+ "<br>Ideally (but this would be hard), fix collision:"
 			+ "<li>with self</li>"
 			+ "<li>with the corners of windows</li>"
 			+ "<li>occasional no clip</li>"
 		).position("top right");
 	};
 	ops.$("#help").onclick = function () {
-		new Modal().title("Help").content(
-			"<p>Left Click to use the selected tool."
+		new Modal().title("Help").content(""
+			+ "<p>Left Click to use the selected tool."
 			+ "<br>Right Click to drag points."
 			+ "<br>Use the glue tool or hold space near some points to connect them."
 			+ "<br>Shift+Left Click (with the create points tool) to make static points."
 			+ "<br>Toggle the 'terrain' to regenerate it. It only looks anything like terrain if you check AutoConnect"
-			+ "<br>Press <kbd>P</kbd> to pause/unpause."
-			+ "<br>Press <kbd>Z</kbd> to undo to a previous state and <kbd>Y</kbd> to redo."
+			+ "<br>Press <kbd>P</kbd> to pause/unpause the simulation."
+			+ "<br>Press <kbd>Z</kbd> to undo to a previous state and <kbd>Y</kbd> or <kbd>Shift+Z</kbd> to redo."
+			+ "<br>This doesn't work for connections yet because references to objects are not serialized properly."
 		).position("top");
 	};
 	ops.$("#resz").onclick = function () {

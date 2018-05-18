@@ -5,6 +5,10 @@ This is a little experiment I did a while ago, a point-based physics sandbox.
 
 You can [check it out here](https://1j01.github.io/pbp2d).
 
+## Help + TODO
+
+See in-app Help and TODO windows accessible from the Options window.
+
 ## License
 
 [WTFPL](https://en.wikipedia.org/wiki/WTFPL) or [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
