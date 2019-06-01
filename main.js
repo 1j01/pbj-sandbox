@@ -1,22 +1,38 @@
+function serialize(points, connections, isSelection) {
+	// TODO: use cereal, arson, or another serialization library that allows object references to be kept intact
+	return JSON.stringify({
+		format: "pbp2d",
+		isSelection: !!isSelection,
+		points: points,
+		connections: connections
+	});
+}
+function deserialize(serialized) {
+	return JSON.parse(serialized);
+}
+function getState() {
+	return serialize(points, connections);
+}
+function setState(serialized) {
+	var state = deserialize(serialized);
+	points = state.points;
+	connections = state.connections;
+}
 
 function undoable() {
-	undos.push(JSON.parse(JSON.stringify({ points: points, connections: connections })));
+	undos.push(getState());
 	redos = [];
 }
 function undo() {
 	if (undos.length < 1) return false;
-	redos.push(JSON.parse(JSON.stringify({ points: points, connections: connections })));
-	var state = undos.pop();
-	points = state.points;
-	connections = state.connections;
+	redos.push(getState());
+	setState(undos.pop());
 	return true;
 }
 function redo() {
 	if (redos.length < 1) return false;
-	undos.push(JSON.parse(JSON.stringify({ points: points, connections: connections })));
-	var state = redos.pop();
-	points = state.points;
-	connections = state.connections;
+	undos.push(getState());
+	setState(redos.pop());
 	return true;
 }
 function main() {
@@ -74,10 +90,7 @@ function main() {
 					selection.connections = [];
 					break;
 				case "C"://copy selection
-					clipboard = JSON.parse(JSON.stringify({
-						points: selection.points,
-						connections: selection.connections,
-					}));
+					clipboard = deserialize(serialize(selection.points, selection.connections, true));
 					console.log(clipboard);
 					break;
 				case "V"://pasta
