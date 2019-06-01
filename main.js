@@ -1,15 +1,16 @@
 function serialize(points, connections, isSelection) {
-	// TODO: use cereal, arson, or another serialization library that allows object references to be kept intact
-	return JSON.stringify({
+	return ARSON.stringify({
 		format: "pbp2d",
+		formatVersion: 0.1,
 		isSelection: !!isSelection,
 		points: points,
 		connections: connections
 	});
 }
 function deserialize(serialized) {
-	return JSON.parse(serialized);
+	return ARSON.parse(serialized);
 }
+
 function getState() {
 	return serialize(points, connections);
 }
@@ -63,7 +64,7 @@ function main() {
 	};
 	undos = [];
 	redos = [];
-	clipboard = null;
+	serializedClipboard = null;
 
 	addEventListener('contextmenu', function (e) { e.preventDefault(); });
 	addEventListener('keydown', function (e) {
@@ -81,8 +82,8 @@ function main() {
 					redo();
 					break;
 				case "A"://select all
-					selection.points = points;
-					selection.connections = connections;
+					selection.points = Array.from(points);
+					selection.connections = Array.from(connections);
 					e.preventDefault();
 					break;
 				case "D"://deselect all
@@ -90,12 +91,13 @@ function main() {
 					selection.connections = [];
 					break;
 				case "C"://copy selection
-					clipboard = deserialize(serialize(selection.points, selection.connections, true));
-					console.log(clipboard);
+					serializedClipboard = serialize(selection.points, selection.connections, true);
+					console.log(deserialize(serializedClipboard));
 					break;
 				case "V"://pasta
 					undoable();
-					if (clipboard) {
+					if (serializedClipboard) {
+						var clipboard = deserialize(serializedClipboard);
 						var minx = Infinity, miny = Infinity;
 						for (var i = 0; i < clipboard.points.length; i++) {
 							var p = clipboard.points[i];
@@ -744,7 +746,6 @@ function guiStuff() {
 	};
 	ops.$("#todo").onclick = function () {
 		new Modal().title("Todo").content(""
-			+ "<li>Use a library for serializing with support for references</li>"
 			+ "<li>Precise connector tool</li>"
 			+ "<li>Rope tool</li>"
 			+ "<br>Ideally (but this would be hard), fix collision:"
@@ -762,7 +763,6 @@ function guiStuff() {
 			+ "<br>Toggle the 'terrain' to regenerate it. It only looks anything like terrain if you check AutoConnect"
 			+ "<br>Press <kbd>P</kbd> to pause/unpause the simulation."
 			+ "<br>Press <kbd>Z</kbd> to undo to a previous state and <kbd>Y</kbd> or <kbd>Shift+Z</kbd> to redo."
-			+ "<br>This doesn't work for connections yet because references to objects are not serialized properly."
 		).position("top");
 	};
 	ops.$("#resz").onclick = function () {
