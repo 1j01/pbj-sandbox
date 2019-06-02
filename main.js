@@ -793,6 +793,8 @@ function guiStuff() {
 			+ "<br>Toggle the 'terrain' to regenerate it. It only looks anything like terrain if you check AutoConnect"
 			+ "<br>Press <kbd>P</kbd> to pause/unpause the simulation."
 			+ "<br>Press <kbd>Z</kbd> to undo to a previous state and <kbd>Y</kbd> or <kbd>Shift+Z</kbd> to redo."
+			+ "<br>Press <kbd>C</kbd> to copy the selection (or <kbd>X</kbd> to cut), and <kbd>V</kbd> to paste near the mouse."
+			+ "<br>Press <kbd>Delete</kbd> to remove the selected points."
 		).position("top");
 	};
 	ops.$("#resz").onclick = function () {
