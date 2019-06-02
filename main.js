@@ -789,7 +789,7 @@ function guiStuff() {
 			+ "<p>Left Click to use the selected tool."
 			+ "<br>Right Click to drag points."
 			+ "<br>Use the glue tool or hold space near some points to connect them."
-			+ "<br>Shift+Left Click (with the create points tool) to make static points."
+			+ "<br>Hold shift when making points to fix them in place."
 			+ "<br>Toggle the 'terrain' to regenerate it. It only looks anything like terrain if you check AutoConnect"
 			+ "<br>Press <kbd>P</kbd> to pause/unpause the simulation."
 			+ "<br>Press <kbd>Z</kbd> to undo to a previous state and <kbd>Y</kbd> or <kbd>Shift+Z</kbd> to redo."
