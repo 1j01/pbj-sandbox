@@ -40,7 +40,7 @@ function redo() {
 }
 function copySelected() {
 	serializedClipboard = serialize(selection.points, selection.connections, true);
-	console.log(deserialize(serializedClipboard));
+	// console.log(deserialize(serializedClipboard));
 }
 function deleteSelected() {
 	for (var i = selection.points.length - 1; i >= 0; i--) {
@@ -48,7 +48,7 @@ function deleteSelected() {
 		for (var j = connections.length - 1; j >= 0; j--) {
 			var c = connections[j];
 			if (c.p1 === p || c.p2 === p) {
-				console.log(c, j);
+				// console.log(c, j);
 				connections.splice(j, 1);
 			}
 		}
@@ -105,7 +105,7 @@ function main() {
 		}
 		if (!keys[e.keyCode]) {
 			keys[e.keyCode] = true;
-			console.log(String.fromCharCode(e.keyCode) + ": ", e.keyCode);
+			// console.log(String.fromCharCode(e.keyCode) + ": ", e.keyCode);
 			switch (String.fromCharCode(e.keyCode)) {
 				case "P"://pause/play
 					play = !play;
@@ -498,7 +498,7 @@ function step() {
 
 						if (false) {
 							normal += Math.PI;
-							console.log("reversed normal");
+							// console.log("reversed normal");
 						}
 						//console.log("normal:",normal," p_dir:",p_dir," reflection:",normal-p_dir," speed:",speed);
 
@@ -618,7 +618,7 @@ function intersection(x1, y1, x2, y2, x3, y3, x4, y4) {
 	var y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
 	if (isNaN(x) || isNaN(y)) {
 		return false;
-		console.log(x, y);
+		// console.log(x, y);
 	} else {
 		if (x1 > x2) {
 			if (!(x2 < x && x < x1)) { return false; }
