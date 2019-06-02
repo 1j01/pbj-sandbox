@@ -68,17 +68,27 @@ function main() {
 	redos = [];
 	serializedClipboard = null;
 
-	addEventListener('contextmenu', function (e) { e.preventDefault(); });
+	canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 	addEventListener('keydown', function (e) {
+		if(e.defaultPrevented){
+			return;
+		}
+		if(
+			document.activeElement instanceof HTMLInputElement ||
+			document.activeElement instanceof HTMLTextAreaElement ||
+			!window.getSelection().isCollapsed
+		){
+			return; // don't prevent interaction with inputs or textareas, or copying text in windows
+		}
 		if (!keys[e.keyCode]) {
+			keys[e.keyCode] = true;
 			console.log(String.fromCharCode(e.keyCode) + ": ", e.keyCode);
 			switch (String.fromCharCode(e.keyCode)) {
 				case "P"://pause/play
 					play = !play;
 					break;
 				case "Z"://undo (+shift=redo)
-					if (e.shiftKey) { redo(); } else
-						undo();
+					if (e.shiftKey) { redo(); } else { undo(); }
 					break;
 				case "Y"://redo
 					redo();
@@ -86,7 +96,6 @@ function main() {
 				case "A"://select all
 					selection.points = Array.from(points);
 					selection.connections = Array.from(connections);
-					e.preventDefault();
 					break;
 				case "D"://deselect all
 					selection.points = [];
@@ -117,12 +126,11 @@ function main() {
 						connections = connections.concat(clipboard.connections);
 					}
 					break;
+				default:
+					return; // don't prevent default
 			}
 		}
-		keys[e.keyCode] = true;
-		if (String.fromCharCode(e.keyCode) === "A") {
-			return false;
-		}
+		e.preventDefault();
 	});
 	addEventListener('keypress', function (e) {
 		if (String.fromCharCode(e.keyCode) === "A") {
@@ -131,10 +139,22 @@ function main() {
 	});
 	addEventListener('keyup', function (e) { delete keys[e.keyCode]; });
 	canvas.addEventListener('mousedown', function (e) {
-		if (e.button == 0)
+		if (e.button == 0) {
 			mouse.left = true;
-		else mouse.right = true;
+		} else {
+			mouse.right = true;
+		}
 		e.preventDefault();
+		if (window.getSelection) {
+			if (window.getSelection().empty) {  // Chrome
+				window.getSelection().empty();
+			} else if (window.getSelection().removeAllRanges) {  // Firefox
+				window.getSelection().removeAllRanges();
+			}
+		} else if (document.selection) {  // IE?
+			document.selection.empty();
+		}
+		document.activeElement.blur();
 	});
 	addEventListener('mouseup', function (e) {
 		if (e.button == 0)

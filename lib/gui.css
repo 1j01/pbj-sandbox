@@ -18,10 +18,10 @@
 	outline: none;
 	border: none;
 	cursor: default;
-	-webkit-user-select: none;
+	/*-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
-	user-select: none;
+	user-select: none;*/
 	-webkit-transition: opacity .2s, color .2s, background .2s;
 	-moz-transition: opacity .2s, color .2s, background .2s;
 	-o-transition: opacity .2s, color .2s, background .2s;
