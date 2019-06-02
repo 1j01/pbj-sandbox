@@ -18,6 +18,8 @@ function setState(serialized) {
 	var state = deserialize(serialized);
 	points = state.points;
 	connections = state.connections;
+	selection.points = [];
+	selection.connections = [];
 }
 
 function undoable() {
