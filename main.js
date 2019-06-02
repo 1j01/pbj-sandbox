@@ -781,14 +781,14 @@ function guiStuff() {
 	var tools = new Modal().position("left").title("Tools").content(
 		"<h3>Basic:</h3>"
 		+ "<button id='create-points'>Create Points</button>"
-		+ "<br><button id='remove-points'>Remove Points</button>"
+		+ "<br><button id='remove-points' disabled>Remove Points</button>"
 		+ "<h3>Precision:</h3>"
 		+ "<button id='selection'>Selection</button>"
 		+ "<br><button id='connector' disabled>Precise Connector</button>"
 		+ "<h3>Batch:</h3>"
 		+ "<button id='create-points-fast'>Create Points Quickly</button>"
 		+ "<br><button id='glue'>Glue (Connector)</button>"
-		+ "<br><button id='rope'>Rope</button>"
+		+ "<br><button id='rope' disabled>Rope</button>"
 	);
 	var toolbuttons = tools.$$("button");
 	for (var i = 0; i < toolbuttons.length; i++) {
