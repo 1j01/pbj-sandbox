@@ -108,25 +108,11 @@ function main() {
 						}
 						for (var i = 0; i < clipboard.points.length; i++) {
 							var p = clipboard.points[i];
-							/*var p={
-								x: cp.x-minx+mouse.x,
-								y: cp.y-miny+mouse.y,
-							};*/
-							var p0 = JSON.parse(JSON.stringify(p));
-							p0.x -= minx - mouse.x;
-							p0.y -= miny - mouse.y;
-							for (var j = 0; j < clipboard.connections.length; j++) {
-								var c = clipboard.connections[j];
-								if (c.p1 == p) c.p1 = p0;
-								if (c.p2 == p) c.p2 = p0;
-							}
-							points.push(p0);
+							p.x -= minx - mouse.x;
+							p.y -= miny - mouse.y;
 						}
-						//connections=connections.concat(clipboard.connections);
-						for (var i = 0; i < clipboard.connections.length; i++) {
-							var c = clipboard.connections[i];
-							connections.push(c);
-						}
+						points = points.concat(clipboard.points);
+						connections = connections.concat(clipboard.connections);
 					}
 					break;
 			}
