@@ -38,6 +38,29 @@ function redo() {
 	setState(redos.pop());
 	return true;
 }
+function copySelected() {
+	serializedClipboard = serialize(selection.points, selection.connections, true);
+	console.log(deserialize(serializedClipboard));
+}
+function deleteSelected() {
+	for (var i = selection.points.length - 1; i >= 0; i--) {
+		var p = selection.points[i];
+		for (var j = connections.length - 1; j >= 0; j--) {
+			var c = connections[j];
+			if (c.p1 === p || c.p2 === p) {
+				console.log(c, j);
+				connections.splice(j, 1);
+			}
+		}
+		points.splice(points.indexOf(p), 1);
+		selection.points.splice(i, 1);
+		// ctx.lineWidth = 10;
+		// ctx.strokeStyle = "rgba(255,0,0,0.5)";
+		// ctx.beginPath();
+		// ctx.arc(p.x, p.y, 3, 0, Math.PI * 2, false);
+		// ctx.stroke();
+	}
+}
 function main() {
 	gui.overlay();
 
@@ -103,8 +126,13 @@ function main() {
 					break;
 				case "C"://copy selection
 					if (selection.points.length > 0) {
-						serializedClipboard = serialize(selection.points, selection.connections, true);
-						console.log(deserialize(serializedClipboard));
+						copySelected();
+					}
+					break;
+				case "X"://cut selection
+					if (selection.points.length > 0) {
+						copySelected();
+						deleteSelected();
 					}
 					break;
 				case "V"://pasta
@@ -541,22 +569,14 @@ function step() {
 		/**/
 	}
 
+	if (keys[46]) { // delete
+		deleteSelected();
+	}
+
 	ctx.lineWidth = 1;
 	ctx.strokeStyle = "rgba(0,255,200,0.5)";
 	for (var i = selection.points.length - 1; i >= 0; i--) {
 		var p = selection.points[i];
-		if (keys[46]) {
-			for (var j = connections.length - 1; j >= 0; j--) {
-				var c = connections[j];
-				if (c.p1 === p || c.p2 === p) {
-					console.log(c, j);
-					connections.splice(j, 1);
-				}
-			}
-			points.splice(points.indexOf(p), 1);
-			selection.points.splice(i, 1);
-			continue;
-		}
 		ctx.beginPath();
 		ctx.arc(p.x, p.y, 3, 0, Math.PI * 2, false);
 		ctx.stroke();
