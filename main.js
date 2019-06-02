@@ -93,8 +93,10 @@ function main() {
 					selection.connections = [];
 					break;
 				case "C"://copy selection
-					serializedClipboard = serialize(selection.points, selection.connections, true);
-					console.log(deserialize(serializedClipboard));
+					if (selection.points.length > 0) {
+						serializedClipboard = serialize(selection.points, selection.connections, true);
+						console.log(deserialize(serializedClipboard));
+					}
 					break;
 				case "V"://pasta
 					undoable();
