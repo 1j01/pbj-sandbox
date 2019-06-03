@@ -421,25 +421,29 @@ function step() {
 				var r = m.$m.getBoundingClientRect();
 				var o = 3;
 				if (p.x >= r.left - o && p.x <= r.right + o) {
-					if (p.y >= r.top - o && p.y <= r.bottom + o) {
-						if (p.x >= r.left - o && p.x < r.left + 20) {
-							p.x = r.left - o;
-							p.vx = -Math.abs(p.vx) / cor;
-							//p.vy/=friction;
-						} else if (p.x <= r.right + o && p.x > r.right - 20) {
-							p.x = r.right + o;
-							p.vx = Math.abs(p.vx) / cor;
-							//p.vy/=friction;
+					if (p.px <= r.left - o || p.px >= r.right + o) {
+						if (p.y >= r.top - o && p.y <= r.bottom + o) {
+							if (p.x >= r.left - o && p.x < r.left + 20) {
+								p.x = r.left - o;
+								p.vx = -Math.abs(p.vx) / cor;
+								//p.vy/=friction;
+							} else if (p.x <= r.right + o && p.x > r.right - 20) {
+								p.x = r.right + o;
+								p.vx = Math.abs(p.vx) / cor;
+								//p.vy/=friction;
+							}
 						}
 					}
-					if (p.y <= r.top + 15 && p.y >= r.top - o) {
-						p.y = r.top - o;
-						p.vy = -Math.abs(p.vy) / cor;
-						p.vx /= friction;
-					} else if (p.y >= r.bottom - 15 && p.y <= r.bottom + o) {
-						p.y = r.bottom + o;
-						p.vy = Math.abs(p.vy) / cor;
-						p.vx /= friction;
+					if (p.py <= r.top - o || p.py >= r.bottom + o) {
+						if (p.y <= r.top + 15 && p.y >= r.top - o) {
+							p.y = r.top - o;
+							p.vy = -Math.abs(p.vy) / cor;
+							p.vx /= friction;
+						} else if (p.y >= r.bottom - 15 && p.y <= r.bottom + o) {
+							p.y = r.bottom + o;
+							p.vy = Math.abs(p.vy) / cor;
+							p.vx /= friction;
+						}
 					}
 				}
 			}
@@ -819,7 +823,6 @@ function guiStuff() {
 			+ "<li>Rope tool</li>"
 			+ "<br>Ideally (but this would be hard), fix collision:"
 			+ "<li>with self</li>"
-			+ "<li>with the corners of windows</li>"
 			+ "<li>occasional no clip</li>"
 		).position("top right");
 	};
