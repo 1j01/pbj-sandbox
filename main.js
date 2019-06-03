@@ -427,17 +427,14 @@ function step() {
 				r.height = r.bottom - r.top;
 				if (p.x >= r.left && p.x <= r.right) {
 					if (p.y >= r.top && p.y <= r.bottom) {
-						// console.log(Math.max(p.px - r.left, r.right - p.px, 0) / r.width * r.height > Math.max(p.py - r.top, r.bottom - p.py, 0));
-						// console.log((p.px - r.left) / r.width, (p.py - r.top) / r.height, (p.px - r.left) / r.width > (p.py - r.top) / r.height);
-						// if (Math.max(p.px - r.left, r.right - p.px, 0) * r.width / r.height > Math.max(p.py - r.top, r.bottom - p.py, 0)) {
-						// if (p.px + p.py * r.width / r.height > ) {
-						// if ((p.px - r.left) / r.width > (p.py - r.top) / r.height) {
-						// TODO: simplify
+						// convert to rect unit coords (0 = left, 1 = right, 0 = top, 1 = bottom)
+						// then find whether it was, in the last frame, in two diagonal halves
+						// and use that to find whether it's in opposing diagonal quadrants
+						// i.e. whether it's more horizontal or more vertical (in its approach)
 						var in_upper_right_half = (p.px - r.left) / r.width > (p.py - r.top) / r.height;
 						var in_upper_left_half = (r.right - p.px) / r.width > (p.py - r.top) / r.height;
-						var vertical_more = (in_upper_right_half && in_upper_left_half) || (!in_upper_right_half && !in_upper_left_half);
-						// console.log({in_upper_left_half, in_upper_right_half, vertical_more});
-						if (!vertical_more) {
+						var in_left_or_right_quadrant = in_upper_right_half ^ in_upper_left_half;
+						if (in_left_or_right_quadrant) {
 							if (p.x < r.left + r.width / 2) {
 								p.x = r.left;
 								p.vx = -Math.abs(p.vx) / cor;
