@@ -420,27 +420,28 @@ function step() {
 				var m = gui.modals[j];
 				var r = m.$m.getBoundingClientRect();
 				var o = 3;
-				if (p.x >= r.left - o && p.x <= r.right + o) {
-					if (p.px <= r.left - o || p.px >= r.right + o) {
-						if (p.y >= r.top - o && p.y <= r.bottom + o) {
-							if (p.x >= r.left - o && p.x < r.left + 20) {
-								p.x = r.left - o;
+				r = {left: r.left - o, top: r.top - o, right: r.right + o, bottom: r.bottom + o};
+				if (p.x >= r.left && p.x <= r.right) {
+					if (p.px <= r.left || p.px >= r.right) {
+						if (p.y >= r.top && p.y <= r.bottom) {
+							if (p.x >= r.left && p.x < r.left + 23) {
+								p.x = r.left;
 								p.vx = -Math.abs(p.vx) / cor;
 								//p.vy/=friction;
-							} else if (p.x <= r.right + o && p.x > r.right - 20) {
-								p.x = r.right + o;
+							} else if (p.x <= r.right && p.x > r.right - 23) {
+								p.x = r.right;
 								p.vx = Math.abs(p.vx) / cor;
 								//p.vy/=friction;
 							}
 						}
 					}
-					if (p.py <= r.top - o || p.py >= r.bottom + o) {
-						if (p.y <= r.top + 15 && p.y >= r.top - o) {
-							p.y = r.top - o;
+					if (p.py <= r.top || p.py >= r.bottom) {
+						if (p.y <= r.top + 18 && p.y >= r.top) {
+							p.y = r.top;
 							p.vy = -Math.abs(p.vy) / cor;
 							p.vx /= friction;
-						} else if (p.y >= r.bottom - 15 && p.y <= r.bottom + o) {
-							p.y = r.bottom + o;
+						} else if (p.y >= r.bottom - 18 && p.y <= r.bottom) {
+							p.y = r.bottom;
 							p.vy = Math.abs(p.vy) / cor;
 							p.vx /= friction;
 						}
