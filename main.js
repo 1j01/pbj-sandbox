@@ -18,8 +18,7 @@ function setState(serialized) {
 	var state = deserialize(serialized);
 	points = state.points;
 	connections = state.connections;
-	selection.points = [];
-	selection.connections = [];
+	deselect();
 }
 
 function undoable() {
@@ -38,6 +37,10 @@ function redo() {
 	setState(redos.pop());
 	return true;
 }
+function deselect() {
+	selection.points = [];
+	selection.connections = [];
+}
 function copySelected() {
 	serializedClipboard = serialize(selection.points, selection.connections, true);
 	// console.log(deserialize(serializedClipboard));
@@ -53,13 +56,13 @@ function deleteSelected() {
 			}
 		}
 		points.splice(points.indexOf(p), 1);
-		selection.points.splice(i, 1);
 		// ctx.lineWidth = 10;
 		// ctx.strokeStyle = "rgba(255,0,0,0.5)";
 		// ctx.beginPath();
 		// ctx.arc(p.x, p.y, 3, 0, Math.PI * 2, false);
 		// ctx.stroke();
 	}
+	deselect();
 }
 function main() {
 	gui.overlay();
@@ -121,8 +124,7 @@ function main() {
 					selection.connections = Array.from(connections);
 					break;
 				case "D"://deselect all
-					selection.points = [];
-					selection.connections = [];
+					deselect();
 					break;
 				case "C"://copy selection
 					if (selection.points.length > 0) {
