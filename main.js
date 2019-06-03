@@ -421,29 +421,40 @@ function step() {
 				var r = m.$m.getBoundingClientRect();
 				var o = 3;
 				r = {left: r.left - o, top: r.top - o, right: r.right + o, bottom: r.bottom + o};
+				r.width = r.right - r.left;
+				r.height = r.bottom - r.top;
 				if (p.x >= r.left && p.x <= r.right) {
-					if (p.px <= r.left || p.px >= r.right) {
-						if (p.y >= r.top && p.y <= r.bottom) {
-							if (p.x >= r.left && p.x < r.left + 23) {
+					if (p.y >= r.top && p.y <= r.bottom) {
+						// console.log(Math.max(p.px - r.left, r.right - p.px, 0) / r.width * r.height > Math.max(p.py - r.top, r.bottom - p.py, 0));
+						// console.log((p.px - r.left) / r.width, (p.py - r.top) / r.height, (p.px - r.left) / r.width > (p.py - r.top) / r.height);
+						// if (Math.max(p.px - r.left, r.right - p.px, 0) * r.width / r.height > Math.max(p.py - r.top, r.bottom - p.py, 0)) {
+						// if (p.px + p.py * r.width / r.height > ) {
+						// if ((p.px - r.left) / r.width > (p.py - r.top) / r.height) {
+						// TODO: simplify
+						var in_upper_right_half = (p.px - r.left) / r.width > (p.py - r.top) / r.height;
+						var in_upper_left_half = (r.right - p.px) / r.width > (p.py - r.top) / r.height;
+						var vertical_more = (in_upper_right_half && in_upper_left_half) || (!in_upper_right_half && !in_upper_left_half);
+						// console.log({in_upper_left_half, in_upper_right_half, vertical_more});
+						if (!vertical_more) {
+							if (p.x < r.left + r.width / 2) {
 								p.x = r.left;
 								p.vx = -Math.abs(p.vx) / cor;
 								//p.vy/=friction;
-							} else if (p.x <= r.right && p.x > r.right - 23) {
+							} else {
 								p.x = r.right;
 								p.vx = Math.abs(p.vx) / cor;
 								//p.vy/=friction;
 							}
-						}
-					}
-					if (p.py <= r.top || p.py >= r.bottom) {
-						if (p.y <= r.top + 18 && p.y >= r.top) {
-							p.y = r.top;
-							p.vy = -Math.abs(p.vy) / cor;
-							p.vx /= friction;
-						} else if (p.y >= r.bottom - 18 && p.y <= r.bottom) {
-							p.y = r.bottom;
-							p.vy = Math.abs(p.vy) / cor;
-							p.vx /= friction;
+						} else {
+							if (p.y < r.top + r.height / 2) {
+								p.y = r.top;
+								p.vy = -Math.abs(p.vy) / cor;
+								p.vx /= friction;
+							} else {
+								p.y = r.bottom;
+								p.vy = Math.abs(p.vy) / cor;
+								p.vx /= friction;
+							}
 						}
 					}
 				}
