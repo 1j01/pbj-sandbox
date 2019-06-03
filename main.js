@@ -207,13 +207,10 @@ function main() {
 
 	shoopen = 0;
 
-	//shimmer
-	window.AudioContext = window.AudioContext || window.webkitAudioContext;
-	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
-	window.URL = window.URL || window.webkitURL;
-
-	var actx = ACTX = new AudioContext();
 	try {
+		actx = new AudioContext();
+		actx.suspend();
+		/*
 		var x, node, freq = 440;
 		if (actx.createScriptProcessor) {
 			node = actx.createScriptProcessor(1024, 1, 1);
@@ -236,8 +233,21 @@ function main() {
 			}
 		};
 		node.connect(actx.destination);
-		//node.start();
+		// node.start ? node.start() : node.noteOn(0);
+		*/
+
+		gain = actx.createGain();
+		gain.gain.setValueAtTime(0, actx.currentTime);
+		gain.connect(actx.destination);
+
+		oscillator = actx.createOscillator();
+		oscillator.type = 'square';
+		oscillator.frequency.setValueAtTime(440, actx.currentTime); // value in hertz
+		oscillator.connect(gain);
+		oscillator.start();
+
 	} catch (e) {
+		audioSetupError = e;
 		console.warn(e);
 	}
 }
@@ -339,6 +349,8 @@ function step() {
 			sd2m = 100;
 		}
 
+		var freq = 440; // or something
+		var amplitude = 0;
 		//for(var g=0;g<4;g++){
 		for (var j = connections.length - 1; j >= 0; j--) {
 			var c = connections[j];
@@ -355,6 +367,13 @@ function step() {
 			c.p2.fy -= dy / d * dd * f;
 			if (dd > c.dist * 3) {
 				connections.splice(j, 1);
+			}
+			if (!c.p1.fixed && !c.p2.fixed) {
+				freq += dd;
+				var vd = distance(c.p1.vx, c.p1.vy, c.p2.vx, c.p2.vy);
+				var v = distance(0, 0, c.p1.vx, c.p1.vy) + distance(0, 0, c.p2.vx, c.p2.vy);
+				amplitude += vd / 1000;
+				// amplitude += vd * v / 1000;
 			}
 		}
 	}
@@ -612,6 +631,10 @@ function step() {
 	mousePrevious.x = mouse.x;
 	mousePrevious.y = mouse.y;
 
+	if (typeof oscillator !== "undefined") {
+		oscillator.frequency.setValueAtTime(freq, actx.currentTime);
+		gain.gain.setValueAtTime(amplitude, actx.currentTime);
+	}
 }
 function intersection(x1, y1, x2, y2, x3, y3, x4, y4) {
 	var x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
@@ -740,6 +763,7 @@ function r() { return Math.random() * 2 - 1; }
 function guiStuff() {
 	var ops = new Modal().position("left top").title("Options").content(
 		"<label><input type='checkbox' id='coll'/>Poor, Broken Collision</label>"
+		+ "<br><label><input type='checkbox' id='audiofx'/>Audio</label>"
 		+ "<br><label><input type='checkbox' id='terrain'/>\"Terrain\"</label>"
 		+ "<br><label><input type='checkbox' id='ac'/>AutoConnect</label>"
 		+ "<br><label>Gravity: <input type='number' id='grav' value=" + gravity + " step=0.05 min=-50 max=50/></label>"
@@ -748,6 +772,21 @@ function guiStuff() {
 		+ "<br><button id='help'>Help</button>"
 		+ "<button id='todo'>Todo</button>");
 
+	ops.$("#audiofx").onchange = function () {
+		if (typeof audioSetupError !== "undefined") {
+			new Modal().position("center").title("Audio Setup Failed").content(
+				"<p>Initialization failed, audio is not available.</p>"
+				+ "<pre class='padded'/>"
+			).$c.querySelector("pre").textContent = audioSetupError.stack;
+			this.checked = false;
+			this.disabled = true;
+		}
+		if (this.checked) {
+			actx.resume();
+		} else {
+			actx.suspend();
+		}
+	};
 	ops.$("#coll").onchange = function () {
 		collision = this.checked;
 	};
