@@ -84,6 +84,7 @@ function main() {
 	collision = false;
 	autoConnect = false;
 	gravity = 0.1;
+	audioEnabled = false;
 	audioStyle = 1;
 	audioViz = false;
 
@@ -731,6 +732,16 @@ function step() {
 	mousePrevious.x = mouse.x;
 	mousePrevious.y = mouse.y;
 
+	if (audioEnabled && play) {
+		if (actx.state === "suspended") {
+			actx.resume();
+		}
+	} else {
+		if (actx.state === "running") {
+			actx.suspend();
+		}
+	}
+
 	if (typeof oscillator !== "undefined" && freq != null) {
 		if (audioStyle == 0 || audioStyle == 2) {
 			oscillator.frequency.setValueAtTime(freq, actx.currentTime);
@@ -873,15 +884,12 @@ function guiStuff() {
 	};
 	// TODO: maybe enable/disable audio related sub-controls based on audio checkbox
 	// ...except maybe just the audio style - not the viz
+	audioEnabled = $audioCheckbox.checked;
 	$audioCheckbox.onchange = function () {
+		audioEnabled = $audioCheckbox.checked;
 		if (typeof audioSetupError !== "undefined") {
 			showAudioSetupError();
 			return;
-		}
-		if (this.checked) {
-			actx.resume();
-		} else {
-			actx.suspend();
 		}
 	};
 	audioStyle = parseInt($audioStyleSelect.value);
