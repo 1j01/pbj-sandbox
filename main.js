@@ -369,13 +369,51 @@ function step() {
 			c.p2.fy -= dy / d * dd * f;
 			if (dd > c.dist * 3) {
 				connections.splice(j, 1);
+				// console.log(dd);
+				amplitude += Math.min(Math.abs(dd), 100) / 100;
+				freq = 0;
 			}
 			if (!c.p1.fixed && !c.p2.fixed) {
-				freq += dd;
 				var vd = distance(c.p1.vx, c.p1.vy, c.p2.vx, c.p2.vy);
+				var fd = distance(c.p1.fx, c.p1.fy, c.p2.fx, c.p2.fy);
 				var v = distance(0, 0, c.p1.vx, c.p1.vy) + distance(0, 0, c.p2.vx, c.p2.vy);
-				amplitude += vd / 1000;
-				// amplitude += vd * v / 1000;
+				vdd = vd - (c.vdp || 0);
+				// var angle = Math.atan2(c.p1.x, c.p1.y, c.p2.x, c.p2.y);
+				// var amp_add = vd / 1000;
+				// var amp_add = vd ** 1.2 / 1000;
+				// var amp_add = vd / 1000;
+				var amp_add = vdd / 1000;
+				// var amp_add = vd / 5000 + vdd / 1000;
+				// var amp_add = vd / (Math.max(Math.abs(fd), 1) ** 2) / 100;
+				// var amp_add = vd * v / 1000;
+				// var amp_add = vdd / 1000 * vdd > 1;
+				// var freq_add = dd;
+				// var freq_add = -dd;
+				// var freq_add = Math.abs(dd);
+				// var freq_add = angle;
+				// var freq_add = -dd * vdd / 10;
+				// var freq_add = -dd * vdd > 1;
+				// var freq_add = dd * vdd > 1;
+				// var freq_add = dd * Math.max(0, Math.min(1, vdd / 5 - 10)) * 5;
+				// var freq_add = Math.max(0, Math.min(20, 
+				// 	dd * Math.max(0, Math.min(1,
+				// 		vdd / 5 - 10
+				// 	)) * 50
+				// ));
+				// var freq_add = dd * v / 100;
+				// var freq_add = dd * (dd > 1);
+				// var freq_add = dd * (v ** 1.5 / 100);
+				var freq_add = dd * (~~v) / 100;
+				freq += freq_add;
+				amplitude += amp_add;
+				// ctx.fillStyle = "red";
+				// ctx.fillRect(j*2, 0, 2, dd);
+				ctx.fillStyle = "yellow";
+				ctx.fillRect(j*2, 0, 2, freq_add * 5);
+				ctx.fillStyle = "green";
+				ctx.fillRect(j*2, 0, 2, amp_add * 2000);
+
+				c.vdp = vd;
 			}
 		}
 	}
@@ -418,6 +456,9 @@ function step() {
 				p.vx = -p.vx / cor;
 				p.vy /= friction;
 			}
+			// if (Math.sign(p.x - p.px - p.vx) > 0) {
+				
+			// }
 			for (var j = 0; j < gui.modals.length; j++) {
 				var m = gui.modals[j];
 				var r = m.$m.getBoundingClientRect();
@@ -428,11 +469,11 @@ function step() {
 				if (p.x >= r.left && p.x <= r.right) {
 					if (p.y >= r.top && p.y <= r.bottom) {
 						// convert to rect unit coords (0 = left, 1 = right, 0 = top, 1 = bottom)
-						// then find whether it was, in the last frame, in two diagonal halves
+						// then find whether it's in each of two diagonal halves
 						// and use that to find whether it's in opposing diagonal quadrants
-						// i.e. whether it's more horizontal or more vertical (in its approach)
-						var in_upper_right_half = (p.px - r.left) / r.width > (p.py - r.top) / r.height;
-						var in_upper_left_half = (r.right - p.px) / r.width > (p.py - r.top) / r.height;
+						// i.e. whether it's more horizontal or more vertical
+						var in_upper_right_half = (p.x - r.left) / r.width > (p.y - r.top) / r.height;
+						var in_upper_left_half = (r.right - p.x) / r.width > (p.y - r.top) / r.height;
 						var in_left_or_right_quadrant = in_upper_right_half ^ in_upper_left_half;
 						if (in_left_or_right_quadrant) {
 							if (p.x < r.left + r.width / 2) {
@@ -646,9 +687,11 @@ function step() {
 	mousePrevious.x = mouse.x;
 	mousePrevious.y = mouse.y;
 
-	if (typeof oscillator !== "undefined") {
-		oscillator.frequency.setValueAtTime(freq, actx.currentTime);
-		gain.gain.setValueAtTime(amplitude, actx.currentTime);
+	if (typeof oscillator !== "undefined" && freq != null) {
+		// oscillator.frequency.setValueAtTime(freq, actx.currentTime);
+		// gain.gain.setValueAtTime(amplitude, actx.currentTime);
+		oscillator.frequency.linearRampToValueAtTime(freq, actx.currentTime + 0.05);
+		gain.gain.linearRampToValueAtTime(amplitude, actx.currentTime + 0.001);
 	}
 }
 function intersection(x1, y1, x2, y2, x3, y3, x4, y4) {
@@ -681,37 +724,6 @@ function intersection(x1, y1, x2, y2, x3, y3, x4, y4) {
 	}
 	return { x: x, y: y };
 }
-/*
-function intersects(x1, y1, x2, y2, x3, y3, x4, y4) {
-	var x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
-	var y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
-	if (isNaN(x) || isNaN(y)) {
-		return false;
-	} else {
-		if (x1 >= x2) {
-			if (!(x2 <= x && x <= x1)) { return false; }
-		} else {
-			if (!(x1 <= x && x <= x2)) { return false; }
-		}
-		if (y1 >= y2) {
-			if (!(y2 <= y && y <= y1)) { return false; }
-		} else {
-			if (!(y1 <= y && y <= y2)) { return false; }
-		}
-		if (x3 >= x4) {
-			if (!(x4 <= x && x <= x3)) { return false; }
-		} else {
-			if (!(x3 <= x && x <= x4)) { return false; }
-		}
-		if (y3 >= y4) {
-			if (!(y4 <= y && y <= y3)) { return false; }
-		} else {
-			if (!(y3 <= y && y <= y4)) { return false; }
-		}
-	}
-	return { x: x, y: y };
-}
-*/
 function createTerrain() {
 	var x = Math.random() * 200;
 	var y = Math.random() * 200 + 200;
