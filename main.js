@@ -170,13 +170,7 @@ function main() {
 		}
 	});
 	addEventListener('keyup', function (e) { delete keys[e.keyCode]; });
-	canvas.addEventListener('mousedown', function (e) {
-		if (e.button == 0) {
-			mouse.left = true;
-		} else {
-			mouse.right = true;
-		}
-		e.preventDefault();
+	var removeSelectionAndBlur = function () {
 		if (window.getSelection) {
 			if (window.getSelection().empty) {  // Chrome
 				window.getSelection().empty();
@@ -187,16 +181,47 @@ function main() {
 			document.selection.empty();
 		}
 		document.activeElement.blur();
+	};
+	var moveMouse = function(pageX, pageY) {
+		mouse.x = pageX - canvas.getBoundingClientRect().left;
+		mouse.y = pageY - canvas.getBoundingClientRect().top;
+	};
+	canvas.addEventListener('mousedown', function (e) {
+		moveMouse(e.pageX, epageY);
+		if (e.button == 0) {
+			mouse.left = true;
+		} else {
+			mouse.right = true;
+		}
+		e.preventDefault();
+		removeSelectionAndBlur();
+	});
+	canvas.addEventListener('touchstart', function (e) {
+		moveMouse(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
+		mouse.left = true;
+		removeSelectionAndBlur();
 	});
 	addEventListener('mouseup', function (e) {
-		if (e.button == 0)
+		if (e.button == 0) {
 			mouse.left = false;
-		else mouse.right = false;
+		} else {
+			mouse.right = false;
+		}
 		e.preventDefault();
 	});
-	addEventListener('mousemove', function (e) {
-		mouse.x = e.clientX - canvas.getBoundingClientRect().left;
-		mouse.y = e.clientY - canvas.getBoundingClientRect().top;
+	addEventListener('touchend', function (e) {
+		mouse.left = false;
+		mouse.right = false;
+	});
+	addEventListener('touchcancel', function (e) {
+		mouse.left = false;
+		mouse.right = false;
+	});
+	addEventListener('mousemove', function(e){
+		moveMouse(e.pageX, e.pageY);
+	}, false);
+	addEventListener('touchmove', function(e){
+		moveMouse(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
 	}, false);
 
 	/*(onresize = function () {
