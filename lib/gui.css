@@ -15,7 +15,6 @@
 	pointer-events: none !important;
 }
 .modal * {
-	outline: none;
 	border: none;
 	cursor: default;
 	/*-webkit-user-select: none;

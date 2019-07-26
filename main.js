@@ -84,6 +84,7 @@ function main() {
 	collision = false;
 	autoConnect = false;
 	gravity = 0.1;
+	audio_style = 1;
 
 	tool = "create-points";
 	selection = {
@@ -379,14 +380,22 @@ function step() {
 				var v = distance(0, 0, c.p1.vx, c.p1.vy) + distance(0, 0, c.p2.vx, c.p2.vy);
 				vdd = vd - (c.vdp || 0);
 				// var angle = Math.atan2(c.p1.x, c.p1.y, c.p2.x, c.p2.y);
+				if (audio_style == 0) {
+					var amp_add = vd / 1000;
+				}
 				// var amp_add = vd / 1000;
 				// var amp_add = vd ** 1.2 / 1000;
 				// var amp_add = vd / 1000;
-				var amp_add = vdd / 1000;
+				if (audio_style == 1 || audio_style == 2) {
+					var amp_add = vdd / 1000;
+				}
 				// var amp_add = vd / 5000 + vdd / 1000;
 				// var amp_add = vd / (Math.max(Math.abs(fd), 1) ** 2) / 100;
 				// var amp_add = vd * v / 1000;
 				// var amp_add = vdd / 1000 * vdd > 1;
+				if (audio_style == 0) {
+					var freq_add = dd;
+				}
 				// var freq_add = dd;
 				// var freq_add = -dd;
 				// var freq_add = Math.abs(dd);
@@ -403,7 +412,13 @@ function step() {
 				// var freq_add = dd * v / 100;
 				// var freq_add = dd * (dd > 1);
 				// var freq_add = dd * (v ** 1.5 / 100);
-				var freq_add = dd * (~~v) / 100;
+				// if (audio_style == 1) {
+				if (audio_style == 1 || audio_style == 2) {
+					var freq_add = dd * (~~v) / 100;
+				}
+				// if (audio_style == 2) {
+				// 	var freq_add = dd * (~~v) / 100 * Math.random();
+				// }
 				freq += freq_add;
 				amplitude += amp_add;
 				// ctx.fillStyle = "red";
@@ -688,10 +703,16 @@ function step() {
 	mousePrevious.y = mouse.y;
 
 	if (typeof oscillator !== "undefined" && freq != null) {
-		// oscillator.frequency.setValueAtTime(freq, actx.currentTime);
-		// gain.gain.setValueAtTime(amplitude, actx.currentTime);
-		oscillator.frequency.linearRampToValueAtTime(freq, actx.currentTime + 0.05);
-		gain.gain.linearRampToValueAtTime(amplitude, actx.currentTime + 0.001);
+		if (audio_style == 0 || audio_style == 2) {
+			oscillator.frequency.setValueAtTime(freq, actx.currentTime);
+		} else {
+			oscillator.frequency.linearRampToValueAtTime(freq, actx.currentTime + 0.05);
+		}
+		if (audio_style == 0) {
+			gain.gain.setValueAtTime(amplitude, actx.currentTime);
+		} else {
+			gain.gain.linearRampToValueAtTime(amplitude, actx.currentTime + 0.001);
+		}
 	}
 }
 function intersection(x1, y1, x2, y2, x3, y3, x4, y4) {
@@ -791,6 +812,11 @@ function guiStuff() {
 	var ops = new Modal().position("left top").title("Options").content(
 		"<label><input type='checkbox' id='coll'/>Poor, Broken Collision</label>"
 		+ "<br><label><input type='checkbox' id='audiofx'/>Audio</label>"
+		+ "<br><label>Audio Style: <select id='audiofx-style'>"
+			+ "<option value='0'>Retro (droning)</option>"
+			+ "<option value='1' selected>Highlighting collisions</option>"
+			+ "<option value='2'>Hybrid</option></select>"
+		+ "</label>"
 		+ "<br><label><input type='checkbox' id='terrain'/>\"Terrain\"</label>"
 		+ "<br><label><input type='checkbox' id='ac'/>AutoConnect</label>"
 		+ "<br><label>Gravity: <input type='number' id='grav' value=" + gravity + " step=0.05 min=-50 max=50/></label>"
@@ -799,19 +825,44 @@ function guiStuff() {
 		+ "<br><button id='help'>Help</button>"
 		+ "<button id='todo'>Todo</button>");
 
-	ops.$("#audiofx").onchange = function () {
+	var $audio_checkbox = ops.$("#audiofx");
+	var $audio_style_select = ops.$("#audiofx-style");
+
+	$audio_checkbox.onchange = function () {
 		if (typeof audioSetupError !== "undefined") {
 			new Modal().position("center").title("Audio Setup Failed").content(
 				"<p>Initialization failed, audio is not available.</p>"
 				+ "<pre class='padded'/>"
 			).$c.querySelector("pre").textContent = audioSetupError.stack;
-			this.checked = false;
-			this.disabled = true;
+			$audio_checkbox.disabled = true;
+			$audio_style_select.disabled = true;
+			$audio_checkbox.checked = false;
+			return;
 		}
 		if (this.checked) {
 			actx.resume();
 		} else {
 			actx.suspend();
+		}
+	};
+	audio_style = parseInt($audio_style_select.value);
+	$audio_style_select.onchange = function () {
+		audio_style = parseInt($audio_style_select.value);
+		if (typeof audioSetupError !== "undefined") {
+			new Modal().position("center").title("Audio Setup Failed").content(
+				"<p>Initialization failed, audio is not available.</p>"
+				+ "<pre class='padded'/>"
+			).$c.querySelector("pre").textContent = audioSetupError.stack;
+			$audio_checkbox.disabled = true;
+			$audio_style_select.disabled = true;
+			$audio_checkbox.checked = false;
+			return;
+		}
+		if (!$audio_checkbox.checked) {
+			new Modal().position("center").title("Audio Not Enabled").content(
+				"<p>Check the box to enable 'Audio' first. </p>"
+			);
+			return;
 		}
 	};
 	ops.$("#coll").onchange = function () {
