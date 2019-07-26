@@ -200,6 +200,7 @@ function main() {
 		moveMouse(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
 		mouse.left = true;
 		removeSelectionAndBlur();
+		e.preventDefault();
 	});
 	addEventListener('mouseup', function (e) {
 		if (e.button == 0) {
