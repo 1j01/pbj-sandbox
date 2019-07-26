@@ -821,7 +821,7 @@ function guiStuff() {
 			+ "<option value='1' selected>Highlighting collisions</option>"
 			+ "<option value='2'>Hybrid</option>"
 		+ "</select></div></label>"
-		+ "<h3>Misc:</h3>"
+		+ "<h3>Simulation:</h3>"
 		+ "<label>Gravity: <input type='number' id='grav' value=" + gravity + " step=0.05 min=-50 max=50/></label>"
 		+ "<br><label><input type='checkbox' id='ac'/>AutoConnect</label>"
 		+ "<br><label><input type='checkbox' id='terrain'/>\"Terrain\"</label>"
