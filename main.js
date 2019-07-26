@@ -84,7 +84,8 @@ function main() {
 	collision = false;
 	autoConnect = false;
 	gravity = 0.1;
-	audio_style = 1;
+	audioStyle = 1;
+	audioViz = false;
 
 	tool = "create-points";
 	selection = {
@@ -380,20 +381,20 @@ function step() {
 				var v = distance(0, 0, c.p1.vx, c.p1.vy) + distance(0, 0, c.p2.vx, c.p2.vy);
 				vdd = vd - (c.vdp || 0);
 				// var angle = Math.atan2(c.p1.x, c.p1.y, c.p2.x, c.p2.y);
-				if (audio_style == 0) {
+				if (audioStyle == 0) {
 					var amp_add = vd / 1000;
 				}
 				// var amp_add = vd / 1000;
 				// var amp_add = vd ** 1.2 / 1000;
 				// var amp_add = vd / 1000;
-				if (audio_style == 1 || audio_style == 2) {
+				if (audioStyle == 1 || audioStyle == 2) {
 					var amp_add = vdd / 1000;
 				}
 				// var amp_add = vd / 5000 + vdd / 1000;
 				// var amp_add = vd / (Math.max(Math.abs(fd), 1) ** 2) / 100;
 				// var amp_add = vd * v / 1000;
 				// var amp_add = vdd / 1000 * vdd > 1;
-				if (audio_style == 0) {
+				if (audioStyle == 0) {
 					var freq_add = dd;
 				}
 				// var freq_add = dd;
@@ -412,21 +413,23 @@ function step() {
 				// var freq_add = dd * v / 100;
 				// var freq_add = dd * (dd > 1);
 				// var freq_add = dd * (v ** 1.5 / 100);
-				// if (audio_style == 1) {
-				if (audio_style == 1 || audio_style == 2) {
+				// if (audioStyle == 1) {
+				if (audioStyle == 1 || audioStyle == 2) {
 					var freq_add = dd * (~~v) / 100;
 				}
-				// if (audio_style == 2) {
+				// if (audioStyle == 2) {
 				// 	var freq_add = dd * (~~v) / 100 * Math.random();
 				// }
 				freq += freq_add;
 				amplitude += amp_add;
 				// ctx.fillStyle = "red";
 				// ctx.fillRect(j*2, 0, 2, dd);
-				ctx.fillStyle = "yellow";
-				ctx.fillRect(j*2, 0, 2, freq_add * 5);
-				ctx.fillStyle = "green";
-				ctx.fillRect(j*2, 0, 2, amp_add * 2000);
+				if (audioViz) {
+					ctx.fillStyle = "yellow";
+					ctx.fillRect(j*2, 0, 2, freq_add * 5);
+					ctx.fillStyle = "green";
+					ctx.fillRect(j*2, 0, 2, amp_add * 2000);
+				}
 
 				c.vdp = vd;
 			}
@@ -703,12 +706,12 @@ function step() {
 	mousePrevious.y = mouse.y;
 
 	if (typeof oscillator !== "undefined" && freq != null) {
-		if (audio_style == 0 || audio_style == 2) {
+		if (audioStyle == 0 || audioStyle == 2) {
 			oscillator.frequency.setValueAtTime(freq, actx.currentTime);
 		} else {
 			oscillator.frequency.linearRampToValueAtTime(freq, actx.currentTime + 0.05);
 		}
-		if (audio_style == 0) {
+		if (audioStyle == 0) {
 			gain.gain.setValueAtTime(amplitude, actx.currentTime);
 		} else {
 			gain.gain.linearRampToValueAtTime(amplitude, actx.currentTime + 0.001);
@@ -817,6 +820,7 @@ function guiStuff() {
 			+ "<option value='1' selected>Highlighting collisions</option>"
 			+ "<option value='2'>Hybrid</option></select>"
 		+ "</label>"
+		+ "<br><label><input type='checkbox' id='audiofx-viz'/>Visualize Audio</label>"
 		+ "<br><label><input type='checkbox' id='terrain'/>\"Terrain\"</label>"
 		+ "<br><label><input type='checkbox' id='ac'/>AutoConnect</label>"
 		+ "<br><label>Gravity: <input type='number' id='grav' value=" + gravity + " step=0.05 min=-50 max=50/></label>"
@@ -825,18 +829,24 @@ function guiStuff() {
 		+ "<br><button id='help'>Help</button>"
 		+ "<button id='todo'>Todo</button>");
 
-	var $audio_checkbox = ops.$("#audiofx");
-	var $audio_style_select = ops.$("#audiofx-style");
-
-	$audio_checkbox.onchange = function () {
+	var $audioCheckbox = ops.$("#audiofx");
+	var $audioVizCheckbox = ops.$("#audiofx-viz");
+	var $audioStyleSelect = ops.$("#audiofx-style");
+	
+	var showAudioSetupError = function() {
+		new Modal().position("center").title("Audio Setup Failed").content(
+			"<p>Initialization failed, audio is not available.</p>"
+			+ "<pre class='padded'/>"
+		).$c.querySelector("pre").textContent = audioSetupError.stack;
+		$audioCheckbox.disabled = true;
+		$audioStyleSelect.disabled = true;
+		$audioCheckbox.checked = false;
+	};
+	// TODO: maybe enable/disable audio related sub-controls based on audio checkbox
+	// ...except maybe just the audio style - not the viz
+	$audioCheckbox.onchange = function () {
 		if (typeof audioSetupError !== "undefined") {
-			new Modal().position("center").title("Audio Setup Failed").content(
-				"<p>Initialization failed, audio is not available.</p>"
-				+ "<pre class='padded'/>"
-			).$c.querySelector("pre").textContent = audioSetupError.stack;
-			$audio_checkbox.disabled = true;
-			$audio_style_select.disabled = true;
-			$audio_checkbox.checked = false;
+			showAudioSetupError();
 			return;
 		}
 		if (this.checked) {
@@ -845,22 +855,27 @@ function guiStuff() {
 			actx.suspend();
 		}
 	};
-	audio_style = parseInt($audio_style_select.value);
-	$audio_style_select.onchange = function () {
-		audio_style = parseInt($audio_style_select.value);
+	audioStyle = parseInt($audioStyleSelect.value);
+	$audioStyleSelect.onchange = function () {
+		audioStyle = parseInt($audioStyleSelect.value);
 		if (typeof audioSetupError !== "undefined") {
-			new Modal().position("center").title("Audio Setup Failed").content(
-				"<p>Initialization failed, audio is not available.</p>"
-				+ "<pre class='padded'/>"
-			).$c.querySelector("pre").textContent = audioSetupError.stack;
-			$audio_checkbox.disabled = true;
-			$audio_style_select.disabled = true;
-			$audio_checkbox.checked = false;
+			showAudioSetupError();
 			return;
 		}
-		if (!$audio_checkbox.checked) {
+		if (!$audioCheckbox.checked) {
 			new Modal().position("center").title("Audio Not Enabled").content(
 				"<p>Check the box to enable 'Audio' first. </p>"
+			);
+			return;
+		}
+	};
+	audioViz = $audioVizCheckbox.checked;
+	$audioVizCheckbox.onchange = function () {
+		audioViz = $audioVizCheckbox.checked;
+		if (!$audioCheckbox.checked && audioViz) {
+			new Modal().position("center").title("Audio Not Enabled").content(
+				"<p>You <em>can</em> enjoy the viz without sound.</p>"
+				+"<p>Check the box to enable 'Audio' to actually hear it.</p>"
 			);
 			return;
 		}
