@@ -1,9 +1,26 @@
 
 # <img src="icon-47x47.png" height="32"> Point Based Physics 2D <img src="icon-48x48.png" height="32">
 
-This is a little experiment I did a while ago, a point-based physics sandbox.
+This is a little experiment I did a while ago, a point-based physics sandbox.  
+I've since brushed it off and added **audio!** which is fun!
 
 You can [check it out here](https://1j01.github.io/pbp2d).
+
+## Ways to Lose Data
+
+There's **no save/load**.
+
+Some things are not in the undo state, even tho they affect the world:
+- browser window size,
+- in-app window positions and sizes,
+- simulation options like gravity
+
+Furthermore, if the simulation is active, undoing and redoing is destructive,
+because the states will be replaced with ones further ahead in time,
+as you traverse the stacks / go back and forth.
+
+And some things don't create undo history, like dragging points, and connecting points, currently,
+so you can go for quite some time messing around without creating any undo states you can go back to.
 
 ## Help + TODO
 
@@ -13,12 +30,11 @@ See in-app Help and TODO windows accessible from the Options window.
 
 [WTFPL](https://en.wikipedia.org/wiki/WTFPL) or [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
 
-## Project Status
+## Contributing
 
-The code is a mess, and this project isn't going anywhere.
+This is just a toy, so I'm happy growing it as organically as the structures you can create with it.
 
-(Unless it's rewritten... probably with code from, or using [Skele2D][].
-It could be like an example program, just a physics sandbox, using that interface for moving points around and everything.)
+Feel free to send pull requests adding weird tools.
 
 ## See Also
 
