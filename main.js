@@ -112,7 +112,10 @@ function main() {
 		if (!keys[e.keyCode]) {
 			keys[e.keyCode] = true;
 			// console.log(String.fromCharCode(e.keyCode) + ": ", e.keyCode);
-			switch (String.fromCharCode(e.keyCode)) {
+			if (e.keyCode === 46) { // delete
+				undoable();
+				deleteSelected();
+			} else switch (String.fromCharCode(e.keyCode)) {
 				case "P"://pause/play
 					play = !play;
 					break;
@@ -137,6 +140,7 @@ function main() {
 				case "X"://cut selection
 					if (selection.points.length > 0) {
 						copySelected();
+						undoable();
 						deleteSelected();
 					}
 					break;
@@ -687,10 +691,6 @@ function step() {
 		ctx.lineTo((c.p2.x - c.p1.x) * 0.6 + c.p1.x, (c.p2.y - c.p1.y) * 0.6 + c.p1.y);
 		ctx.stroke();
 		/**/
-	}
-
-	if (keys[46]) { // delete
-		deleteSelected();
 	}
 
 	ctx.lineWidth = 1;
