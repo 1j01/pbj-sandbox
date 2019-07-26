@@ -851,8 +851,8 @@ function r() { return Math.random() * 2 - 1; }
 function guiStuff() {
 	var ops = new Modal().position("left top").title("Options").content(
 		"<h3>Audio:</h3>"
-		+ "<label><input type='checkbox' id='audiofx'/>Enable Audio</label>" /* WET: label text referenced */
-		+ "<br><label><input type='checkbox' id='audiofx-viz'/>Visualize Audio</label>"
+		+ "<label><input type='checkbox' id='audiofx'/>Audio</label>" /* WET: label text referenced */
+		+ "<br><label><input type='checkbox' id='audiofx-viz'/>Visualization</label>"
 		+ "<br><label>Audio Style: <div class='select-wrapper'><select id='audiofx-style'>"
 			+ "<option value='0'>Scorched Earth</option>"
 			+ "<option value='1' selected>Collisions</option>"
@@ -901,7 +901,7 @@ function guiStuff() {
 		}
 		if (!$audioCheckbox.checked) {
 			new Modal().position("center").title("Audio Not Enabled").content(
-				"<p>Check the box to 'Enable Audio' first.</p>"
+				"<p>Check the box to enable 'Audio' first.</p>"
 			);
 			return;
 		}
@@ -912,7 +912,7 @@ function guiStuff() {
 		if (!$audioCheckbox.checked && audioViz) {
 			new Modal().position("center").title("Audio Not Enabled").content(
 				"<p>You <em>can</em> enjoy the viz without sound.</p>"
-				+"<p>But check 'Enable Audio' to hear sound.</p>"
+				+"<p>Check the box to enable 'Audio' to hear it.</p>"
 			);
 			return;
 		}
