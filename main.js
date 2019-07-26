@@ -843,8 +843,8 @@ function guiStuff() {
 		+ "<label><input type='checkbox' id='audiofx'/>Audio</label>" /* WET: label text referenced */
 		+ "<br><label><input type='checkbox' id='audiofx-viz'/>Visualize Audio</label>"
 		+ "<br><label>Audio Style: <div class='select-wrapper'><select id='audiofx-style'>"
-			+ "<option value='0'>Retro (droning)</option>"
-			+ "<option value='1' selected>Highlighting collisions</option>"
+			+ "<option value='0'>Scorched Earth</option>"
+			+ "<option value='1' selected>Collisions</option>"
 			+ "<option value='2'>Hybrid</option>"
 		+ "</select></div></label>"
 		+ "<h3>Simulation:</h3>"
