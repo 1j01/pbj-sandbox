@@ -813,21 +813,24 @@ function r() { return Math.random() * 2 - 1; }
 
 function guiStuff() {
 	var ops = new Modal().position("left top").title("Options").content(
-		"<label><input type='checkbox' id='coll'/>Poor, Broken Collision</label>"
-		+ "<br><label><input type='checkbox' id='audiofx'/>Audio</label>"
-		+ "<br><label>Audio Style: <select id='audiofx-style'>"
+		"<h3>Audio:</h3>"
+		+ "<label><input type='checkbox' id='audiofx'/>Audio</label>" /* WET: label text referenced */
+		+ "<br><label><input type='checkbox' id='audiofx-viz'/>Visualize Audio</label>"
+		+ "<br><label>Audio Style: <div class='select-wrapper'><select id='audiofx-style'>"
 			+ "<option value='0'>Retro (droning)</option>"
 			+ "<option value='1' selected>Highlighting collisions</option>"
-			+ "<option value='2'>Hybrid</option></select>"
-		+ "</label>"
-		+ "<br><label><input type='checkbox' id='audiofx-viz'/>Visualize Audio</label>"
-		+ "<br><label><input type='checkbox' id='terrain'/>\"Terrain\"</label>"
+			+ "<option value='2'>Hybrid</option>"
+		+ "</select></div></label>"
+		+ "<h3>Misc:</h3>"
+		+ "<label>Gravity: <input type='number' id='grav' value=" + gravity + " step=0.05 min=-50 max=50/></label>"
 		+ "<br><label><input type='checkbox' id='ac'/>AutoConnect</label>"
-		+ "<br><label>Gravity: <input type='number' id='grav' value=" + gravity + " step=0.05 min=-50 max=50/></label>"
+		+ "<br><label><input type='checkbox' id='terrain'/>\"Terrain\"</label>"
+		+ "<br><label><input type='checkbox' id='coll'/>Poor, Broken Collision</label>"
 		+ "<h3>Windows:</h3>"
 		+ "<button id='resz'>Resizable Window</button>"
 		+ "<br><button id='help'>Help</button>"
-		+ "<button id='todo'>Todo</button>");
+		+ "<button id='todo'>Todo</button>"
+	);
 
 	var $audioCheckbox = ops.$("#audiofx");
 	var $audioVizCheckbox = ops.$("#audiofx-viz");
@@ -864,7 +867,7 @@ function guiStuff() {
 		}
 		if (!$audioCheckbox.checked) {
 			new Modal().position("center").title("Audio Not Enabled").content(
-				"<p>Check the box to enable 'Audio' first. </p>"
+				"<p>Check the box to 'Enable Audio' first. </p>"
 			);
 			return;
 		}
@@ -875,7 +878,7 @@ function guiStuff() {
 		if (!$audioCheckbox.checked && audioViz) {
 			new Modal().position("center").title("Audio Not Enabled").content(
 				"<p>You <em>can</em> enjoy the viz without sound.</p>"
-				+"<p>Check the box to enable 'Audio' to actually hear it.</p>"
+				+"<p>But check 'Enable Audio' to hear sound.</p>"
 			);
 			return;
 		}
