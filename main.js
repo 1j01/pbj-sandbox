@@ -163,6 +163,18 @@ function main() {
 						connections = connections.concat(clipboard.connections);
 					}
 					break;
+				case "S":
+					selectTool("selection");
+					break;
+				case "Q":
+					selectTool("create-points-fast");
+					break;
+				case "W":
+					selectTool("create-points");
+					break;
+				case "G":
+					selectTool("glue");
+					break;
 				default:
 					return; // don't prevent default
 			}
@@ -980,22 +992,27 @@ function guiStuff() {
 		+ "<br><button id='glue'>Glue (Connector)</button>"
 		+ "<br><button id='rope' disabled>Rope</button>"
 	);
+
 	var toolbuttons = tools.$$("button");
+
+	selectTool = function(id) {
+		tool = id;
+		for (var i = 0; i < toolbuttons.length; i++) {
+			var tb = toolbuttons[i];
+			if (tb.id === id) {
+				tb.classList.add("selected");
+			} else {
+				tb.classList.remove("selected");
+			}
+		}
+	};
+
+	selectTool(tool);
 	for (var i = 0; i < toolbuttons.length; i++) {
 		var tb = toolbuttons[i];
 		tb.onclick = function () {
-			tool = this.id;
-			for (var i = 0; i < toolbuttons.length; i++) {
-				var tb = toolbuttons[i];
-				tb.style.background = "";
-				tb.style.color = "";
-			}
-			this.style.background = "rgba(50,100,100,0.5)";
-			this.style.color = "#DFF";
+			selectTool(this.id);
 		};
-		if (tool == tb.id) {
-			tb.onclick();
-		}
 	}
 }
 
