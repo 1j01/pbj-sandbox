@@ -981,16 +981,18 @@ function guiStuff() {
 		new Modal().position("center").title("Resizable").content("Windows are collidable.").resizable();
 	};
 	var tools = new Modal().position("left").title("Tools").content(
-		"<h3>Basic:</h3>"
-		+ "<button id='create-points'>Create Points</button>"
-		+ "<br><button id='remove-points' disabled>Remove Points</button>"
-		+ "<h3>Precision:</h3>"
-		+ "<button id='selection'>Selection</button>"
-		+ "<br><button id='connector' disabled>Precise Connector</button>"
-		+ "<h3>Batch:</h3>"
-		+ "<button id='create-points-fast'>Create Points Quickly</button>"
-		+ "<br><button id='glue'>Glue (Connector)</button>"
-		+ "<br><button id='rope' disabled>Rope</button>"
+		""
+		+ "<button id='create-points'>Create Points (W)</button>"
+		+ "<br>"
+		+ "<button id='create-points-fast'>Create Points Quickly (Q)</button>"
+		// + "<br>"
+		// + "<button id='rope' disabled>Rope</button>"
+		+ "<br>"
+		+ "<button id='glue'>Glue (G)</button>"
+		+ "<br>"
+		// + "<button id='connector' disabled>Precise Connector</button>"
+		// + "<br>"
+		+ "<button id='selection'>Select (S)</button>"
 	);
 
 	var toolbuttons = tools.$$("button");
