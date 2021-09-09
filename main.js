@@ -659,6 +659,7 @@ function step() {
 						// I tried flipping the signs and sines and cosines for a while
 						// but didn't get it to work while being more sensible.
 						// Maybe later I'll go at it again.
+						// (Keep in mind, the drawArrow function is also arbitrary in its base angle)
 						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy;
 						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
 						var bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
