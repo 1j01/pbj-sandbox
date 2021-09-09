@@ -1,5 +1,5 @@
 gravity = 0
-document.getElementById("grav").value = gravity;
+document.getElementById("gravity-input").value = gravity;
 
 blueprint = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 

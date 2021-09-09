@@ -148,32 +148,32 @@ function main() {
 					undoable();
 					if (serializedClipboard) {
 						var clipboard = deserialize(serializedClipboard);
-						var minx = Infinity, miny = Infinity;
+						var minX = Infinity, minY = Infinity;
 						for (var i = 0; i < clipboard.points.length; i++) {
 							var p = clipboard.points[i];
-							minx = Math.min(minx, p.x);
-							miny = Math.min(miny, p.y);
+							minX = Math.min(minX, p.x);
+							minY = Math.min(minY, p.y);
 						}
 						for (var i = 0; i < clipboard.points.length; i++) {
 							var p = clipboard.points[i];
-							p.x -= minx - mouse.x;
-							p.y -= miny - mouse.y;
+							p.x -= minX - mouse.x;
+							p.y -= minY - mouse.y;
 						}
 						points = points.concat(clipboard.points);
 						connections = connections.concat(clipboard.connections);
 					}
 					break;
 				case "S":
-					selectTool("selection");
+					selectTool("selection-tool");
 					break;
 				case "Q":
-					selectTool("create-points-fast");
+					selectTool("create-points-fast-tool");
 					break;
 				case "W":
-					selectTool("create-points");
+					selectTool("create-points-tool");
 					break;
 				case "G":
-					selectTool("glue");
+					selectTool("glue-tool");
 					break;
 				default:
 					return; // don't prevent default
@@ -252,7 +252,7 @@ function main() {
 
 	setInterval(step, 15);
 
-	shoopen = 0;
+	// shoopen = 0;
 
 	try {
 		actx = new AudioContext();
@@ -320,7 +320,7 @@ function step() {
 
 	ctx.save();
 
-	if (tool === "selection" && mouse.left && mousePrevious.left) {
+	if (tool === "selection-tool" && mouse.left && mousePrevious.left) {
 		selection = {
 			x: selection.x, y: selection.y,
 			x1: Math.min(selection.x, mouse.x),
@@ -360,12 +360,12 @@ function step() {
 		ctx.stroke();
 	}
 
-	if (tool === "selection") {
+	if (tool === "selection-tool") {
 		if (mouse.left && !mousePrevious.left) {
 			selection = { x: mouse.x, y: mouse.y, points: [], connections: [] };
 		}
 	} else if (tool.match(/create-points/)) {
-		if (mouse.left && (!mousePrevious.left || tool === "create-points-fast")) {
+		if (mouse.left && (!mousePrevious.left || tool === "create-points-fast-tool")) {
 			if (!mousePrevious.left) undoable();
 			points.push({
 				x: mouse.x,//position
@@ -585,7 +585,7 @@ function step() {
 					}
 					return nc;
 				}
-				if ((d2m < 30 && (tool === "glue" && mouse.left || keys[32])) || (autoConnect && d < 50 && numConn(p) < 6 && numConn(p2) < 3)) {
+				if ((d2m < 30 && (tool === "glue-tool" && mouse.left || keys[32])) || (autoConnect && d < 50 && numConn(p) < 6 && numConn(p2) < 3)) {
 					var connected = false;
 					for (var ci = connections.length - 1; ci >= 0; ci--) {
 						if (
@@ -800,15 +800,15 @@ function intersection(x1, y1, x2, y2, x3, y3, x4, y4) {
 function createTerrain() {
 	var x = Math.random() * 200;
 	var y = Math.random() * 200 + 200;
-	var ytend = 0, xtend = 10;
+	var y_tend = 0, x_tend = 10;
 	var p, pp;
 	for (var i = 0; i < 50; i++) {
-		x += Math.random() * 10 - 5 + xtend;
-		y += Math.random() * 10 - 5 + ytend;
-		ytend += Math.random() * 20 - 10;
-		xtend += Math.random() * 35 - 15;
-		ytend *= 0.945;
-		xtend *= 0.9;
+		x += Math.random() * 10 - 5 + x_tend;
+		y += Math.random() * 10 - 5 + y_tend;
+		y_tend += Math.random() * 20 - 10;
+		x_tend += Math.random() * 35 - 15;
+		y_tend *= 0.945;
+		x_tend *= 0.9;
 		pp = p;
 		p = {
 			x: x,//position
@@ -863,27 +863,27 @@ function r() { return Math.random() * 2 - 1; }
 function guiStuff() {
 	var ops = new Modal().position("left top").title("Options").content(
 		"<h3>Audio:</h3>"
-		+ "<label><input type='checkbox' id='audiofx'/>Audio</label>" /* WET: label text referenced */
-		+ "<br><label><input type='checkbox' id='audiofx-viz'/>Visualization</label>"
-		+ "<br><label>Audio Style: <div class='select-wrapper'><select id='audiofx-style'>"
+		+ "<label><input type='checkbox' id='sfx-checkbox'/>Audio</label>" /* WET: label text referenced */
+		+ "<br><label><input type='checkbox' id='sfx-viz-checkbox'/>Visualization</label>"
+		+ "<br><label>Audio Style: <div class='select-wrapper'><select id='sfx-style-select'>"
 			+ "<option value='0'>Scorched Earth</option>"
 			+ "<option value='1' selected>Collisions</option>"
 			+ "<option value='2'>Hybrid</option>"
 		+ "</select></div></label>"
 		+ "<h3>Simulation:</h3>"
-		+ "<label>Gravity: <input type='number' id='grav' value=" + gravity + " step=0.05 min=-50 max=50/></label>"
+		+ "<label>Gravity: <input type='number' id='gravity-input' value=" + gravity + " step=0.05 min=-50 max=50/></label>"
 		+ "<br><label><input type='checkbox' id='ac'/>AutoConnect</label>"
 		+ "<br><label><input type='checkbox' id='terrain'/>\"Terrain\"</label>"
 		+ "<br><label><input type='checkbox' id='coll'/>Poor, Broken Collision</label>"
 		+ "<h3>Windows:</h3>"
-		+ "<button id='resz'>Resizable Window</button>"
+		+ "<button id='make-resizable-window-button'>Resizable Window</button>"
 		+ "<br><button id='help'>Help</button>"
 		+ "<button id='todo'>Todo</button>"
 	);
 
-	var $audioCheckbox = ops.$("#audiofx");
-	var $audioVizCheckbox = ops.$("#audiofx-viz");
-	var $audioStyleSelect = ops.$("#audiofx-style");
+	var $audioCheckbox = ops.$("#sfx-checkbox");
+	var $audioVizCheckbox = ops.$("#sfx-viz-checkbox");
+	var $audioStyleSelect = ops.$("#sfx-style-select");
 	
 	var showAudioSetupError = function() {
 		new Modal().position("center").title("Audio Setup Failed").content(
@@ -952,7 +952,7 @@ function guiStuff() {
 			}
 		}
 	};
-	ops.$("#grav").onchange = function () {
+	ops.$("#gravity-input").onchange = function () {
 		gravity = Number(this.value);
 	};
 	ops.$("#todo").onclick = function () {
@@ -977,30 +977,30 @@ function guiStuff() {
 			+ "<br>Press <kbd>Delete</kbd> to remove the selected points."
 		).position("top");
 	};
-	ops.$("#resz").onclick = function () {
-		new Modal().position("center").title("Resizable").content("Windows are collidable.").resizable();
+	ops.$("#make-resizable-window-button").onclick = function () {
+		new Modal().position("center").title("Resizable").content("Windows are collidable. Resize me in the bottom right corner.").resizable();
 	};
 	var tools = new Modal().position("left").title("Tools").content(
 		""
-		+ "<button id='create-points'>Create Points (W)</button>"
+		+ "<button id='create-points-tool'>Create Points (W)</button>"
 		+ "<br>"
-		+ "<button id='create-points-fast'>Create Points Quickly (Q)</button>"
+		+ "<button id='create-points-fast-tool'>Create Points Quickly (Q)</button>"
 		// + "<br>"
-		// + "<button id='rope' disabled>Rope</button>"
+		// + "<button id='rope-tool' disabled>Rope</button>"
 		+ "<br>"
-		+ "<button id='glue'>Glue (G)</button>"
+		+ "<button id='glue-tool'>Glue (G)</button>"
 		+ "<br>"
-		// + "<button id='connector' disabled>Precise Connector</button>"
+		// + "<button id='connector-tool' disabled>Precise Connector</button>"
 		// + "<br>"
-		+ "<button id='selection'>Select (S)</button>"
+		+ "<button id='selection-tool'>Select (S)</button>"
 	);
 
-	var toolbuttons = tools.$$("button");
+	var toolButtons = tools.$$("button");
 
 	selectTool = function(id) {
 		tool = id;
-		for (var i = 0; i < toolbuttons.length; i++) {
-			var tb = toolbuttons[i];
+		for (var i = 0; i < toolButtons.length; i++) {
+			var tb = toolButtons[i];
 			if (tb.id === id) {
 				tb.classList.add("selected");
 			} else {
@@ -1010,8 +1010,8 @@ function guiStuff() {
 	};
 
 	selectTool(tool);
-	for (var i = 0; i < toolbuttons.length; i++) {
-		var tb = toolbuttons[i];
+	for (var i = 0; i < toolButtons.length; i++) {
+		var tb = toolButtons[i];
 		tb.onclick = function () {
 			selectTool(this.id);
 		};
