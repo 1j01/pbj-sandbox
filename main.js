@@ -299,7 +299,7 @@ function main() {
 	}
 }
 
-function drawArrow(ctx, x, y, angle, length, headSize=10) {
+function drawArrow(ctx, x, y, angle, length, headSize = 10) {
 	ctx.beginPath();
 	ctx.save();
 	ctx.translate(x, y);
@@ -638,6 +638,10 @@ function step() {
 
 					var is = intersectLineLine(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p2.x, c.p2.y)
 						|| intersectLineLine(p.x, p.y, p.px, p.py, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
+					// HACK
+					// is = is
+					// 	|| intersectLineLine(p.x, p.y, p.px, p.py-1, c.p1.x, c.p1.y, c.p2.x, c.p2.y)
+					// 	|| intersectLineLine(p.x, p.y, p.px, p.py-1, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
 					// the moving line is really a quad, not two lines
 					// var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y);
 
@@ -645,30 +649,30 @@ function step() {
 						hit = true;
 
 						// var p_dir = Math.atan2(p.x - p.px, p.y - p.py);
-						var p_dir = Math.atan2(p.vy, p.vx);
+						// var p_dir = Math.atan2(p.vy, p.vx);
 						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
-						var speed = distance(p.x, p.y, p.px, p.py) / (p.friction = 2); // + 1;
+						// Note: normal can point either way
+						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
+						// hence the negation when rendering the normal's arrow
 						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy;
 						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
 						var bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
 						var bounce_angle = bounce_angle_connection_space - normal;
 
-						if (false) {
-							normal += Math.PI;
-							// console.log("reversed normal");
-						}
-						//console.log("normal:",normal," p_dir:",p_dir," reflection:",normal-p_dir," speed:",speed);
-
-						p.x = is.x + Math.sin(bounce_angle) / 10;
-						p.y = is.y + Math.cos(bounce_angle) / 10;
-						p.vx = Math.sin(bounce_angle) * speed;
-						p.vy = Math.cos(bounce_angle) * speed;
+						var hack = 0.1;
+						p.x = is.x + -Math.sin(-bounce_angle) * hack;
+						p.y = is.y + -Math.cos(-bounce_angle) * hack;
+						// var speed = distance(p.x, p.y, p.px, p.py) / (p.friction = 2); // + 1;
+						var speed = Math.hypot(p.vx, p.vy);
+						p.vx = -Math.sin(-bounce_angle) * speed;
+						p.vy = -Math.cos(-bounce_angle) * speed;
+						// TODO: has force already been applied?
+						// would this do anything, or be reset?
 						// p.fx += Math.sin(bounce_angle) * speed;
 						// p.fy += Math.cos(bounce_angle) * speed;
-						//var l
 
 						ctx.strokeStyle = "aqua";
-						drawArrow(ctx, is.x, is.y, normal, 50);
+						drawArrow(ctx, is.x, is.y, -normal, 50);
 						ctx.strokeStyle = "red";
 						drawArrow(ctx, is.x, is.y, bounce_angle, 50);
 
