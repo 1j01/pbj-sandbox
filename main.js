@@ -649,11 +649,16 @@ function step() {
 						hit = true;
 
 						// var p_dir = Math.atan2(p.x - p.px, p.y - p.py);
-						// var p_dir = Math.atan2(p.vy, p.vx);
+						var p_dir = Math.atan2(p.vy, p.vx);
+
 						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
 						// Note: normal can point either way
 						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
 						// hence the negation when rendering the normal's arrow
+						// THIS IS NOT INTENTIONAL, it's just bad math.
+						// I tried flipping the signs and sines and cosines for a while
+						// but didn't get it to work while being more sensible.
+						// Maybe later I'll go at it again.
 						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy;
 						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
 						var bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
@@ -678,11 +683,11 @@ function step() {
 
 						// impart force to the connection's points
 						// TODO: elastic collision physics
-						// var f = speed;
-						// c.p1.fx += Math.sin(p_dir) * f;
-						// c.p1.fy += Math.cos(p_dir) * f;
-						// c.p2.fx += Math.sin(p_dir) * f;
-						// c.p2.fy += Math.cos(p_dir) * f;
+						var f = speed / 5;
+						c.p1.fx += Math.sin(Math.PI/2-p_dir) * f;
+						c.p1.fy += Math.cos(Math.PI/2-p_dir) * f;
+						c.p2.fx += Math.sin(Math.PI/2-p_dir) * f;
+						c.p2.fy += Math.cos(Math.PI/2-p_dir) * f;
 
 						// oh um, yeah I don't know what I'm doing
 						// maybe add a force to the point that is perpendicular to the line? but in which direction?
