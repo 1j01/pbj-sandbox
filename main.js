@@ -99,14 +99,14 @@ function main() {
 
 	canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 	addEventListener('keydown', function (e) {
-		if(e.defaultPrevented){
+		if (e.defaultPrevented) {
 			return;
 		}
-		if(
+		if (
 			document.activeElement instanceof HTMLInputElement ||
 			document.activeElement instanceof HTMLTextAreaElement ||
 			!window.getSelection().isCollapsed
-		){
+		) {
 			return; // don't prevent interaction with inputs or textareas, or copying text in windows
 		}
 		if (!keys[e.keyCode]) {
@@ -199,7 +199,7 @@ function main() {
 		}
 		document.activeElement.blur();
 	};
-	var moveMouse = function(pageX, pageY) {
+	var moveMouse = function (pageX, pageY) {
 		mouse.x = pageX - canvas.getBoundingClientRect().left;
 		mouse.y = pageY - canvas.getBoundingClientRect().top;
 	};
@@ -235,10 +235,10 @@ function main() {
 		mouse.left = false;
 		mouse.right = false;
 	});
-	addEventListener('mousemove', function(e){
+	addEventListener('mousemove', function (e) {
 		moveMouse(e.pageX, e.pageY);
 	}, false);
-	addEventListener('touchmove', function(e){
+	addEventListener('touchmove', function (e) {
 		moveMouse(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
 	}, false);
 
@@ -469,9 +469,9 @@ function step() {
 				// ctx.fillRect(j*2, 0, 2, dd);
 				if (audioViz) {
 					ctx.fillStyle = "yellow";
-					ctx.fillRect(j*2, 0, 2, freq_add * 5);
+					ctx.fillRect(j * 2, 0, 2, freq_add * 5);
 					ctx.fillStyle = "green";
-					ctx.fillRect(j*2, 0, 2, amp_add * 2000);
+					ctx.fillRect(j * 2, 0, 2, amp_add * 2000);
 				}
 
 				c.vdp = vd;
@@ -518,13 +518,13 @@ function step() {
 				p.vy /= friction;
 			}
 			// if (Math.sign(p.x - p.px - p.vx) > 0) {
-				
+
 			// }
 			for (var j = 0; j < gui.modals.length; j++) {
 				var m = gui.modals[j];
 				var r = m.$m.getBoundingClientRect();
 				var o = 3;
-				r = {left: r.left - o, top: r.top - o, right: r.right + o, bottom: r.bottom + o};
+				r = { left: r.left - o, top: r.top - o, right: r.right + o, bottom: r.bottom + o };
 				r.width = r.right - r.left;
 				r.height = r.bottom - r.top;
 				if (p.x >= r.left && p.x <= r.right) {
@@ -884,8 +884,8 @@ function guiStuff() {
 	var $audioCheckbox = ops.$("#sfx-checkbox");
 	var $audioVizCheckbox = ops.$("#sfx-viz-checkbox");
 	var $audioStyleSelect = ops.$("#sfx-style-select");
-	
-	var showAudioSetupError = function() {
+
+	var showAudioSetupError = function () {
 		new Modal().position("center").title("Audio Setup Failed").content(`
 			<p>Initialization failed, audio is not available.</p>
 			<pre class='padded'/>
@@ -996,7 +996,7 @@ function guiStuff() {
 
 	var toolButtons = tools.$$("button");
 
-	selectTool = function(id) {
+	selectTool = function (id) {
 		tool = id;
 		for (var i = 0; i < toolButtons.length; i++) {
 			var tb = toolButtons[i];
