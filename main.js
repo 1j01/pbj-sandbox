@@ -666,23 +666,28 @@ function step() {
 
 					// I'm gonna try enlarging quad region?
 					// This is gonna be complicated and stupid, but it might help...
-					const nudge_amount = 1;
+					const nudge_amount = 30;
 					let quad_points = [[c.p1.x, c.p1.y], [c.p1.px, c.p1.py], [c.p2.px, c.p2.py], [c.p2.x, c.p2.y]];
 					for (let i = 0; i < quad_points.length; i++) {
 						const qpi = quad_points[i];
 						for (let j = 0; j < quad_points.length; j++) {
 							if (i === j) continue;
 							const qpj = quad_points[j];
-							// const dist = Math.hypot(qpi[0] - qpj[0], qpi[1] - qpj[1]);
+							let dist = Math.hypot(qpi[0] - qpj[0], qpi[1] - qpj[1]);
 							qpi.fx = qpi.fx ?? 0;
 							qpi.fy = qpi.fy ?? 0;
-							qpi.fx += (qpj[0] - qpi[0]) * nudge_amount;
-							qpi.fy += (qpj[1] - qpi[1]) * nudge_amount;
+							if (dist < 1) { dist = 1; }
+							qpi.fx -= (qpj[0] - qpi[0]) / dist;// * nudge_amount;
+							qpi.fy -= (qpj[1] - qpi[1]) / dist;// * nudge_amount;
 						}
 					}
 					for (let i = 0; i < quad_points.length; i++) {
-						quad_points[i][0] += quad_points[i].fx;
-						quad_points[i][1] += quad_points[i].fy;
+						// quad_points[i][0] += quad_points[i].fx;
+						// quad_points[i][1] += quad_points[i].fy;
+						// normalize before applying
+						const d = Math.hypot(quad_points[i].fx, quad_points[i].fy);
+						quad_points[i][0] += quad_points[i].fx / d * nudge_amount;
+						quad_points[i][1] += quad_points[i].fy / d * nudge_amount;
 					}
 					const is = intersectLineQuad(p.x, p.y, p.px, p.py, ...quad_points.flat(), ctx);
 
@@ -918,7 +923,7 @@ function pointInPolygon(x, y, polygon_points, debug_ctx) {
 	}
 	// debug
 	debug_ctx.beginPath();
-	debug_ctx.fillStyle = inside ? "rgba(0,255,0,0.1)" : "rgba(255,0,0,0.1)";
+	debug_ctx.fillStyle = inside ? "rgba(0,255,0,0.6)" : "rgba(255,0,0,0.6)";
 	debug_ctx.moveTo(polygon_points[0].x, polygon_points[0].y);
 	for (var i = 1; i < polygon_points.length; i++) {
 		debug_ctx.lineTo(polygon_points[i].x, polygon_points[i].y);
