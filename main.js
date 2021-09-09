@@ -637,14 +637,14 @@ function step() {
 				//this check shouldn't be here
 				if (p.x != p.px || p.y != p.py) {
 
-					var is = intersectLineLine(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p2.x, c.p2.y)
-						|| intersectLineLine(p.x, p.y, p.px, p.py, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
+					// var is = intersectLineLine(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p2.x, c.p2.y)
+					// 	|| intersectLineLine(p.x, p.y, p.px, p.py, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
 					// HACK
 					// is = is
 					// 	|| intersectLineLine(p.x, p.y, p.px, p.py-1, c.p1.x, c.p1.y, c.p2.x, c.p2.y)
 					// 	|| intersectLineLine(p.x, p.y, p.px, p.py-1, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
 					// the moving line is really a quad, not two lines
-					// var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y);
+					var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y);
 
 					if (is) {
 						hit = true;
@@ -674,10 +674,8 @@ function step() {
 						var speed = original_speed * 0.7;
 						p.vx = -Math.sin(-bounce_angle) * speed;
 						p.vy = -Math.cos(-bounce_angle) * speed;
-						// TODO: has force already been applied?
-						// would this do anything, or be reset?
-						// p.fx += Math.sin(bounce_angle) * speed;
-						// p.fy += Math.cos(bounce_angle) * speed;
+						// p.fx += -Math.sin(-bounce_angle) * speed;
+						// p.fy += -Math.cos(-bounce_angle) * speed;
 
 						ctx.strokeStyle = "aqua";
 						drawArrow(ctx, is.x, is.y, -normal, 50);
@@ -837,6 +835,8 @@ function step() {
 }
 function intersectLineLine(x1, y1, x2, y2, x3, y3, x4, y4) {
 	x1 += 0.00001; // fix for straight up/down lines (i.e. points falling straight down)
+	x3 -= 0.00001; // fix in case straight up/down line is the second line passed
+	y4 += 0.00001; // might help too, idk (TODO: think about what the degenerate cases are, maybe write tests, maybe find a better algorithm)
 	var x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
 	var y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
 	if (isNaN(x) || isNaN(y)) {
@@ -866,6 +866,18 @@ function intersectLineLine(x1, y1, x2, y2, x3, y3, x4, y4) {
 	}
 	return { x: x, y: y };
 }
+function pointInPolygon(x, y, polygon_points) {
+	var inside = false;
+	for (var i = 0, j = polygon_points.length - 1; i < polygon_points.length; j = i++) {
+		var xi = polygon_points[i].x, yi = polygon_points[i].y;
+		var xj = polygon_points[j].x, yj = polygon_points[j].y;
+        
+		var intersect = ((yi > y) != (yj > y))
+			&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+		if (intersect) inside = !inside;
+	}
+	return inside;
+}
 function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4) {
 	var p1 = intersectLineLine(quad_x1, quad_y1, quad_x2, quad_y2, line_x1, line_y1, line_x2, line_y2);
 	var p2 = intersectLineLine(quad_x2, quad_y2, quad_x3, quad_y3, line_x1, line_y1, line_x2, line_y2);
@@ -883,8 +895,19 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 			}
 		}
 	}
-	return best_point;
+	if (best_point) {
+		return best_point;
+	}
 	// if line is inside quad
+	if (pointInPolygon(line_x1, line_x2, [
+		{ x: quad_x1, y: quad_y1 },
+		{ x: quad_x2, y: quad_y2 },
+		{ x: quad_x3, y: quad_y3 },
+		{ x: quad_x4, y: quad_y4 },
+	])) {
+		// uneducated guess ("hopefully it won't matter")
+		return { x: (line_x1 + line_x2) / 2, y: (line_y1 + line_y2) / 2 };
+	}
 	// if (pointInQuad(line_x1, line_y1, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4)) {
 }
 
