@@ -644,7 +644,8 @@ function step() {
 				if (areConnected(p, c.p1)) continue;
 				// if (areConnected(p, c.p2)) continue; // assuming the connectedness works, this is unnecessary
 				//this check shouldn't be here
-				if (p.x != p.px || p.y != p.py) {
+				// if (p.x != p.px || p.y != p.py) {
+				if (true) {
 
 					// var is = intersectLineLine(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p2.x, c.p2.y)
 					// 	|| intersectLineLine(p.x, p.y, p.px, p.py, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
