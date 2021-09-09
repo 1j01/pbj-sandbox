@@ -666,35 +666,51 @@ function step() {
 
 					// I'm gonna try enlarging quad region?
 					// This is gonna be complicated and stupid, but it might help...
-					const nudge_amount = 30;
-					let quad_points = [[c.p1.x, c.p1.y], [c.p1.px, c.p1.py], [c.p2.px, c.p2.py], [c.p2.x, c.p2.y]];
+					// const nudge_amount = 30;
+					// let quad_points = [[c.p1.x, c.p1.y], [c.p1.px, c.p1.py], [c.p2.px, c.p2.py], [c.p2.x, c.p2.y]];
 
-					for (let i = 0; i < quad_points.length; i++) {
-						const qpi = quad_points[i];
-						for (let j = 0; j < quad_points.length; j++) {
-							if (i === j) continue;
-							const qpj = quad_points[j];
-							let dist = Math.hypot(qpi[0] - qpj[0], qpi[1] - qpj[1]);
-							qpi.fx = qpi.fx ?? 0;
-							qpi.fy = qpi.fy ?? 0;
-							if (dist < 1) { dist = 1; }
-							qpi.fx -= (qpj[0] - qpi[0]) / dist;
-							qpi.fy -= (qpj[1] - qpi[1]) / dist;
-							// qpi.fx = 0.001; // testing the normalize below
-							// qpi.fy = 0.001;
-						}
+					// for (let i = 0; i < quad_points.length; i++) {
+					// 	const qpi = quad_points[i];
+					// 	for (let j = 0; j < quad_points.length; j++) {
+					// 		if (i === j) continue;
+					// 		const qpj = quad_points[j];
+					// 		let dist = Math.hypot(qpi[0] - qpj[0], qpi[1] - qpj[1]);
+					// 		qpi.fx = qpi.fx ?? 0;
+					// 		qpi.fy = qpi.fy ?? 0;
+					// 		if (dist < 1) { dist = 1; }
+					// 		qpi.fx -= (qpj[0] - qpi[0]) / dist;
+					// 		qpi.fy -= (qpj[1] - qpi[1]) / dist;
+					// 		// qpi.fx = 0.001; // testing the normalize below
+					// 		// qpi.fy = 0.001;
+					// 	}
+					// }
+					// for (let i = 0; i < quad_points.length; i++) {
+					// 	const qp = quad_points[i];
+					// 	// normalize before applying
+					// 	const d = Math.hypot(qp.fx, qp.fy);
+					// 	// if (d < 0.01) {
+					// 	// 	do thick line test instead?
+					// 	// }
+					// 	qp[0] += qp.fx / d * nudge_amount;
+					// 	qp[1] += qp.fy / d * nudge_amount;
+					// }
+					// const is = intersectLineQuad(p.x, p.y, p.px, p.py, ...quad_points.flat(), ctx);
+
+					// GONNA DO SEPARATE MOVEMENT QUAD AND STATIC "THICK LINE" QUAD
+					var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
+					if (!is) {
+						const normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
+						const nudge_amount = 1;
+						const qx1 = c.p1.x + Math.sin(normal) * nudge_amount;
+						const qy1 = c.p1.y + Math.cos(normal) * nudge_amount;
+						const qx2 = c.p2.x + Math.sin(normal) * nudge_amount;
+						const qy2 = c.p2.y + Math.cos(normal) * nudge_amount;
+						const qx3 = c.p2.x - Math.sin(normal) * nudge_amount;
+						const qy3 = c.p2.y - Math.cos(normal) * nudge_amount;
+						const qx4 = c.p1.x - Math.sin(normal) * nudge_amount;
+						const qy4 = c.p1.y - Math.cos(normal) * nudge_amount;
+						is = intersectLineQuad(p.x, p.y, p.px, p.py, qx1, qy1, qx2, qy2, qx3, qy3, qx4, qy4, ctx);
 					}
-					for (let i = 0; i < quad_points.length; i++) {
-						const qp = quad_points[i];
-						// normalize before applying
-						const d = Math.hypot(qp.fx, qp.fy);
-						// if (d < 0.01) {
-						// 	do thick line test instead?
-						// }
-						qp[0] += qp.fx / d * nudge_amount;
-						qp[1] += qp.fy / d * nudge_amount;
-					}
-					const is = intersectLineQuad(p.x, p.y, p.px, p.py, ...quad_points.flat(), ctx);
 
 					if (is) {
 						hit = true;
