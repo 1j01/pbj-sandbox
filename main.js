@@ -82,6 +82,7 @@ function main() {
 
 	play = true;
 	collision = true;
+	slowmo = false; // TODO: generalize to a time scale
 	autoConnect = false;
 	gravity = 0.1;
 	audioEnabled = false;
@@ -506,8 +507,8 @@ function step() {
 			//Move
 			p.px = p.x;
 			p.py = p.y;
-			p.x += p.vx * 0.06;
-			p.y += p.vy * 0.06;
+			p.x += p.vx * (slowmo ? 0.06 : 1);
+			p.y += p.vy * (slowmo ? 0.06 : 1);
 
 			var friction = 2, cor = 4;
 			if (p.x > canvas.width - 2) {
@@ -970,6 +971,7 @@ function guiStuff() {
 		<br><label><input type='checkbox' id='auto-connect-checkbox'/>AutoConnect</label>
 		<br><label><input type='checkbox' id='terrain-checkbox'/>“Terrain”</label>
 		<br><label><input type='checkbox' id='collision-checkbox' checked/>Poor, Broken Collision</label>
+		<br><label><input type='checkbox' id='slowmo-checkbox' title='This is not a physically accurate time scale.'/>Slow Motion (Fake)</label>
 		<h3>Windows:</h3>
 		<button id='make-resizable-window-button'>Resizable Window</button>
 		<br><button id='help'>Help</button>
@@ -1029,6 +1031,9 @@ function guiStuff() {
 	};
 	ops.$("#auto-connect-checkbox").onchange = function () {
 		autoConnect = this.checked;
+	};
+	ops.$("#slowmo-checkbox").onchange = function () {
+		slowmo = this.checked;
 	};
 	ops.$("#terrain-checkbox").onchange = function () {
 		if (this.checked) {
