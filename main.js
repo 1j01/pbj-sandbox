@@ -974,8 +974,8 @@ function guiStuff() {
 		<br><label><input type='checkbox' id='slowmo-checkbox' title='This is not a physically accurate time scale.'/>Slow Motion (Fake)</label>
 		<h3>Windows:</h3>
 		<button id='make-resizable-window-button'>Resizable Window</button>
-		<br><button id='help'>Help</button>
-		<button id='todo'>Todo</button>
+		<br><button id='help-button'>Help</button>
+		<button id='todo-button'>Todo</button>
 	`);
 
 	var $audioCheckbox = ops.$("#sfx-checkbox");
@@ -1055,7 +1055,7 @@ function guiStuff() {
 	ops.$("#gravity-input").onchange = function () {
 		gravity = Number(this.value);
 	};
-	ops.$("#todo").onclick = function () {
+	ops.$("#todo-button").onclick = function () {
 		new Modal().title("Todo").content(`
 			<li>Precise connector tool</li>
 			<li>Rope tool</li>
@@ -1066,7 +1066,7 @@ function guiStuff() {
 			</li>
 		`).position("top right");
 	};
-	ops.$("#help").onclick = function () {
+	ops.$("#help-button").onclick = function () {
 		new Modal().title("Help").content(`
 			<p>Left Click to use the selected tool.
 			<br>Right Click to drag points.
