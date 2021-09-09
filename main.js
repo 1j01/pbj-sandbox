@@ -654,14 +654,37 @@ function step() {
 					// 	|| intersectLineLine(p.x, p.y, p.px, p.py-1, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
 					// the moving line is really a quad, not two lines
 					// var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
-					// but if the line is rotating, it makes a self-intersecting quad, an hourglass shape
-					// so we need to check for that...
-					let is;
-					if (intersectLineLine(c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y)) {
-						is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.x, c.p2.y, c.p2.px, c.p2.py, ctx);
-					} else {
-						is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
+					// but if the line is rotating, it makes a self-intersecting quad (an hourglass shape), which has a weak spot
+					// let is;
+					// if (intersectLineLine(c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y)) {
+					// 	is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.x, c.p2.y, c.p2.px, c.p2.py, ctx);
+					// } else {
+					// 	is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
+					// }
+					// but if the line is rotating, it SHOULD have a hour-glass shape to represent its movement, or better a rounded bow-tie shape
+					// the real problem is... well it's unreliable, I'm trying to figure it out
+
+					// I'm gonna try enlarging quad region?
+					// This is gonna be complicated and stupid, but it might help...
+					const nudge_amount = 10;
+					let quad_points = [[c.p1.x, c.p1.y], [c.p1.px, c.p1.py], [c.p2.px, c.p2.py], [c.p2.x, c.p2.y]];
+					for (let i = 0; i < quad_points.length; i++) {
+						const qpi = quad_points[i];
+						for (let j = 0; j < quad_points.length; j++) {
+							if (i === j) continue;
+							const qpj = quad_points[j];
+							// const dist = Math.hypot(qpi[0] - qpj[0], qpi[1] - qpj[1]);
+							qpi.fx = qpi.fx ?? 0;
+							qpi.fy = qpi.fy ?? 0;
+							qpi.fx += (qpj[0] - qpi[0]) * nudge_amount;
+							qpi.fy += (qpj[1] - qpi[1]) * nudge_amount;
+						}
 					}
+					for (let i = 0; i < quad_points.length; i++) {
+						quad_points[i][0] += quad_points[i].fx;
+						quad_points[i][1] += quad_points[i].fy;
+					}
+					const is = intersectLineQuad(p.x, p.y, p.px, p.py, ...quad_points.flat(), ctx);
 
 					if (is) {
 						hit = true;
