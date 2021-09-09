@@ -81,7 +81,7 @@ function main() {
 	points = [];
 
 	play = true;
-	collision = false;
+	collision = true;
 	autoConnect = false;
 	gravity = 0.1;
 	audioEnabled = false;
@@ -922,7 +922,7 @@ function guiStuff() {
 		<label>Gravity: <input type='number' id='gravity-input' value='${gravity}' step='0.05' min='-50' max='50'/></label>
 		<br><label><input type='checkbox' id='auto-connect-checkbox'/>AutoConnect</label>
 		<br><label><input type='checkbox' id='terrain-checkbox'/>“Terrain”</label>
-		<br><label><input type='checkbox' id='collision-checkbox'/>Poor, Broken Collision</label>
+		<br><label><input type='checkbox' id='collision-checkbox' checked/>Poor, Broken Collision</label>
 		<h3>Windows:</h3>
 		<button id='make-resizable-window-button'>Resizable Window</button>
 		<br><button id='help'>Help</button>
