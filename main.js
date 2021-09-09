@@ -1210,8 +1210,14 @@ function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60 }) {
 
 // make_ball({ x: innerWidth / 2, y: innerHeight / 2 });
 
-for (let numPoints = 3, x = 500; numPoints < 10; numPoints+=3, x += 200) {
-	for (let size = 30, y = 100; size < 100; size += 30, y += 200, x += 0) {
-		make_ball({ numPoints, size, x, y });
-	}
-}
+// Test scene: a bunch of balls of different types.
+// for (let numPoints = 3, x = 500; numPoints < 10; numPoints+=3, x += 200) {
+// 	for (let size = 30, y = 100; size < 100; size += 30, y += 200, x += 0) {
+// 		make_ball({ numPoints, size, x, y });
+// 	}
+// }
+
+// Test scene: Throw two balls at each other
+make_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
+make_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
+
