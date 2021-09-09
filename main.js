@@ -630,9 +630,10 @@ function step() {
 					if (is) {
 						hit = true;
 
-						var p_dir = Math.atan2(p.x - p.px, p.y - p.py);
-						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
-						var speed = distance(p.x, p.y, p.px, p.py) / (p.friction = 2);
+						// var p_dir = Math.atan2(p.x - p.px, p.y - p.py);
+						var p_dir = Math.atan2(p.vy, p.vx);
+						var normal = -Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
+						var speed = distance(p.x, p.y, p.px, p.py) / (p.friction = 2); // + 1;
 
 						if (false) {
 							normal += Math.PI;
@@ -640,23 +641,51 @@ function step() {
 						}
 						//console.log("normal:",normal," p_dir:",p_dir," reflection:",normal-p_dir," speed:",speed);
 
-						p.x = is.x + Math.sin(normal - p_dir) / 10;
-						p.y = is.y + Math.cos(normal - p_dir) / 10;
-						p.vx = Math.sin(normal - p_dir) * speed;
-						p.vy = Math.cos(normal - p_dir) * speed;
+						// p.x = is.x + Math.sin(normal - p_dir) / 10;
+						// p.y = is.y + Math.cos(normal - p_dir) / 10;
+						// p.vx = Math.sin(normal - p_dir) * speed;
+						// p.vy = Math.cos(normal - p_dir) * speed;
+						p.fx += Math.sin(normal + p_dir) * speed * 20;
+						p.fy += Math.cos(normal + p_dir) * speed * 20;
 						//var l
 
 						ctx.strokeStyle = "aqua";
 						ctx.beginPath();
 						//ctx.arc(is.x,is.y,50,0,Math.PI*2,true);
-						ctx.moveTo(is.x, is.y);
-						var r = Math.random() * 0.5 - 0.25, d = Math.random() * 5;
-						ctx.lineTo(is.x + Math.sin(normal + r) * d, is.y + Math.cos(normal + r) * d);
-						var r = Math.random() * 0.7 - 0.7 / 2, d = Math.random() * 5 + 3;
-						ctx.lineTo(is.x + Math.sin(normal + r) * d, is.y + Math.cos(normal + r) * d);
-						var r = Math.random() * 0.9 - 0.9 / 2, d = Math.random() * 10 + 5;
-						ctx.lineTo(is.x + Math.sin(normal + r) * d, is.y + Math.cos(normal + r) * d);
+						// draw arrow to show the normal
+						ctx.save();
+						ctx.translate(is.x, is.y);
+						ctx.rotate(normal);
+						ctx.moveTo(0, 0);
+						ctx.lineTo(0, -50);
+						ctx.moveTo(-10, -40);
+						ctx.lineTo(0, -50);
+						ctx.lineTo(10, -40);
+						ctx.restore();
+						// ctx.moveTo(is.x, is.y);
+						// var r = Math.random() * 0.5 - 0.25, d = Math.random() * 5;
+						// ctx.lineTo(is.x + Math.sin(normal + r) * d, is.y + Math.cos(normal + r) * d);
+						// var r = Math.random() * 0.7 - 0.7 / 2, d = Math.random() * 5 + 3;
+						// ctx.lineTo(is.x + Math.sin(normal + r) * d, is.y + Math.cos(normal + r) * d);
+						// var r = Math.random() * 0.9 - 0.9 / 2, d = Math.random() * 10 + 5;
+						// ctx.lineTo(is.x + Math.sin(normal + r) * d, is.y + Math.cos(normal + r) * d);
 						ctx.stroke();
+
+						// impart force to the connection's points
+						// TODO: elastic collision physics
+						// var f = speed;
+						// c.p1.fx += Math.sin(p_dir) * f;
+						// c.p1.fy += Math.cos(p_dir) * f;
+						// c.p2.fx += Math.sin(p_dir) * f;
+						// c.p2.fy += Math.cos(p_dir) * f;
+
+						// oh um, yeah I don't know what I'm doing
+						// maybe add a force to the point that is perpendicular to the line? but in which direction?
+						
+						// add a force based on the connection's points' velocities
+						// var f = 0.3;
+						// p.fx += (c.p1.vx + c.p2.vx) * f;
+						// p.fy += (c.p1.vy + c.p2.vy) * f;
 					}
 				}
 			}
