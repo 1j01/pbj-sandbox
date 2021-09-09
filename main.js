@@ -578,6 +578,7 @@ function step() {
 		ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
 
 		var d2m = distance(p.x, p.y, mouse.x, mouse.y);
+		d2m = Math.max(d2m, 1); // prevent divide by zero in drag force calculation
 		if (!mouse.right) {
 			if (d2m < sd2m && !p.fixed) {
 				ntm = p;
