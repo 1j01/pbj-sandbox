@@ -1059,6 +1059,7 @@ function guiStuff() {
 		new Modal().title("Todo").content(`
 			<li>Precise connector tool</li>
 			<li>Rope tool</li>
+			<li>Drag tool (for touch screens)</li>
 			<li>
 				Ideally (but this would be hard), fix collision.
 				<br>(Things no clip and get stuck in each other.
