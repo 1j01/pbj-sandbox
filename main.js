@@ -622,8 +622,10 @@ function step() {
 				//this check shouldn't be here
 				if (p.x != p.px || p.y != p.py) {
 
-					var is = intersection(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p2.x, c.p2.y)
-						|| intersection(p.x, p.y, p.px, p.py, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
+					var is = intersectLineLine(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p2.x, c.p2.y)
+						|| intersectLineLine(p.x, p.y, p.px, p.py, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
+					// the moving line is really a quad, not two lines
+					// var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y);
 
 					if (is) {
 						hit = true;
@@ -789,7 +791,7 @@ function step() {
 		}
 	}
 }
-function intersection(x1, y1, x2, y2, x3, y3, x4, y4) {
+function intersectLineLine(x1, y1, x2, y2, x3, y3, x4, y4) {
 	var x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
 	var y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
 	if (isNaN(x) || isNaN(y)) {
@@ -819,6 +821,28 @@ function intersection(x1, y1, x2, y2, x3, y3, x4, y4) {
 	}
 	return { x: x, y: y };
 }
+function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4) {
+	var p1 = intersectLineLine(quad_x1, quad_y1, quad_x2, quad_y2, line_x1, line_y1, line_x2, line_y2);
+	var p2 = intersectLineLine(quad_x2, quad_y2, quad_x3, quad_y3, line_x1, line_y1, line_x2, line_y2);
+	var p3 = intersectLineLine(quad_x3, quad_y3, quad_x4, quad_y4, line_x1, line_y1, line_x2, line_y2);
+	var p4 = intersectLineLine(quad_x4, quad_y4, quad_x1, quad_y1, line_x1, line_y1, line_x2, line_y2);
+	// return closest point to line_x1, line_y1
+	var best_dist = Infinity;
+	var best_point = null;
+	for (const point of [p1, p2, p3, p4]) {
+		if (point) {
+			const dist = Math.hypot(point.x - line_x1, point.y - line_y1);
+			if (dist < best_dist) {
+				best_dist = dist;
+				best_point = point;
+			}
+		}
+	}
+	return best_point;
+	// if line is inside quad
+	// if (pointInQuad(line_x1, line_y1, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4)) {
+}
+
 function createTerrain() {
 	var x = Math.random() * 200;
 	var y = Math.random() * 200 + 200;
