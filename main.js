@@ -668,7 +668,8 @@ function step() {
 						p.x = is.x + -Math.sin(-bounce_angle) * hack;
 						p.y = is.y + -Math.cos(-bounce_angle) * hack;
 						// var speed = distance(p.x, p.y, p.px, p.py) / (p.friction = 2); // + 1;
-						var speed = Math.hypot(p.vx, p.vy);
+						var original_speed = Math.hypot(p.vx, p.vy);
+						var speed = original_speed * 0.7;
 						p.vx = -Math.sin(-bounce_angle) * speed;
 						p.vy = -Math.cos(-bounce_angle) * speed;
 						// TODO: has force already been applied?
@@ -683,7 +684,7 @@ function step() {
 
 						// impart force to the connection's points
 						// TODO: elastic collision physics
-						var f = speed / 5;
+						var f = original_speed / 5;
 						c.p1.fx += Math.sin(Math.PI/2-p_dir) * f;
 						c.p1.fy += Math.cos(Math.PI/2-p_dir) * f;
 						c.p2.fx += Math.sin(Math.PI/2-p_dir) * f;
