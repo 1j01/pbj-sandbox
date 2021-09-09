@@ -618,7 +618,7 @@ function step() {
 				var p = points[i];
 				if (p == c.p1 || p == c.p2) continue;
 				if (areConnected(p, c.p1)) continue;
-				if (areConnected(p, c.p2)) continue;
+				// if (areConnected(p, c.p2)) continue; // assuming the connectedness works, this is unnecessary
 				//this check shouldn't be here
 				if (p.x != p.px || p.y != p.py) {
 
@@ -744,6 +744,28 @@ function step() {
 	mousePrevious.x = mouse.x;
 	mousePrevious.y = mouse.y;
 
+	if (play) {
+		// find connected groups of points
+		groups.clear();
+		for (var i = points.length - 1; i >= 0; i--) {
+			var p = points[i];
+			groups.set(p, i);
+		}
+		for (var i = connections.length - 1; i >= 0; i--) {
+			var c = connections[i];
+			var g1 = groups.get(c.p1);
+			var g2 = groups.get(c.p2);
+			if (g1 != g2) {
+				for (var j = points.length - 1; j >= 0; j--) {
+					if (groups.get(points[j]) == g2) {
+						groups.set(points[j], g1);
+					}
+				}
+			}
+		}
+	}
+
+
 	if (audioEnabled && play) {
 		if (actx.state === "suspended") {
 			actx.resume();
@@ -849,8 +871,10 @@ function rope(x1, y1, x2, y2, seg, force) {
 		if (pp) connections.push({ p1: p, p2: pp, dist: distance(p.x, p.y, pp.x, pp.y), force: force });
 	}
 }
-function areConnected(p1, p2, depth) {
-	return false; // TODO I guess? except I'm not planning on trying to get collision working
+var groups = new Map(); // point to group id, for connected groups
+function areConnected(p1, p2) {
+	if (p1.fixed && p2.fixed) return false;
+	return groups.get(p1) == groups.get(p2);
 }
 function distance(x1, y1, x2, y2) {
 	return Math.sqrt(sqrDistance(x1, y1, x2, y2));
@@ -959,9 +983,11 @@ function guiStuff() {
 		new Modal().title("Todo").content(`
 			<li>Precise connector tool</li>
 			<li>Rope tool</li>
-			<br>Ideally (but this would be hard), fix collision:
-			<li>with self</li>
-			<li>occasional no clip</li>
+			<li>
+				Ideally (but this would be hard), fix collision.
+				<br>(Things no clip and get stuck in each other.
+				<br>It just doesn't really work.)
+			</li>
 		`).position("top right");
 	};
 	ops.$("#help").onclick = function () {
