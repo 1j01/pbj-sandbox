@@ -377,7 +377,7 @@ function step() {
 				fx: 0,//force
 				fy: 0,
 				fixed: keys[16],
-				color: keys[16] ? "grey" : ("hsl(" + (Math.random() * 360) + "," + (Math.random() * 50 + 50) + "%," + (Math.random() * 50 + 50) + "%)")
+				color: keys[16] ? "grey" : `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
 			});
 		}
 	}
@@ -861,35 +861,35 @@ function sqrDistance(x1, y1, x2, y2) {
 function r() { return Math.random() * 2 - 1; }
 
 function guiStuff() {
-	var ops = new Modal().position("left top").title("Options").content(
-		"<h3>Audio:</h3>"
-		+ "<label><input type='checkbox' id='sfx-checkbox'/>Audio</label>" /* WET: label text referenced */
-		+ "<br><label><input type='checkbox' id='sfx-viz-checkbox'/>Visualization</label>"
-		+ "<br><label>Audio Style: <div class='select-wrapper'><select id='sfx-style-select'>"
-			+ "<option value='0'>Scorched Earth</option>"
-			+ "<option value='1' selected>Collisions</option>"
-			+ "<option value='2'>Hybrid</option>"
-		+ "</select></div></label>"
-		+ "<h3>Simulation:</h3>"
-		+ "<label>Gravity: <input type='number' id='gravity-input' value=" + gravity + " step=0.05 min=-50 max=50/></label>"
-		+ "<br><label><input type='checkbox' id='ac'/>AutoConnect</label>"
-		+ "<br><label><input type='checkbox' id='terrain'/>\"Terrain\"</label>"
-		+ "<br><label><input type='checkbox' id='coll'/>Poor, Broken Collision</label>"
-		+ "<h3>Windows:</h3>"
-		+ "<button id='make-resizable-window-button'>Resizable Window</button>"
-		+ "<br><button id='help'>Help</button>"
-		+ "<button id='todo'>Todo</button>"
-	);
+	var ops = new Modal().position("left top").title("Options").content(`
+		<h3>Audio:</h3>
+		<label><input type='checkbox' id='sfx-checkbox'/>Audio</label>${"" /* Note: Audio checkbox is mentioned in dialog text */}
+		<br><label><input type='checkbox' id='sfx-viz-checkbox'/>Visualization</label>
+		<br><label>Audio Style: <div class='select-wrapper'><select id='sfx-style-select'>
+			<option value='0'>Scorched Earth</option>
+			<option value='1' selected>Collisions</option>
+			<option value='2'>Hybrid</option>
+		</select></div></label>
+		<h3>Simulation:</h3>
+		<label>Gravity: <input type='number' id='gravity-input' value='${gravity}' step='0.05' min='-50' max='50'/></label>
+		<br><label><input type='checkbox' id='ac'/>AutoConnect</label>
+		<br><label><input type='checkbox' id='terrain'/>“Terrain”</label>
+		<br><label><input type='checkbox' id='coll'/>Poor, Broken Collision</label>
+		<h3>Windows:</h3>
+		<button id='make-resizable-window-button'>Resizable Window</button>
+		<br><button id='help'>Help</button>
+		<button id='todo'>Todo</button>
+	`);
 
 	var $audioCheckbox = ops.$("#sfx-checkbox");
 	var $audioVizCheckbox = ops.$("#sfx-viz-checkbox");
 	var $audioStyleSelect = ops.$("#sfx-style-select");
 	
 	var showAudioSetupError = function() {
-		new Modal().position("center").title("Audio Setup Failed").content(
-			"<p>Initialization failed, audio is not available.</p>"
-			+ "<pre class='padded'/>"
-		).$c.querySelector("pre").textContent = audioSetupError.stack;
+		new Modal().position("center").title("Audio Setup Failed").content(`
+			<p>Initialization failed, audio is not available.</p>
+			<pre class='padded'/>
+		`).$c.querySelector("pre").textContent = audioSetupError.stack;
 		$audioCheckbox.disabled = true;
 		$audioStyleSelect.disabled = true;
 		$audioCheckbox.checked = false;
@@ -922,10 +922,10 @@ function guiStuff() {
 	$audioVizCheckbox.onchange = function () {
 		audioViz = $audioVizCheckbox.checked;
 		if (!$audioCheckbox.checked && audioViz) {
-			new Modal().position("center").title("Audio Not Enabled").content(
-				"<p>You <em>can</em> enjoy the viz without sound.</p>"
-				+"<p>Check the box to enable 'Audio' to hear it.</p>"
-			);
+			new Modal().position("center").title("Audio Not Enabled").content(`
+				<p>You <em>can</em> enjoy the viz without sound.</p>
+				<p>Check the box to enable 'Audio' to hear it.</p>
+			`);
 			return;
 		}
 	};
@@ -956,44 +956,43 @@ function guiStuff() {
 		gravity = Number(this.value);
 	};
 	ops.$("#todo").onclick = function () {
-		new Modal().title("Todo").content(""
-			+ "<li>Precise connector tool</li>"
-			+ "<li>Rope tool</li>"
-			+ "<br>Ideally (but this would be hard), fix collision:"
-			+ "<li>with self</li>"
-			+ "<li>occasional no clip</li>"
-		).position("top right");
+		new Modal().title("Todo").content(`
+			<li>Precise connector tool</li>
+			<li>Rope tool</li>
+			<br>Ideally (but this would be hard), fix collision:
+			<li>with self</li>
+			<li>occasional no clip</li>
+		`).position("top right");
 	};
 	ops.$("#help").onclick = function () {
-		new Modal().title("Help").content(""
-			+ "<p>Left Click to use the selected tool."
-			+ "<br>Right Click to drag points."
-			+ "<br>Use the glue tool or hold space near some points to connect them."
-			+ "<br>Hold shift when making points to fix them in place."
-			+ "<br>Toggle the 'terrain' to regenerate it. It only looks anything like terrain if you check AutoConnect"
-			+ "<br>Press <kbd>P</kbd> to pause/unpause the simulation."
-			+ "<br>Press <kbd>Z</kbd> to undo to a previous state and <kbd>Y</kbd> or <kbd>Shift+Z</kbd> to redo."
-			+ "<br>Press <kbd>C</kbd> to copy the selection (or <kbd>X</kbd> to cut), and <kbd>V</kbd> to paste near the mouse."
-			+ "<br>Press <kbd>Delete</kbd> to remove the selected points."
-		).position("top");
+		new Modal().title("Help").content(`
+			<p>Left Click to use the selected tool.
+			<br>Right Click to drag points.
+			<br>Use the glue tool or hold space near some points to connect them.
+			<br>Hold shift when making points to fix them in place.
+			<br>Toggle the 'terrain' to regenerate it. It only looks anything like terrain if you check AutoConnect
+			<br>Press <kbd>P</kbd> to pause/unpause the simulation.
+			<br>Press <kbd>Z</kbd> to undo to a previous state and <kbd>Y</kbd> or <kbd>Shift+Z</kbd> to redo.
+			<br>Press <kbd>C</kbd> to copy the selection (or <kbd>X</kbd> to cut), and <kbd>V</kbd> to paste near the mouse.
+			<br>Press <kbd>Delete</kbd> to remove the selected points.
+		`).position("top");
 	};
 	ops.$("#make-resizable-window-button").onclick = function () {
 		new Modal().position("center").title("Resizable").content("Windows are collidable. Resize me in the bottom right corner.").resizable();
 	};
-	var tools = new Modal().position("left").title("Tools").content(
-		""
-		+ "<button id='create-points-tool'>Create Points (W)</button>"
-		+ "<br>"
-		+ "<button id='create-points-fast-tool'>Create Points Quickly (Q)</button>"
-		// + "<br>"
-		// + "<button id='rope-tool' disabled>Rope</button>"
-		+ "<br>"
-		+ "<button id='glue-tool'>Glue (G)</button>"
-		+ "<br>"
-		// + "<button id='connector-tool' disabled>Precise Connector</button>"
-		// + "<br>"
-		+ "<button id='selection-tool'>Select (S)</button>"
-	);
+	var tools = new Modal().position("left").title("Tools").content(`
+		<button id='create-points-tool'>Create Points (W)</button>
+		<br>
+		<button id='create-points-fast-tool'>Create Points Quickly (Q)</button>
+		<!-- <br> -->
+		<!-- <button id='rope-tool' disabled>Rope</button> -->
+		<br>
+		<button id='glue-tool'>Glue (G)</button>
+		<br>
+		<!-- <button id='connector-tool' disabled>Precise Connector</button> -->
+		<!-- <br> -->
+		<button id='selection-tool'>Select (S)</button>
+	`);
 
 	var toolButtons = tools.$$("button");
 
