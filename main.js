@@ -788,18 +788,20 @@ function step() {
 	if (play) {
 		// find connected groups of points
 		groups.clear();
-		for (var i = points.length - 1; i >= 0; i--) {
-			var p = points[i];
-			groups.set(p, i);
-		}
-		for (var i = connections.length - 1; i >= 0; i--) {
-			var c = connections[i];
-			var g1 = groups.get(c.p1);
-			var g2 = groups.get(c.p2);
-			if (g1 != g2) {
-				for (var j = points.length - 1; j >= 0; j--) {
-					if (groups.get(points[j]) == g2) {
-						groups.set(points[j], g1);
+		if (collision) {
+			for (var i = points.length - 1; i >= 0; i--) {
+				var p = points[i];
+				groups.set(p, i);
+			}
+			for (var i = connections.length - 1; i >= 0; i--) {
+				var c = connections[i];
+				var g1 = groups.get(c.p1);
+				var g2 = groups.get(c.p2);
+				if (g1 != g2) {
+					for (var j = points.length - 1; j >= 0; j--) {
+						if (groups.get(points[j]) == g2) {
+							groups.set(points[j], g1);
+						}
 					}
 				}
 			}
@@ -934,11 +936,14 @@ function rope(x1, y1, x2, y2, seg, force) {
 		if (pp) connections.push({ p1: p, p2: pp, dist: distance(p.x, p.y, pp.x, pp.y), force: force });
 	}
 }
+
+// Note: `groups` is only computed when collision is enabled
 var groups = new Map(); // point to group id, for connected groups
 function areConnected(p1, p2) {
 	if (p1.fixed && p2.fixed) return false;
 	return groups.get(p1) == groups.get(p2);
 }
+
 function distance(x1, y1, x2, y2) {
 	return Math.sqrt(sqrDistance(x1, y1, x2, y2));
 }
