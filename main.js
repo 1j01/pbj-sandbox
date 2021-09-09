@@ -577,15 +577,15 @@ function step() {
 		}
 		// draw point
 		ctx.fillStyle = p.color;
-		// ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
-		// debug
-		if (groups.has(p)) {
-			ctx.textAlign = "center";
-			ctx.textBaseline = "middle";
-			ctx.fillText(groups.get(p), p.x, p.y);
-		} else {
-			ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
-		}
+		ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+		// debug (looks cool btw)
+		// if (groups.has(p)) {
+		// 	ctx.textAlign = "center";
+		// 	ctx.textBaseline = "middle";
+		// 	ctx.fillText(groups.get(p), p.x, p.y);
+		// } else {
+		// 	ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+		// }
 
 		var d2m = distance(p.x, p.y, mouse.x, mouse.y);
 		d2m = Math.max(d2m, 1); // prevent divide by zero in drag force calculation
