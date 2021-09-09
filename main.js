@@ -875,7 +875,7 @@ function intersectLineLine(x1, y1, x2, y2, x3, y3, x4, y4) {
 	}
 	return { x: x, y: y };
 }
-function pointInPolygon(x, y, polygon_points) {
+function pointInPolygon(x, y, polygon_points, debug_ctx) {
 	var inside = false;
 	for (var i = 0, j = polygon_points.length - 1; i < polygon_points.length; j = i++) {
 		var xi = polygon_points[i].x, yi = polygon_points[i].y;
@@ -885,9 +885,19 @@ function pointInPolygon(x, y, polygon_points) {
 			&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 		if (intersect) inside = !inside;
 	}
+	// debug
+	debug_ctx.beginPath();
+	debug_ctx.fillStyle = inside ? "rgba(0,255,0,0.1)" : "rgba(255,0,0,0.1)";
+	debug_ctx.moveTo(polygon_points[0].x, polygon_points[0].y);
+	for (var i = 1; i < polygon_points.length; i++) {
+		debug_ctx.lineTo(polygon_points[i].x, polygon_points[i].y);
+	}
+	debug_ctx.closePath();
+	debug_ctx.fill();
+
 	return inside;
 }
-function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4) {
+function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4, debug_ctx) {
 	var p1 = intersectLineLine(quad_x1, quad_y1, quad_x2, quad_y2, line_x1, line_y1, line_x2, line_y2);
 	var p2 = intersectLineLine(quad_x2, quad_y2, quad_x3, quad_y3, line_x1, line_y1, line_x2, line_y2);
 	var p3 = intersectLineLine(quad_x3, quad_y3, quad_x4, quad_y4, line_x1, line_y1, line_x2, line_y2);
@@ -913,7 +923,7 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 		{ x: quad_x2, y: quad_y2 },
 		{ x: quad_x3, y: quad_y3 },
 		{ x: quad_x4, y: quad_y4 },
-	])) {
+	], debug_ctx)) {
 		// uneducated guess ("hopefully it won't matter")
 		return { x: (line_x1 + line_x2) / 2, y: (line_y1 + line_y2) / 2 };
 	}
