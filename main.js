@@ -1154,3 +1154,54 @@ function guiStuff() {
 
 main();
 guiStuff();
+
+function connect_if_not_connected(p1, p2, connections, options = {}) {
+	var connected = connections.some((connection) =>
+		(connection.p1 === p1 && connection.p2 === p2) ||
+		(connection.p1 === p2 && connection.p2 === p1)
+	);
+	if (!connected) {
+		connections.push(Object.assign({ p1: p1, p2: p2, dist: 60, force: 1 }, options));
+		// connections.push({p1:p1,p2:p2,dist:Math.ceil(d*.15)*10});
+	}
+}
+
+// Note: radius is not directly proportional to size or numPoints.
+function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60 }) {
+	const ballPoints = [];
+	const ballConnections = [];
+	for (let i = 0; i < numPoints; i++) {
+		ballPoints.push({
+			// position could be random but the sin/cos is to help relax it initially.
+			x: x + Math.sin(i / numPoints * Math.PI * 2) * size,//position
+			y: y + Math.cos(i / numPoints * Math.PI * 2) * size,
+			px: x,//previous position
+			py: y,
+			vx,//velocity
+			vy,
+			fx: 0,//force
+			fy: 0,
+			fixed: false,
+			color: `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
+		});
+	}
+	for (let i = 0; i < numPoints; i++) {
+		const p1 = ballPoints[i];
+		for (let j = 0; j < numPoints; j++) {
+			const p2 = ballPoints[j];
+			// Note: it produces some dope shapes with force: 2 
+			// connect_if_not_connected(p1, p2, ballConnections, { dist: size, force: 2 });
+			connect_if_not_connected(p1, p2, ballConnections, { dist: size, force: 1 });
+		}
+	}
+	points.push(...ballPoints);
+	connections.push(...ballConnections);
+}
+
+// make_ball({ x: innerWidth / 2, y: innerHeight / 2 });
+
+for (let numPoints = 3, x = 500; numPoints < 10; numPoints+=3, x += 200) {
+	for (let size = 30, y = 100; size < 100; size += 30, y += 200, x += 0) {
+		make_ball({ numPoints, size, x, y });
+	}
+}
