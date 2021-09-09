@@ -299,6 +299,19 @@ function main() {
 	}
 }
 
+function drawArrow(ctx, x, y, angle, length, headSize=10) {
+	ctx.beginPath();
+	ctx.save();
+	ctx.translate(x, y);
+	ctx.rotate(angle);
+	ctx.moveTo(0, 0);
+	ctx.lineTo(0, -length);
+	ctx.moveTo(-headSize, -length+headSize);
+	ctx.lineTo(0, -length);
+	ctx.lineTo(headSize, -length+headSize);
+	ctx.restore();
+	ctx.stroke();
+}
 
 function step() {
 	if (canvas.width != innerWidth) {
@@ -632,8 +645,12 @@ function step() {
 
 						// var p_dir = Math.atan2(p.x - p.px, p.y - p.py);
 						var p_dir = Math.atan2(p.vy, p.vx);
-						var normal = -Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
+						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
 						var speed = distance(p.x, p.y, p.px, p.py) / (p.friction = 2); // + 1;
+						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy;
+						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
+						var bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
+						var bounce_angle = bounce_angle_connection_space - normal;
 
 						if (false) {
 							normal += Math.PI;
@@ -641,35 +658,18 @@ function step() {
 						}
 						//console.log("normal:",normal," p_dir:",p_dir," reflection:",normal-p_dir," speed:",speed);
 
-						// p.x = is.x + Math.sin(normal - p_dir) / 10;
-						// p.y = is.y + Math.cos(normal - p_dir) / 10;
-						// p.vx = Math.sin(normal - p_dir) * speed;
-						// p.vy = Math.cos(normal - p_dir) * speed;
-						p.fx += Math.sin(normal + p_dir) * speed * 20;
-						p.fy += Math.cos(normal + p_dir) * speed * 20;
+						p.x = is.x + Math.sin(bounce_angle) / 10;
+						p.y = is.y + Math.cos(bounce_angle) / 10;
+						p.vx = Math.sin(bounce_angle) * speed;
+						p.vy = Math.cos(bounce_angle) * speed;
+						// p.fx += Math.sin(bounce_angle) * speed;
+						// p.fy += Math.cos(bounce_angle) * speed;
 						//var l
 
 						ctx.strokeStyle = "aqua";
-						ctx.beginPath();
-						//ctx.arc(is.x,is.y,50,0,Math.PI*2,true);
-						// draw arrow to show the normal
-						ctx.save();
-						ctx.translate(is.x, is.y);
-						ctx.rotate(normal);
-						ctx.moveTo(0, 0);
-						ctx.lineTo(0, -50);
-						ctx.moveTo(-10, -40);
-						ctx.lineTo(0, -50);
-						ctx.lineTo(10, -40);
-						ctx.restore();
-						// ctx.moveTo(is.x, is.y);
-						// var r = Math.random() * 0.5 - 0.25, d = Math.random() * 5;
-						// ctx.lineTo(is.x + Math.sin(normal + r) * d, is.y + Math.cos(normal + r) * d);
-						// var r = Math.random() * 0.7 - 0.7 / 2, d = Math.random() * 5 + 3;
-						// ctx.lineTo(is.x + Math.sin(normal + r) * d, is.y + Math.cos(normal + r) * d);
-						// var r = Math.random() * 0.9 - 0.9 / 2, d = Math.random() * 10 + 5;
-						// ctx.lineTo(is.x + Math.sin(normal + r) * d, is.y + Math.cos(normal + r) * d);
-						ctx.stroke();
+						drawArrow(ctx, is.x, is.y, normal, 50);
+						ctx.strokeStyle = "red";
+						drawArrow(ctx, is.x, is.y, bounce_angle, 50);
 
 						// impart force to the connection's points
 						// TODO: elastic collision physics
