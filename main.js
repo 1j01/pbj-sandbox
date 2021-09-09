@@ -666,7 +666,7 @@ function step() {
 
 					// I'm gonna try enlarging quad region?
 					// This is gonna be complicated and stupid, but it might help...
-					const nudge_amount = 10;
+					const nudge_amount = 1;
 					let quad_points = [[c.p1.x, c.p1.y], [c.p1.px, c.p1.py], [c.p2.px, c.p2.py], [c.p2.x, c.p2.y]];
 					for (let i = 0; i < quad_points.length; i++) {
 						const qpi = quad_points[i];
