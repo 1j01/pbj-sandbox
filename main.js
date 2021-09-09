@@ -493,8 +493,8 @@ function step() {
 			//Move
 			p.px = p.x;
 			p.py = p.y;
-			p.x += p.vx;
-			p.y += p.vy;
+			p.x += p.vx * 0.06;
+			p.y += p.vy * 0.06;
 
 			var friction = 2, cor = 4;
 			if (p.x > canvas.width - 2) {
