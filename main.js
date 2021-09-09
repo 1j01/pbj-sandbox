@@ -920,9 +920,9 @@ function guiStuff() {
 		</select></div></label>
 		<h3>Simulation:</h3>
 		<label>Gravity: <input type='number' id='gravity-input' value='${gravity}' step='0.05' min='-50' max='50'/></label>
-		<br><label><input type='checkbox' id='ac'/>AutoConnect</label>
-		<br><label><input type='checkbox' id='terrain'/>“Terrain”</label>
-		<br><label><input type='checkbox' id='coll'/>Poor, Broken Collision</label>
+		<br><label><input type='checkbox' id='auto-connect-checkbox'/>AutoConnect</label>
+		<br><label><input type='checkbox' id='terrain-checkbox'/>“Terrain”</label>
+		<br><label><input type='checkbox' id='collision-checkbox'/>Poor, Broken Collision</label>
 		<h3>Windows:</h3>
 		<button id='make-resizable-window-button'>Resizable Window</button>
 		<br><button id='help'>Help</button>
@@ -977,13 +977,13 @@ function guiStuff() {
 			return;
 		}
 	};
-	ops.$("#coll").onchange = function () {
+	ops.$("#collision-checkbox").onchange = function () {
 		collision = this.checked;
 	};
-	ops.$("#ac").onchange = function () {
+	ops.$("#auto-connect-checkbox").onchange = function () {
 		autoConnect = this.checked;
 	};
-	ops.$("#terrain").onchange = function () {
+	ops.$("#terrain-checkbox").onchange = function () {
 		if (this.checked) {
 			createTerrain();
 		} else {
