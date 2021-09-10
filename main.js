@@ -1566,6 +1566,7 @@ function guiStuff() {
 		<br>
 		<button class="toggle" id='selection-tool'>Select (S)</button>
 	`);
+	$toolsWindow.addClass("tools-window");
 	setTimeout(() => {
 		$toolsWindow[0].style.top = `${$optionsWindow[0].getBoundingClientRect().bottom + 10}px`;
 		$toolsWindow[0].style.left = "10px";
