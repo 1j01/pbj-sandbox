@@ -52,11 +52,16 @@
 			background: var(--Window);
 			color: var(--WindowText);
 		}
+
+		/* for windows 98 theme where this wrapper isn't used, and thus doesn't have this */
+		.select-wrapper {
+			display: inline-block;
+		}
 	</style>
 	<link rel="stylesheet" href="lib/os-gui/layout.css" />
-	<!-- <link rel="stylesheet" href="lib/os-gui/windows-98.css" /> -->
+	<link rel="stylesheet" href="lib/os-gui/windows-98.css" id="windows-98-theme" disabled />
 	<!-- <link rel="stylesheet" href="lib/os-gui/windows-default.css" /> -->
-	<link rel="stylesheet" href="gui-theme.css" />
+	<link rel="stylesheet" href="gui-theme.css" id="dark-theme" />
 	<link rel="icon" href="icon-47x47.png" type="image/png" />
 	<script src="lib/jquery-3.6.0.slim.js"></script>
 	<script src="lib/os-gui/$Window.js"></script>

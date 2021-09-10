@@ -87,6 +87,7 @@ function main() {
 	audioStyle = 1;
 	audioViz = false;
 	ghostTrails = false;
+	windowTheme = "dark-theme";
 
 	debugPolygons = []; // reset per frame
 	debugLines = []; // reset per frame
@@ -1406,6 +1407,10 @@ function guiStuff() {
 		<button id='make-resizable-window-button'>Resizable Window</button>
 		<br><button id='help-button'>Help</button>
 		<button id='todo-button'>Todo</button>
+		<br><label>Theme: <div class='select-wrapper'><select id='theme-select'>
+			<option value='dark-theme'>Dark</option>
+			<option value='windows-98-theme'>Windows 98</option>
+		</select></div></label>
 	`);
 	positionElement($optionsWindow[0], "top left");
 
@@ -1607,6 +1612,21 @@ function guiStuff() {
 			selectTool(this.id);
 		};
 	}
+
+	// window theme selection
+	const themeSelect = find("#theme-select");
+	let activeTheme;
+	themeSelect.onchange = () => {
+		windowTheme = themeSelect.value;
+		newThemeStylesheet = document.getElementById(windowTheme);
+		newThemeStylesheet.disabled = false;
+		if (activeTheme) {
+			activeTheme.disabled = true;
+		}
+		activeTheme = newThemeStylesheet;
+	};
+	themeSelect.value = windowTheme;
+	themeSelect.onchange();
 }
 
 main();
