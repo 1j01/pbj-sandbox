@@ -515,10 +515,15 @@ function step() {
 		const standardDistance = 60;
 		const useCustomDistance = keys[16] || distBetweenPoints > standardDistance * 2;
 
+		const canSelect = closestPoint && closestPoint !== connectorToolPoint;
+		const canConnect = closestPoint && connectorToolPoint && closestPoint !== connectorToolPoint && !connections.some(c =>
+			(c.p1 === connectorToolPoint && c.p2 === closestPoint) || (c.p1 === closestPoint && c.p2 === connectorToolPoint)
+		);
+
 		if (mouse.left && !mousePrevious.left) {
 			connectorToolPoint = closestPoint;
 		} else if (mousePrevious.left && !mouse.left) {
-			if (closestPoint) {
+			if (canConnect) {
 				undoable();
 				connections.push({
 					p1: connectorToolPoint,
@@ -529,10 +534,6 @@ function step() {
 			}
 			connectorToolPoint = null;
 		}
-		const canSelect = closestPoint && closestPoint !== connectorToolPoint;
-		const canConnect = closestPoint && connectorToolPoint && closestPoint !== connectorToolPoint && !connections.some(c =>
-			(c.p1 === connectorToolPoint && c.p2 === closestPoint) || (c.p1 === closestPoint && c.p2 === connectorToolPoint)
-		);
 		const toPoint = canSelect ? closestPoint : mouse;
 		ctx.save();
 		if (connectorToolPoint) {
