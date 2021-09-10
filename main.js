@@ -752,12 +752,34 @@ function step() {
 						drawArrow(ctx, is.x, is.y, bounce_angle, 50);
 
 						// impart force to the connection's points
-						// TODO: elastic collision physics
-						var f = original_speed / 5;
-						c.p1.fx += Math.sin(Math.PI/2-p_dir) * f;
-						c.p1.fy += Math.cos(Math.PI/2-p_dir) * f;
-						c.p2.fx += Math.sin(Math.PI/2-p_dir) * f;
-						c.p2.fy += Math.cos(Math.PI/2-p_dir) * f;
+						// WIP: elastic collision physics
+						var d1 = distance(p.x, p.y, c.p1.x, c.p1.y);
+						var d2 = distance(p.x, p.y, c.p2.x, c.p2.y);
+						var along_line = d1 / (d1 + d2);
+						var rotational_force = along_line * 2 - 1;  //(along_line * p.vx + (1 - along_line) * c.p1.vx);// * p.mass;
+						rotational_force *= 10;
+						var p1_rot_fx = Math.cos(normal) * rotational_force;
+						var p1_rot_fy = Math.sin(normal) * rotational_force;
+						var p2_rot_fx = Math.cos(normal) * -rotational_force;
+						var p2_rot_fy = Math.sin(normal) * -rotational_force;
+						c.p1.fx += p1_rot_fx;
+						c.p1.fy += p1_rot_fy;
+						c.p2.fx += p2_rot_fx;
+						c.p2.fy += p2_rot_fy;
+						ctx.strokeStyle = "green";
+						drawArrow(ctx, c.p1.x, c.p1.y, -Math.atan2(p1_rot_fy, p1_rot_fx), Math.abs(rotational_force) * 10);
+						drawArrow(ctx, c.p2.x, c.p2.y, -Math.atan2(p2_rot_fy, p2_rot_fx), Math.abs(rotational_force) * 10);
+						// var f = 1;
+						// c.p1.fx -= Math.sin(Math.PI/2-normal-rotational_force) * f;
+						// c.p1.fy -= Math.cos(Math.PI/2-normal-rotational_force) * f;
+						// c.p2.fx -= Math.sin(Math.PI/2-normal+rotational_force) * f;
+						// c.p2.fy -= Math.cos(Math.PI/2-normal+rotational_force) * f;
+						
+						// var f = original_speed / 5;
+						// c.p1.fx += Math.sin(Math.PI/2-p_dir) * f;
+						// c.p1.fy += Math.cos(Math.PI/2-p_dir) * f;
+						// c.p2.fx += Math.sin(Math.PI/2-p_dir) * f;
+						// c.p2.fy += Math.cos(Math.PI/2-p_dir) * f;
 
 						// oh um, yeah I don't know what I'm doing
 						// maybe add a force to the point that is perpendicular to the line? but in which direction?
