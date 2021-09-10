@@ -364,7 +364,8 @@ function step() {
 				}
 		}
 
-		ctx.fillStyle = "rgba(0,255,200,0.1)";
+		// draw selection rectangle
+		ctx.fillStyle = `rgba(0,255,200,${ghostTrails ? 0.01 : 0.1})`;
 		ctx.strokeStyle = "rgba(0,255,200,0.5)";
 		ctx.beginPath();
 		ctx.rect(
