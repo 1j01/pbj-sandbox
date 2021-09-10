@@ -1426,10 +1426,11 @@ function make_fixed_point(x, y) {
 // }
 
 // Test scene: line rotation on collision
-for (let along_line = 0; along_line < 1; along_line += 0.2) {
-	const base_x = 300 + along_line * 200;
+const line_width = 50;
+for (let along_line = 0, base_x = 300; along_line <= 1 && base_x + line_width + 10 < innerWidth; along_line += 0.2, base_x += line_width * 2) {
 	const base_y = innerHeight / 2;
-	const line_width = 20;
+
+	// make a line to throw a point at
 	const p1 = {
 		x: base_x,
 		y: base_y,
@@ -1449,6 +1450,17 @@ for (let along_line = 0; along_line < 1; along_line += 0.2) {
 		color: "lime",
 	};
 	points.push(p1, p2);
-	connect_if_not_connected(p1, p2, connections);
+	connect_if_not_connected(p1, p2, connections, { dist: line_width });
+	
+	// and throw a point at it
+	points.push({
+		x: base_x + along_line * line_width,
+		y: innerHeight - 20,
+		vx: 0,
+		vy: -20,
+		fx: 0,
+		fy: 0,
+		color: "white",
+	});
 }
 
