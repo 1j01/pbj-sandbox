@@ -94,6 +94,7 @@ function main() {
 	debugLines = []; // reset per frame
 
 	tool = "create-points";
+	lastRopePoint = null;
 	selection = {
 		points: [],
 		connections: []
@@ -183,6 +184,9 @@ function main() {
 					break;
 				case "B":
 					selectTool("create-ball-tool");
+					break;
+				case "R":
+					selectTool("create-rope-tool");
 					break;
 				default:
 					return; // don't prevent default
@@ -405,6 +409,38 @@ function step() {
 	} else if (tool === "create-ball-tool") {
 		if (mouse.left && !mousePrevious.left) {
 			make_ball({ x: mouse.x, y: mouse.y, numPoints: 5 + ~~(Math.random() * 4), size: 20 + Math.random() * 30 });
+		}
+	} else if (tool === "create-rope-tool") {
+		if (mouse.left) {
+			// TODO: if distance is too large, it can snap immediately; I should add multiple points in this case
+			// (or at least create the point only within a set distance of the last point so it doesn't break)
+			const distBetweenPoints = 20;
+			if (!lastRopePoint || Math.hypot(mouse.x - lastRopePoint.x, mouse.y - lastRopePoint.y) > distBetweenPoints) {
+				const newRopePoint = {
+					x: mouse.x,//position
+					y: mouse.y,
+					px: mouse.x,//previous position
+					py: mouse.y,
+					vx: 0,//velocity
+					vy: 0,
+					fx: 0,//force
+					fy: 0,
+					fixed: keys[16],
+					color: keys[16] ? "grey" : `hsl(${Math.random() * 50},${Math.random() * 50 + 15}%,${Math.random() * 50 + 50}%)`,
+				};
+				points.push(newRopePoint);
+				if (lastRopePoint) {
+					connections.push({
+						p1: lastRopePoint,
+						p2: newRopePoint,
+						dist: distBetweenPoints,
+						force: 1,
+					});
+				}
+				lastRopePoint = newRopePoint;
+			}
+		} else {
+			lastRopePoint = null;
 		}
 	}
 	if (play) {
@@ -1307,7 +1343,6 @@ function guiStuff() {
 	ops.$("#todo-button").onclick = function () {
 		new Modal().title("Todo").content(`
 			<li>Precise connector tool</li>
-			<li>Rope tool</li>
 			<li>Drag tool (for touch screens)</li>
 			<li>
 				Ideally (but this would be hard), fix collision.
@@ -1337,14 +1372,14 @@ function guiStuff() {
 		<button id='create-points-tool'>Create Points (W)</button>
 		<br>
 		<button id='create-points-fast-tool'>Create Points Quickly (Q)</button>
-		<!-- <br> -->
-		<!-- <button id='rope-tool' disabled>Rope</button> -->
+		<br>
+		<button id='create-rope-tool'>Create Rope (R)</button>
 		<br>
 		<button id='create-ball-tool'>Create Ball (B)</button>
 		<br>
 		<button id='glue-tool'>Glue (G)</button>
 		<br>
-		<!-- <button id='connector-tool' disabled>Precise Connector</button> -->
+		<!-- <button id='connector-tool'>Precise Connector</button> -->
 		<!-- <br> -->
 		<button id='selection-tool'>Select (S)</button>
 	`);
