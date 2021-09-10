@@ -95,6 +95,7 @@ function main() {
 
 	tool = "create-points";
 	lastRopePoint = null;
+	connectorToolPoint = null;
 	selection = {
 		points: [],
 		connections: []
@@ -441,6 +442,42 @@ function step() {
 			}
 		} else {
 			lastRopePoint = null;
+		}
+	} else if (tool === "connector-tool") {
+		let closestPoint = null;
+		let closestDist = Infinity;
+		for (let i = points.length - 1; i >= 0; i--) {
+			const p = points[i];
+			const dist = Math.hypot(mouse.x - p.x, mouse.y - p.y);
+			if (dist < closestDist) {
+				closestDist = dist;
+				closestPoint = p;
+			}
+		}
+		if (mouse.left && !mousePrevious.left) {
+			connectorToolPoint = closestPoint;
+		} else if (mousePrevious.left && !mouse.left) {
+			if (closestPoint) {
+				connections.push({
+					p1: connectorToolPoint,
+					p2: closestPoint,
+					dist: 60,
+					force: 1,
+				});
+			}
+			connectorToolPoint = null;
+		}
+		if (closestPoint) {
+			ctx.strokeStyle = "rgba(0,255,200,0.5)";
+			ctx.beginPath();
+			ctx.arc(closestPoint.x, closestPoint.y, 5, 0, 2 * Math.PI);
+			ctx.stroke();
+			if (connectorToolPoint) {
+				ctx.beginPath();
+				ctx.moveTo(connectorToolPoint.x, connectorToolPoint.y);
+				ctx.lineTo(closestPoint.x, closestPoint.y);
+				ctx.stroke();
+			}
 		}
 	}
 	if (play) {
@@ -1342,7 +1379,6 @@ function guiStuff() {
 	};
 	ops.$("#todo-button").onclick = function () {
 		new Modal().title("Todo").content(`
-			<li>Precise connector tool</li>
 			<li>Drag tool (for touch screens)</li>
 			<li>
 				Ideally (but this would be hard), fix collision.
@@ -1379,8 +1415,8 @@ function guiStuff() {
 		<br>
 		<button id='glue-tool'>Glue (G)</button>
 		<br>
-		<!-- <button id='connector-tool'>Precise Connector</button> -->
-		<!-- <br> -->
+		<button id='connector-tool'>Precise Connector</button>
+		<br>
 		<button id='selection-tool'>Select (S)</button>
 	`);
 	setTimeout(() => {
