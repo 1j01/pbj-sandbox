@@ -169,12 +169,6 @@
 .window ::-moz-selection {
 	background: rgba(0,200,255,0.5);
 }
-.window ul,
-.window ol {
-	list-style:none;
-	margin: 0;
-	padding: 0;
-}
 
 .select-wrapper {
 	position: relative;

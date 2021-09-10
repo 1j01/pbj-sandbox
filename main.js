@@ -1380,39 +1380,45 @@ function guiStuff() {
 	$optionsWindow.$content.html(`
 		<h3>Audio:</h3>
 		<label><input type='checkbox' id='sfx-checkbox'/>Audio</label>${"" /* Note: Audio checkbox is mentioned in dialog text */}
-		<br><label><input type='checkbox' id='sfx-viz-checkbox'/>Audio Visualization</label>
-		<br><label>Audio Style: <div class='select-wrapper'><select id='sfx-style-select'>
+		<label><input type='checkbox' id='sfx-viz-checkbox'/>Audio Visualization</label>
+		<label>Audio Style: <div class='select-wrapper'><select id='sfx-style-select'>
 			<option value='0'>Scorched Earth</option>
 			<option value='1'>Collisions</option>
 			<option value='2'>Hybrid</option>
 		</select></div></label>
 		<h3>Simulation:</h3>
 		<label title='Hint: Try zero gravity!'>
-			Gravity: <input type='number' id='gravity-input' step='0.05' min='-50' max='50'/>
+			Gravity: <input type='number' id='gravity-input' step='0.05' min='-50' max='50' style="margin-bottom: 4px"/>
 		</label>
-		<br><label title='Connect any points that are near each other. The number of connections is limited per point.'>
+		<label title='Connect any points that are near each other. The number of connections is limited per point.'>
 			<input type='checkbox' id='auto-connect-checkbox'/>Auto-Connect
 		</label>
-		<br><label title='Use together with Auto-Connect. Toggle off and on to regenerate.'>
+		<label title='Use together with Auto-Connect. Toggle off and on to regenerate.'>
 			<input type='checkbox' id='terrain-checkbox'/>Terrain
 		</label>
-		<br><label title='The collision system needs a lot of work.'>
+		<label title='The collision system needs a lot of work.'>
 			<input type='checkbox' id='collision-checkbox'/>Poor, Broken Collision
 		</label>
-		<br><label title='This may not be a physically accurate time scale. There are probably other things it should scale, but it only scales the application of velocity.'>
+		<label title='This may not be a physically accurate time scale. There are probably other things it should scale, but it only scales the application of velocity.'>
 			<input type='checkbox' id='slowmo-checkbox'/>Slow Motion
 		</label>
-		<br><label title='Pause and resume the simulation.'><input type='checkbox' id='play-checkbox'/>Play (P)</label>
+		<label title='Pause and resume the simulation.'><input type='checkbox' id='play-checkbox'/>Play (P)</label>
 		<h3>Sim Visuals:</h3>
 		<label title='Leave a visual trail behind all objects.'><input type='checkbox' id='ghost-trails-checkbox'/>Ghost Trails</label>
 		<h3>Windows:</h3>
-		<button id='make-resizable-window-button'>Resizable Window</button>
-		<br><button id='help-button'>Help</button>
-		<button id='todo-button'>Todo</button>
-		<br><label>Theme: <div class='select-wrapper'><select id='theme-select'>
-			<option value='dark-theme'>Dark</option>
-			<option value='windows-98-theme'>Windows 98</option>
-		</select></div></label>
+		<div style="padding-bottom: 3px;">
+			<button id='make-resizable-window-button'>Resizable Window</button>
+		</div>
+		<div style="padding-bottom: 3px;">
+			<button id='help-button'>Help</button>
+			<button id='todo-button'>Todo</button>
+		</div>
+		<div style="padding-top: 3px;">
+			<label>Theme: <div class='select-wrapper'><select id='theme-select'>
+				<option value='dark-theme'>Dark</option>
+				<option value='windows-98-theme'>Windows 98</option>
+			</select></div></label>
+		</div>
 	`);
 	positionElement($optionsWindow[0], "top left");
 
@@ -1530,29 +1536,30 @@ function guiStuff() {
 	find("#todo-button").onclick = function () {
 		const $w = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
 		$w.$content.html(`
-			<li>Drag tool (for touch screens)</li>
-			<li>
-				Ideally (but this would be hard), fix collision.
-				<br>(Things no clip and get stuck in each other.
-				<br>It just doesn't really work.)
-			</li>
+			<ul>
+				<li>Drag tool (for touch screens)</li>
+				<li>
+					Ideally (but this would be hard), fix collision.
+					<br>(Things no clip and get stuck in each other.
+					<br>It just doesn't really work.)
+				</li>
+			</ul>
 		`);
 		positionElement($w[0], "top right");
 	};
 	find("#help-button").onclick = function () {
 		const $w = new $Window({ title: "Help", resizable: true, maximizeButton: false, minimizeButton: false });
 		$w.$content.html(`
-			<p>Left Click to use the selected tool.
-			<br>Right Click to drag points.
-			<br>Use the glue tool or hold space near some points to connect them.
-			<br>Hold shift when making points to fix them in place.
-			<br>Toggle the "Terrain" to regenerate it. It only looks anything like terrain if you check Auto-Connect.
-			<br>Press <kbd>P</kbd> to pause/unpause the simulation.
-			<br>Press <kbd>Ctrl+Z</kbd> to undo to a previous state and <kbd>Ctrl+Y</kbd> or <kbd>Ctrl+Shift+Z</kbd> to redo.
-			<br>Use the Selection tool to select points, or <kbd>Ctrl+A</kbd> to select all points. <kbd>Ctrl+D</kbd> to deselect.
-			<br>Press <kbd>Ctrl+C</kbd> to copy the selection (or <kbd>Ctrl+X</kbd> to cut), and <kbd>Ctrl+V</kbd> to paste near the mouse.
-			<br>Press <kbd>Delete</kbd> to remove the selected points.
-			<br>Note that this toy doesn't copy to the system clipboard, only an internal clipboard.
+			<p>Left Click to use the selected tool, and Right Click to drag points.</p>
+			<p>Use the Glue tool or hold Space near some points to connect them.</p>
+			<p>Hold Shift when making points to fix them in place.</p>
+			<p>Toggle the "Terrain" to regenerate it. It only looks anything like terrain if you check Auto-Connect.</p>
+			<p>Press <kbd>P</kbd> to pause/unpause the simulation.</p>
+			<p>Press <kbd>Ctrl+Z</kbd> to undo to a previous state and <kbd>Ctrl+Y</kbd> or <kbd>Ctrl+Shift+Z</kbd> to redo.</p>
+			<p>Use the Selection tool to select points, or <kbd>Ctrl+A</kbd> to select all points. <kbd>Ctrl+D</kbd> to deselect.</p>
+			<p>Press <kbd>Ctrl+C</kbd> to copy the selection (or <kbd>Ctrl+X</kbd> to cut), and <kbd>Ctrl+V</kbd> to paste near the mouse.</p>
+			<p>Press <kbd>Delete</kbd> to remove the selected points.</p>
+			<p>Note that this toy doesn't copy to the system clipboard, only an internal clipboard.</p>
 		`);
 		positionElement($w[0], "top");
 	};
