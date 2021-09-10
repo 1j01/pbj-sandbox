@@ -516,9 +516,14 @@ function step() {
 		const useCustomDistance = keys[16] || distBetweenPoints > standardDistance * 2;
 
 		const canSelect = closestPoint && closestPoint !== connectorToolPoint;
-		const canConnect = closestPoint && connectorToolPoint && closestPoint !== connectorToolPoint && !connections.some(c =>
-			(c.p1 === connectorToolPoint && c.p2 === closestPoint) || (c.p1 === closestPoint && c.p2 === connectorToolPoint)
+		let canConnect = closestPoint && connectorToolPoint && closestPoint !== connectorToolPoint;
+		const existingConnection = connections.find(c =>
+			(c.p1 === connectorToolPoint && c.p2 === closestPoint) ||
+			(c.p2 === connectorToolPoint && c.p1 === closestPoint)
 		);
+		if (existingConnection) {
+			canConnect = false;
+		}
 
 		if (mouse.left && !mousePrevious.left) {
 			connectorToolPoint = closestPoint;
@@ -531,24 +536,47 @@ function step() {
 					dist: useCustomDistance ? distBetweenPoints : standardDistance,
 					force: 1,
 				});
+			} else if (existingConnection) {
+				undoable();
+				const index = connections.indexOf(existingConnection);
+				if (index > -1) {
+					connections.splice(index, 1);
+				}
 			}
 			connectorToolPoint = null;
 		}
 		const toPoint = canSelect ? closestPoint : mouse;
 		ctx.save();
 		if (connectorToolPoint) {
-			ctx.lineWidth = connectorToolPoint ? 2 : 1;
-			ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect ? 1 : 0.5})` : `rgba(0,255,200,${canConnect ? 1 : 0.5})`;
+			if (existingConnection) {
+				ctx.lineWidth = 2;
+				ctx.strokeStyle = "rgba(255,0,0,1)";
+			} else {
+				ctx.lineWidth = connectorToolPoint ? 2 : 1;
+				ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect ? 1 : 0.5})` : `rgba(0,255,200,${canConnect ? 1 : 0.5})`;
+			}
 			ctx.beginPath();
 			ctx.arc(connectorToolPoint.x, connectorToolPoint.y, 5, 0, 2 * Math.PI);
 			ctx.stroke();
 		}
-		ctx.lineWidth = canSelect ? 2 : 1;
-		ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect?1:0.5})` : `rgba(0,255,200,${canConnect?1:0.5})`;
+		if (existingConnection) {
+			ctx.lineWidth = canSelect ? 2 : 1;
+			ctx.strokeStyle = "rgba(255,0,0,1)";
+		} else {
+			ctx.lineWidth = canSelect ? 2 : 1;
+			ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect ? 1 : 0.5})` : `rgba(0,255,200,${canConnect ? 1 : 0.5})`;
+		}
 		ctx.beginPath();
 		ctx.arc(toPoint.x, toPoint.y, 5, 0, 2 * Math.PI);
 		ctx.stroke();
-		if (connectorToolPoint) {
+		if (connectorToolPoint && closestPoint) {
+			if (existingConnection) {
+				ctx.lineWidth = 4; // has to be visible together with the existing connection's line
+				ctx.strokeStyle = "rgba(255,0,0,1)";
+			} else {
+				ctx.lineWidth = canSelect ? 2 : 1;
+				ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect ? 1 : 0.5})` : `rgba(0,255,200,${canConnect ? 1 : 0.5})`;
+			}
 			ctx.beginPath();
 			ctx.moveTo(connectorToolPoint.x, connectorToolPoint.y);
 			ctx.lineTo(toPoint.x, toPoint.y);
