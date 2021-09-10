@@ -19,7 +19,7 @@ Furthermore, if the simulation is active, undoing and redoing is destructive,
 because the states will be replaced with ones further ahead in time,
 as you traverse the stacks / go back and forth.
 
-And some things don't create undo history, like dragging points, and connecting points, currently,
+And some things don't create undo history, like dragging points, currently,
 so you can go for quite some time messing around without creating any undo states you can go back to.
 
 ## Help + TODO

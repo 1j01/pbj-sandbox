@@ -124,6 +124,10 @@ function main() {
 				e.preventDefault();
 				undoable();
 				deleteSelected();
+			} else if (e.keyCode === 32) { // space
+				// glue selected points together without selecting the glue tool
+				// handled elsewhere except for creating an undo state
+				undoable();
 			} else switch (String.fromCharCode(e.keyCode)) {
 				case "P"://pause/play
 					e.preventDefault();
@@ -439,10 +443,14 @@ function step() {
 		}
 	} else if (tool === "create-ball-tool") {
 		if (mouse.left && !mousePrevious.left) {
+			undoable();
 			make_ball({ x: mouse.x, y: mouse.y, numPoints: 5 + ~~(Math.random() * 4), size: 20 + Math.random() * 30 });
 		}
 	} else if (tool === "create-rope-tool") {
 		if (mouse.left) {
+			if (!mousePrevious.left) {
+				undoable();
+			}
 			const distBetweenPoints = 20;
 			let distToLast = lastRopePoint ? Math.hypot(mouse.x - lastRopePoint.x, mouse.y - lastRopePoint.y) : Infinity;
 			while (distToLast > distBetweenPoints) {
@@ -490,6 +498,7 @@ function step() {
 			connectorToolPoint = closestPoint;
 		} else if (mousePrevious.left && !mouse.left) {
 			if (closestPoint) {
+				undoable();
 				connections.push({
 					p1: connectorToolPoint,
 					p2: closestPoint,
@@ -510,6 +519,11 @@ function step() {
 				ctx.lineTo(closestPoint.x, closestPoint.y);
 				ctx.stroke();
 			}
+		}
+	} else if (tool === "glue-tool") {
+		// handled elsewhere, except for creating undoable state
+		if (mouse.left && !mousePrevious.left) {
+			undoable();
 		}
 	}
 	if (play) {
@@ -726,6 +740,8 @@ function step() {
 					}
 					return nc;
 				}
+				// 32 = Space bar
+				// Undoable handled elsewhere
 				if ((d2m < 30 && (tool === "glue-tool" && mouse.left || keys[32])) || (autoConnect && d < 50 && numConn(p) < 6 && numConn(p2) < 3)) {
 					var connected = false;
 					for (var ci = connections.length - 1; ci >= 0; ci--) {
