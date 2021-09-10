@@ -1026,8 +1026,9 @@ function pointInPolygon(x, y, polygon_points) {
 		var xi = polygon_points[i].x, yi = polygon_points[i].y;
 		var xj = polygon_points[j].x, yj = polygon_points[j].y;
         
-		var intersect = ((yi > y) != (yj > y))
-			&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+		// var intersect = ((yi > y) != (yj > y))
+		// 	&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+		var intersect = intersectLineLine(xi, yi, xj, yj, x, y, x, y);
 		if (intersect) inside = !inside;
 	}
 	// debugPolygons.push({
@@ -1063,6 +1064,15 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 		{ x: quad_x3, y: quad_y3 },
 		{ x: quad_x4, y: quad_y4 },
 	])) {
+		debugPolygons.push({
+			points: [
+				{ x: quad_x1, y: quad_y1 },
+				{ x: quad_x2, y: quad_y2 },
+				{ x: quad_x3, y: quad_y3 },
+				{ x: quad_x4, y: quad_y4 },
+			],
+			color: "#ff00ff",
+		});
 		// uneducated guess ("hopefully it won't matter")
 		return { x: (line_x1 + line_x2) / 2, y: (line_y1 + line_y2) / 2 };
 	}
