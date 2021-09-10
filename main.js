@@ -1360,16 +1360,34 @@ function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60 }) {
 	connections.push(...ballConnections);
 }
 
-// make_ball({ x: innerWidth / 2, y: innerHeight / 2 });
+function make_fixed_point(x, y) {
+	points.push({
+		x: x,
+		y: y,
+		px: x,
+		py: y,
+		vx: 0,
+		vy: 0,
+		fx: 0,
+		fy: 0,
+		fixed: true,
+		color: "gray",
+	});
+}
 
 // Test scene: a bunch of balls of different types.
-for (let numPoints = 3, x = 500; numPoints < 5; numPoints+=3, x += 200) {
-	for (let size = 30, y = 100; size < 100; size += 30, y += 200, x += 0) {
-		make_ball({ numPoints, size, x, y });
-	}
-}
+// for (let numPoints = 3, x = 500; numPoints < 10; numPoints+=3, x += 200) {
+// 	for (let size = 30, y = 100; size < 100; size += 30, y += 200, x += 0) {
+// 		make_ball({ numPoints, size, x, y });
+// 	}
+// }
 
 // Test scene: Throw two balls at each other
 // make_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
 // make_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
 
+// Test scene: collision false negatives
+make_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 8, size: 60 });
+for (let y = innerHeight / 2; y < innerHeight; y += 30) {
+	make_fixed_point(innerWidth / 2 + Math.sin(y) * 50, y);
+}
