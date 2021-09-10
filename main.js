@@ -1453,9 +1453,11 @@ for (let along_line = 0, base_x = 300; along_line <= 1 && base_x + line_width + 
 		connect_if_not_connected(p1, p2, connections, { dist: line_width });
 		
 		// and throw a point at it
+		// I'm not testing the edge case of whether it collides when x positions are the same, I want it to definitely collide
+		const projectile_x = base_x + 0.005 + along_line * (line_width - 0.01);
 		if (base_y < innerHeight / 2) {
 			points.push({
-				x: base_x + along_line * line_width,
+				x: projectile_x,
 				y: innerHeight - 20,
 				vx: 0,
 				vy: -20,
@@ -1465,7 +1467,7 @@ for (let along_line = 0, base_x = 300; along_line <= 1 && base_x + line_width + 
 			});
 		} else {
 			points.push({
-				x: base_x + along_line * line_width,
+				x: projectile_x,
 				y: 20,
 				vx: 0,
 				vy: 20,
