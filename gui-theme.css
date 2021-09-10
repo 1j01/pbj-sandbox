@@ -6,35 +6,23 @@
 .window * {
 	transition: opacity .2s, color .2s, background-color .2s;
 }
-
-.window.dragging textarea,
-.window.dragging input {
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	cursor: default;
-}
 .window {
 	transition: opacity .5s ease-in-out;
 	position: absolute;
-	background: #000;
 	background: rgba(0,0,0,0.3);
 	color: white;
 	opacity: 0.8;
 	outline: 1px solid rgba(255,255,255,0.4);
-	no-outline-offset: 4px;
-	no-box-shadow: 0 0 1px 4px rgba(0,0,0,0.5);
 	padding: 4px;
 }
-.window:hover, .window.dragging {
+.window:hover,
+.window.dragging {
 	opacity: 1;
 }
 .window.dragging {
 	transition: opacity .8s ease;
 }
 .window .content {
-	background: #000;
 	background: rgba(0,0,0,0.9);
 	color: #AAA;
 }
@@ -46,10 +34,10 @@
 	resize: default;
 }
 .window .window-titlebar {
-	background: #000;
 	background: rgba(0,0,0,0.5);
 	cursor: move;
 	border-bottom: 1px solid rgba(255,255,255,0.4);
+	padding-bottom: 4px;
 }
 .window .title {
 	cursor: move;
@@ -57,47 +45,52 @@
 	font-weight: lighter;
 }
 .window:hover .window-titlebar {
-	background: #000;
 	background: rgba(0,0,0,0.7);
 }
 .window .window-titlebar.window-titlebar.window-titlebar:hover,
 .window.dragging .window-titlebar.window-titlebar.window-titlebar {
-	background: rgb(66,66,66);
 	background: rgba(55,55,55,0.8);
 	color: #FFF;
 }
-.window .window-close-button {
-	cursor: pointer;
-	font-size: 1.1em;
-	line-height: 0.25em;
-	width: 0.5em;
-	height: 0.5em;
-	/* color: gray; */
-	color: rgba(255,255,255,0.8);
-	opacity: 0.5;
-	padding: 5px 5px 0 0;
+.window-close-button {
+	vertical-align: middle;
+	border: none;
+	color: inherit;
+	/* border-radius: 50%; */
+	background: transparent;
+	position: relative;
+	width: 20px;
+	height: 20px;
+	opacity: 0.6;
 }
-.window:hover .window-close-button {
-	opacity: 0.9;
-	color: gray;
-	color: rgba(255,255,255,0.5);
-}
-.window .window-close-button.window-close-button.window-close-button.window-close-button:hover {
+.window-close-button:focus,
+.window-close-button:hover {
 	opacity: 1;
-	color: #FFF;
+	background: rgba(128, 128, 128, 0.5);
 }
-.window .window-close-button.window-close-button.window-close-button.window-close-button:active {
-	color: gray;
-	color: rgba(255,255,255,0.5);
+.window-close-button:active {
+	background: rgba(128, 128, 128, 0.9);
 }
-.window .window-close-button::after {
-	content: "×";
+.window-close-button::before,
+.window-close-button::after {
+	content: " ";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	height: 15px;
+	width: 4px;
+	background-color: currentColor;
+}
+.window-close-button::before {
+	transform: translate(-50%, -50%) rotate(45deg);
+}
+.window-close-button::after {
+	transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 .window button,
 .window .button,
 .window input[type="submit"]{
-	background: #000;
 	background: rgba(0,0,0,0.1);
 	color: #CCC;
 	border: 0;
@@ -163,11 +156,9 @@
 	transition: outline, box-shadow .2s ease;
 }
 .window ::selection {
-	background: blue;
 	background: rgba(0,200,255,0.5);
 }
 .window ::-moz-selection {
-	background: blue;
 	background: rgba(0,200,255,0.5);
 }
 .window ul,
