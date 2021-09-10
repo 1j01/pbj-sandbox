@@ -516,16 +516,19 @@ function step() {
 			}
 			connectorToolPoint = null;
 		}
+		const canSelect = closestPoint && closestPoint !== connectorToolPoint;
+		const canConnect = closestPoint && connectorToolPoint && closestPoint !== connectorToolPoint;
+		const toPoint = canSelect ? closestPoint : mouse;
 		ctx.save();
-		ctx.lineWidth = closestPoint ? 2 : 1;
-		ctx.strokeStyle = useCustomDistance ? "rgba(255,255,0,0.5)" : "rgba(0,255,200,0.5)";
+		ctx.lineWidth = canSelect ? 2 : 1;
+		ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect?1:0.5})` : `rgba(0,255,200,${canConnect?1:0.5})`;
 		ctx.beginPath();
-		ctx.arc((closestPoint ?? mouse).x, (closestPoint ?? mouse).y, 5, 0, 2 * Math.PI);
+		ctx.arc(toPoint.x, toPoint.y, 5, 0, 2 * Math.PI);
 		ctx.stroke();
 		if (connectorToolPoint) {
 			ctx.beginPath();
 			ctx.moveTo(connectorToolPoint.x, connectorToolPoint.y);
-			ctx.lineTo((closestPoint ?? mouse).x, (closestPoint ?? mouse).y);
+			ctx.lineTo(toPoint.x, toPoint.y);
 			ctx.stroke();
 		}
 		ctx.restore();
