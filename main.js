@@ -81,14 +81,14 @@ function main() {
 	points = [];
 
 	play = true;
-	collision = true;
-	slowmo = true; // TODO: generalize to a time scale
+	collision = false;
+	slowmo = false; // TODO: generalize to a time scale
 	autoConnect = false;
-	gravity = 0;
-	audioEnabled = true;
+	gravity = 0.1;
+	audioEnabled = false;
 	audioStyle = 1;
 	audioViz = false;
-	ghostTrails = true;
+	ghostTrails = false;
 
 	debugPolygons = []; // reset per frame
 	debugLines = []; // reset per frame
@@ -1525,6 +1525,7 @@ function make_fixed_point(x, y) {
 // }
 
 // Test scene: line rotation on collision
+/*
 const line_width = 50;
 for (let along_line = 0, base_x = 300; along_line <= 1 && base_x + line_width + 10 < innerWidth; along_line += 0.2, base_x += line_width * 2) {
 	for (let base_y = innerHeight / 3; base_y < innerHeight; base_y += innerHeight / 3) {
@@ -1577,4 +1578,5 @@ for (let along_line = 0, base_x = 300; along_line <= 1 && base_x + line_width + 
 		}
 	}
 }
+*/
 
