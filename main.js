@@ -91,7 +91,7 @@ function main() {
 	debugPolygons = []; // reset per frame
 	debugLines = []; // reset per frame
 
-	tool = "create-points-tool";
+	tool = "add-points-tool";
 	lastRopePoint = null;
 	connectorToolPoint = null;
 	selection = {
@@ -211,13 +211,13 @@ function main() {
 				case "Q":
 					if (!ctrl && !e.shiftKey && !e.altKey) {
 						e.preventDefault();
-						selectTool("create-points-fast-tool");
+						selectTool("add-points-fast-tool");
 					}
 					break;
-				case "W":
+				case "A":
 					if (!ctrl && !e.shiftKey && !e.altKey) {
 						e.preventDefault();
-						selectTool("create-points-tool");
+						selectTool("add-points-tool");
 					}
 					break;
 				case "G":
@@ -229,13 +229,13 @@ function main() {
 				case "B":
 					if (!ctrl && !e.shiftKey && !e.altKey) {
 						e.preventDefault();
-						selectTool("create-ball-tool");
+						selectTool("add-ball-tool");
 					}
 					break;
 				case "R":
 					if (!ctrl && !e.shiftKey && !e.altKey) {
 						e.preventDefault();
-						selectTool("create-rope-tool");
+						selectTool("add-rope-tool");
 					}
 					break;
 			}
@@ -437,8 +437,8 @@ function step() {
 		if (mouse.left && !mousePrevious.left) {
 			selection = { x: mouse.x, y: mouse.y, points: [], connections: [] };
 		}
-	} else if (tool.match(/create-points/)) {
-		if (mouse.left && (!mousePrevious.left || tool === "create-points-fast-tool")) {
+	} else if (tool.match(/add-points/)) {
+		if (mouse.left && (!mousePrevious.left || tool === "add-points-fast-tool")) {
 			if (!mousePrevious.left) undoable();
 			points.push({
 				x: mouse.x,//position
@@ -453,12 +453,12 @@ function step() {
 				color: keys[16] ? "grey" : `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
 			});
 		}
-	} else if (tool === "create-ball-tool") {
+	} else if (tool === "add-ball-tool") {
 		if (mouse.left && !mousePrevious.left) {
 			undoable();
 			make_ball({ x: mouse.x, y: mouse.y, numPoints: 5 + ~~(Math.random() * 4), size: 20 + Math.random() * 30 });
 		}
-	} else if (tool === "create-rope-tool") {
+	} else if (tool === "add-rope-tool") {
 		if (mouse.left) {
 			if (!mousePrevious.left) {
 				undoable();
@@ -1566,13 +1566,13 @@ function guiStuff() {
 		minimizeButton: false,
 	});
 	$toolsWindow.$content.html(`
-		<button class="toggle" id='create-points-tool'>Create Points (W)</button>
+		<button class="toggle" id='add-points-tool'>Add Points (A)</button>
 		<br>
-		<button class="toggle" id='create-points-fast-tool'>Create Points Quickly (Q)</button>
+		<button class="toggle" id='add-points-fast-tool'>Add Points Quickly (Q)</button>
 		<br>
-		<button class="toggle" id='create-rope-tool'>Create Rope (R)</button>
+		<button class="toggle" id='add-rope-tool'>Make Rope (R)</button>
 		<br>
-		<button class="toggle" id='create-ball-tool'>Create Ball (B)</button>
+		<button class="toggle" id='add-ball-tool'>Make Ball (B)</button>
 		<br>
 		<button class="toggle" id='glue-tool'>Glue (G)</button>
 		<br>
