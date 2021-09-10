@@ -413,15 +413,16 @@ function step() {
 		}
 	} else if (tool === "create-rope-tool") {
 		if (mouse.left) {
-			// TODO: if distance is too large, it can snap immediately; I should add multiple points in this case
-			// (or at least create the point only within a set distance of the last point so it doesn't break)
 			const distBetweenPoints = 20;
-			if (!lastRopePoint || Math.hypot(mouse.x - lastRopePoint.x, mouse.y - lastRopePoint.y) > distBetweenPoints) {
+			let distToLast = lastRopePoint ? Math.hypot(mouse.x - lastRopePoint.x, mouse.y - lastRopePoint.y) : Infinity;
+			while (distToLast > distBetweenPoints) {
+				const newX = lastRopePoint ? lastRopePoint.x + (mouse.x - lastRopePoint.x) / distToLast * distBetweenPoints : mouse.x;
+				const newY = lastRopePoint ? lastRopePoint.y + (mouse.y - lastRopePoint.y) / distToLast * distBetweenPoints : mouse.y;
 				const newRopePoint = {
-					x: mouse.x,//position
-					y: mouse.y,
-					px: mouse.x,//previous position
-					py: mouse.y,
+					x: newX,//position
+					y: newY,
+					px: newX,//previous position
+					py: newY,
 					vx: 0,//velocity
 					vy: 0,
 					fx: 0,//force
@@ -439,6 +440,7 @@ function step() {
 					});
 				}
 				lastRopePoint = newRopePoint;
+				distToLast = lastRopePoint ? Math.hypot(mouse.x - lastRopePoint.x, mouse.y - lastRopePoint.y) : Infinity;
 			}
 		} else {
 			lastRopePoint = null;
