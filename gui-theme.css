@@ -1,0 +1,224 @@
+
+.window.closing,
+.window.closing * {
+	pointer-events: none !important;
+}
+.window * {
+	transition: opacity .2s, color .2s, background-color .2s;
+}
+
+.window.dragging textarea,
+.window.dragging input {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: default;
+}
+.window {
+	transition: opacity .5s ease-in-out;
+	position: absolute;
+	background: #000;
+	background: rgba(0,0,0,0.3);
+	color: white;
+	opacity: 0.8;
+	outline: 1px solid rgba(255,255,255,0.4);
+	no-outline-offset: 4px;
+	no-box-shadow: 0 0 1px 4px rgba(0,0,0,0.5);
+	padding: 4px;
+}
+.window:hover, .window.dragging {
+	opacity: 1;
+}
+.window.dragging {
+	transition: opacity .8s ease;
+}
+.window .content {
+	background: #000;
+	background: rgba(0,0,0,0.9);
+	color: #AAA;
+}
+.window .content.resizable {
+	resize: both;
+	overflow:scroll;
+}
+.window .content.resizable * {
+	resize: default;
+}
+.window .window-titlebar {
+	background: #000;
+	background: rgba(0,0,0,0.5);
+	cursor: move;
+	border-bottom: 1px solid rgba(255,255,255,0.4);
+}
+.window .title {
+	cursor: move;
+	color: #CCC;
+	font-weight: lighter;
+}
+.window:hover .window-titlebar {
+	background: #000;
+	background: rgba(0,0,0,0.7);
+}
+.window .window-titlebar.window-titlebar.window-titlebar:hover,
+.window.dragging .window-titlebar.window-titlebar.window-titlebar {
+	background: rgb(66,66,66);
+	background: rgba(55,55,55,0.8);
+	color: #FFF;
+}
+.window .window-close-button {
+	cursor: pointer;
+	font-size: 1.1em;
+	line-height: 0.25em;
+	width: 0.5em;
+	height: 0.5em;
+	/* color: gray; */
+	color: rgba(255,255,255,0.8);
+	opacity: 0.5;
+	padding: 5px 5px 0 0;
+}
+.window:hover .window-close-button {
+	opacity: 0.9;
+	color: gray;
+	color: rgba(255,255,255,0.5);
+}
+.window .window-close-button.window-close-button.window-close-button.window-close-button:hover {
+	opacity: 1;
+	color: #FFF;
+}
+.window .window-close-button.window-close-button.window-close-button.window-close-button:active {
+	color: gray;
+	color: rgba(255,255,255,0.5);
+}
+.window .window-close-button::after {
+	content: "×";
+}
+
+.window button,
+.window .button,
+.window input[type="submit"]{
+	background: #000;
+	background: rgba(0,0,0,0.1);
+	color: #CCC;
+	border: 0;
+	cursor: pointer;
+	outline: 1px solid rgba(255,255,255,0.4);
+}
+.window button:hover,
+.window button:focus,
+.window .button:hover,
+.window .button:focus,
+.window input[type="submit"]:hover,
+.window input[type="submit"]:focus {
+	background: #555;
+	background: rgba(255,255,255,0.2);
+	color: white;
+}
+.window button:active,
+.window .button:active,
+.window input[type="submit"]:active {
+	background: #333;
+	background: rgba(255,255,255,0.1);
+	color: #FFF;
+}
+[disabled] {
+	opacity: 0.5;
+}
+.window input, 
+.window textarea {
+	color: #FFF;
+	background: #000;
+	box-shadow: 0 0 10px 1px rgba(0,155,255,0);
+	outline: solid 1px rgba(255,255,255,0.3);
+}
+.window input:focus,
+.window textarea:focus {
+	box-shadow: 0 0 10px 1px rgba(0,155,255,0.9);
+	outline: solid 1px rgba(255,255,255,0.3);
+	outline-offset: 0;
+}
+
+.window input[type="number"]{width:40px}
+.window input[type="checkbox"]{
+	background:#000;
+	-moz-appearance:none;
+	width:12px;height:12px;
+	line-height: 10px;
+	vertical-align: top;
+}
+.window input[type="checkbox"]:checked{
+	box-shadow: 0 0 5px #0CF;
+}
+.window input[type="checkbox"]::after{
+	content: "x";
+	color: rgb(0,155,255);
+	opacity: 0;
+}
+.window input[type="checkbox"]:checked::after{
+	content: "✓";
+	color: rgb(0,155,255);
+	opacity: 1;
+}
+.window textarea{
+	transition: outline, box-shadow .2s ease;
+}
+.window ::selection {
+	background: blue;
+	background: rgba(0,200,255,0.5);
+}
+.window ::-moz-selection {
+	background: blue;
+	background: rgba(0,200,255,0.5);
+}
+.window ul,
+.window ol {
+	list-style:none;
+	margin: 0;
+	padding: 0;
+}
+
+.select-wrapper {
+	position: relative;
+	display: inline-block;
+}
+.select-wrapper select {
+	display: inline-block;
+	min-width: 20ch;
+	padding: 4px 3px 3px 5px;
+	margin: 0;
+	font: inherit;
+	font-size: smaller;
+	line-height: 1.2;
+	background: #000;
+	color: white;
+	border: 1px solid rgba(255,255,255,0.4);
+}
+.select-wrapper::after {
+	content: "▼";
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	bottom: 1px;
+	font-size: 60%;
+	line-height: 2.8em;
+	padding: 0 7px;
+	background: #000;
+	color: white;
+	pointer-events: none;
+}
+
+
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+	background: black;
+	display: block;
+}
+::-webkit-scrollbar-thumb {
+	background: rgba(255,255,255,0.1);
+	border: 1px solid rgba(255,255,255,0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(255,255,255,0.2);
+	border: 1px solid rgba(255,255,255,0.3);
+}
