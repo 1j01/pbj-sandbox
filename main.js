@@ -167,7 +167,7 @@ function main() {
 						}
 					} else {
 						e.preventDefault();
-						selectTool("connector-tool");
+						selectTool("precise-connector-tool");
 					}
 					break;
 				case "X"://cut selection
@@ -483,17 +483,25 @@ function step() {
 		} else {
 			lastRopePoint = null;
 		}
-	} else if (tool === "connector-tool") {
+	} else if (tool === "precise-connector-tool") {
 		let closestPoint = null;
-		let closestDist = Infinity;
-		for (let i = points.length - 1; i >= 0; i--) {
-			const p = points[i];
-			const dist = Math.hypot(mouse.x - p.x, mouse.y - p.y);
-			if (dist < closestDist) {
-				closestDist = dist;
-				closestPoint = p;
+		{
+			const maxDistanceToSelect = 60;
+			let closestDist = maxDistanceToSelect;
+			for (let i = points.length - 1; i >= 0; i--) {
+				const p = points[i];
+				const dist = Math.hypot(mouse.x - p.x, mouse.y - p.y);
+				if (dist < closestDist) {
+					closestDist = dist;
+					closestPoint = p;
+				}
 			}
 		}
+		const distBetweenPoints = (connectorToolPoint && closestPoint) ? Math.hypot(connectorToolPoint.x - closestPoint.x, connectorToolPoint.y - closestPoint.y) : 0;
+		// going with a standard distance for connections, unless it's too long (would break), and in that case a custom distance
+		const standardDistance = 60;
+		const useCustomDistance = keys[16] || distBetweenPoints > standardDistance * 2;
+
 		if (mouse.left && !mousePrevious.left) {
 			connectorToolPoint = closestPoint;
 		} else if (mousePrevious.left && !mouse.left) {
@@ -502,24 +510,25 @@ function step() {
 				connections.push({
 					p1: connectorToolPoint,
 					p2: closestPoint,
-					dist: 60,
+					dist: useCustomDistance ? distBetweenPoints : standardDistance,
 					force: 1,
 				});
 			}
 			connectorToolPoint = null;
 		}
-		if (closestPoint) {
-			ctx.strokeStyle = "rgba(0,255,200,0.5)";
+		ctx.save();
+		ctx.lineWidth = closestPoint ? 2 : 1;
+		ctx.strokeStyle = useCustomDistance ? "rgba(255,255,0,0.5)" : "rgba(0,255,200,0.5)";
+		ctx.beginPath();
+		ctx.arc((closestPoint ?? mouse).x, (closestPoint ?? mouse).y, 5, 0, 2 * Math.PI);
+		ctx.stroke();
+		if (connectorToolPoint) {
 			ctx.beginPath();
-			ctx.arc(closestPoint.x, closestPoint.y, 5, 0, 2 * Math.PI);
+			ctx.moveTo(connectorToolPoint.x, connectorToolPoint.y);
+			ctx.lineTo((closestPoint ?? mouse).x, (closestPoint ?? mouse).y);
 			ctx.stroke();
-			if (connectorToolPoint) {
-				ctx.beginPath();
-				ctx.moveTo(connectorToolPoint.x, connectorToolPoint.y);
-				ctx.lineTo(closestPoint.x, closestPoint.y);
-				ctx.stroke();
-			}
 		}
+		ctx.restore();
 	} else if (tool === "glue-tool") {
 		// handled elsewhere, except for creating undoable state
 		if (mouse.left && !mousePrevious.left) {
@@ -1464,7 +1473,7 @@ function guiStuff() {
 		<br>
 		<button id='glue-tool'>Glue (G)</button>
 		<br>
-		<button id='connector-tool'>Precise Connector (C)</button>
+		<button id='precise-connector-tool'>Precise Connector (C)</button>
 		<br>
 		<button id='selection-tool'>Select (S)</button>
 	`);
