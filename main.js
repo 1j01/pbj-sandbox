@@ -520,6 +520,13 @@ function step() {
 		const canConnect = closestPoint && connectorToolPoint && closestPoint !== connectorToolPoint;
 		const toPoint = canSelect ? closestPoint : mouse;
 		ctx.save();
+		if (connectorToolPoint) {
+			ctx.lineWidth = connectorToolPoint ? 2 : 1;
+			ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect ? 1 : 0.5})` : `rgba(0,255,200,${canConnect ? 1 : 0.5})`;
+			ctx.beginPath();
+			ctx.arc(connectorToolPoint.x, connectorToolPoint.y, 5, 0, 2 * Math.PI);
+			ctx.stroke();
+		}
 		ctx.lineWidth = canSelect ? 2 : 1;
 		ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect?1:0.5})` : `rgba(0,255,200,${canConnect?1:0.5})`;
 		ctx.beginPath();
