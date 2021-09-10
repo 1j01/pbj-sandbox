@@ -141,10 +141,11 @@
 	background:#000;
 	-webkit-appearance: none;
 	-moz-appearance: none;
-	width:12px;height:12px;
+	width:16px;height:16px;
+	font-size: 24px;
 	line-height: 10px;
 	vertical-align: top;
-	outline: solid 1px rgba(255,255,255,0.3);
+	border: solid 1px rgba(255,255,255,0.3);
 }
 .window input[type="checkbox"]:checked{
 	box-shadow: 0 0 5px #0CF;
