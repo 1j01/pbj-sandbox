@@ -128,48 +128,50 @@ function main() {
 				undoable();
 			} else switch (String.fromCharCode(e.keyCode)) {
 				case "P"://pause/play
-					e.preventDefault();
-					play = !play;
-					document.getElementById("play-checkbox").checked = play;
+					if (!ctrl && !e.shiftKey && !e.altKey) {
+						e.preventDefault();
+						play = !play;
+						document.getElementById("play-checkbox").checked = play;
+					}
 					break;
-				case "Z"://undo (+shift=redo)
-					if (ctrl) {
+				case "Z"://undo & redo
+					if (ctrl && !e.altKey) {
 						e.preventDefault();
 						if (e.shiftKey) { redo(); } else { undo(); }
 					}
 					break;
 				case "Y"://redo
-					if (ctrl) {
+					if (ctrl && !e.shiftKey && !e.altKey) {
 						e.preventDefault();
 						redo();
 					}
 					break;
 				case "A"://select all
-					if (ctrl) {
+					if (ctrl && !e.shiftKey && !e.altKey) {
 						e.preventDefault();
 						selection.points = Array.from(points);
 						selection.connections = Array.from(connections);
 					}
 					break;
 				case "D"://deselect all
-					if (ctrl) {
+					if (ctrl && !e.shiftKey && !e.altKey) {
 						e.preventDefault();
 						deselect();
 					}
 					break;
 				case "C"://copy selection, connector tool
-					if (ctrl) {
+					if (ctrl && !e.shiftKey && !e.altKey) {
 						if (selection.points.length > 0) {
 							e.preventDefault();
 							copySelected();
 						}
-					} else {
+					} else if (!ctrl && !e.shiftKey && !e.altKey) {
 						e.preventDefault();
 						selectTool("precise-connector-tool");
 					}
 					break;
 				case "X"://cut selection
-					if (ctrl) {
+					if (ctrl && !e.shiftKey && !e.altKey) {
 						if (selection.points.length > 0) {
 							e.preventDefault();
 							copySelected();
@@ -179,7 +181,7 @@ function main() {
 					}
 					break;
 				case "V"://pasta
-					if (ctrl) {
+					if (ctrl && !e.shiftKey && !e.altKey) {
 						if (serializedClipboard) {
 							e.preventDefault();
 							undoable();
@@ -201,28 +203,40 @@ function main() {
 					}
 					break;
 				case "S":
-					e.preventDefault();
-					selectTool("selection-tool");
+					if (!ctrl && !e.shiftKey && !e.altKey) {
+						e.preventDefault();
+						selectTool("selection-tool");
+					}
 					break;
 				case "Q":
-					e.preventDefault();
-					selectTool("create-points-fast-tool");
+					if (!ctrl && !e.shiftKey && !e.altKey) {
+						e.preventDefault();
+						selectTool("create-points-fast-tool");
+					}
 					break;
 				case "W":
-					e.preventDefault();
-					selectTool("create-points-tool");
+					if (!ctrl && !e.shiftKey && !e.altKey) {
+						e.preventDefault();
+						selectTool("create-points-tool");
+					}
 					break;
 				case "G":
-					e.preventDefault();
-					selectTool("glue-tool");
+					if (!ctrl && !e.shiftKey && !e.altKey) {
+						e.preventDefault();
+						selectTool("glue-tool");
+					}
 					break;
 				case "B":
-					e.preventDefault();
-					selectTool("create-ball-tool");
+					if (!ctrl && !e.shiftKey && !e.altKey) {
+						e.preventDefault();
+						selectTool("create-ball-tool");
+					}
 					break;
 				case "R":
-					e.preventDefault();
-					selectTool("create-rope-tool");
+					if (!ctrl && !e.shiftKey && !e.altKey) {
+						e.preventDefault();
+						selectTool("create-rope-tool");
+					}
 					break;
 			}
 		}
