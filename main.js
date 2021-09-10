@@ -1287,6 +1287,9 @@ function guiStuff() {
 		<!-- <br> -->
 		<button id='selection-tool'>Select (S)</button>
 	`);
+	setTimeout(() => {
+		tools.$m.style.top = `${ops.$m.getBoundingClientRect().bottom + 10}px`;
+	}, 100);
 
 	var toolButtons = tools.$$("button");
 
