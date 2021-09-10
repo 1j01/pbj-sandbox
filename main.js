@@ -123,6 +123,7 @@ function main() {
 			} else switch (String.fromCharCode(e.keyCode)) {
 				case "P"://pause/play
 					play = !play;
+					document.getElementById("play-checkbox").checked = play;
 					break;
 				case "Z"://undo (+shift=redo)
 					if (e.shiftKey) { redo(); } else { undo(); }
@@ -1185,7 +1186,8 @@ function guiStuff() {
 		<br><label><input type='checkbox' id='auto-connect-checkbox'/>AutoConnect</label>
 		<br><label><input type='checkbox' id='terrain-checkbox'/>“Terrain”</label>
 		<br><label><input type='checkbox' id='collision-checkbox'/>Poor, Broken Collision</label>
-		<br><label><input type='checkbox' id='slowmo-checkbox' title='This is not a physically accurate time scale.'/>Slow Motion (Fake)</label>
+		<br><label><input type='checkbox' id='slowmo-checkbox' title='*This may not be a physically accurate time scale. There are probably other things it should scale, but it only scales the application of velocity.'/>Slow Motion*</label>
+		<br><label><input type='checkbox' id='play-checkbox'/>Play (P)</label>
 		<h3>Sim Visuals:</h3>
 		<label><input type='checkbox' id='ghost-trails-checkbox'/>Ghost Trails</label>
 		<h3>Windows:</h3>
@@ -1242,6 +1244,10 @@ function guiStuff() {
 			`);
 			return;
 		}
+	};
+	ops.$("#play-checkbox").checked = play;
+	ops.$("#play-checkbox").onchange = function () {
+		play = this.checked;
 	};
 	ops.$("#collision-checkbox").checked = collision;
 	ops.$("#collision-checkbox").onchange = function () {
