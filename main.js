@@ -1182,14 +1182,24 @@ function guiStuff() {
 			<option value='2'>Hybrid</option>
 		</select></div></label>
 		<h3>Simulation:</h3>
-		<label>Gravity: <input type='number' id='gravity-input' step='0.05' min='-50' max='50'/></label>
-		<br><label><input type='checkbox' id='auto-connect-checkbox'/>AutoConnect</label>
-		<br><label><input type='checkbox' id='terrain-checkbox'/>“Terrain”</label>
-		<br><label><input type='checkbox' id='collision-checkbox'/>Poor, Broken Collision</label>
-		<br><label><input type='checkbox' id='slowmo-checkbox' title='*This may not be a physically accurate time scale. There are probably other things it should scale, but it only scales the application of velocity.'/>Slow Motion*</label>
-		<br><label><input type='checkbox' id='play-checkbox'/>Play (P)</label>
+		<label title='Hint: Try zero gravity!'>
+			Gravity: <input type='number' id='gravity-input' step='0.05' min='-50' max='50'/>
+		</label>
+		<br><label title='Connect any points that are near each other. The number of connections is limited per point.'>
+			<input type='checkbox' id='auto-connect-checkbox'/>Auto-Connect
+		</label>
+		<br><label title='Use together with Auto-Connect. Toggle off and on to regenerate.'>
+			<input type='checkbox' id='terrain-checkbox'/>Terrain
+		</label>
+		<br><label title='The collision system needs a lot of work.'>
+			<input type='checkbox' id='collision-checkbox'/>Poor, Broken Collision
+		</label>
+		<br><label title='This may not be a physically accurate time scale. There are probably other things it should scale, but it only scales the application of velocity.'>
+			<input type='checkbox' id='slowmo-checkbox'/>Slow Motion
+		</label>
+		<br><label title='Pause and resume the simulation.'><input type='checkbox' id='play-checkbox'/>Play (P)</label>
 		<h3>Sim Visuals:</h3>
-		<label><input type='checkbox' id='ghost-trails-checkbox'/>Ghost Trails</label>
+		<label title='Leave a visual trail behind all objects.'><input type='checkbox' id='ghost-trails-checkbox'/>Ghost Trails</label>
 		<h3>Windows:</h3>
 		<button id='make-resizable-window-button'>Resizable Window</button>
 		<br><button id='help-button'>Help</button>
@@ -1305,11 +1315,12 @@ function guiStuff() {
 			<br>Right Click to drag points.
 			<br>Use the glue tool or hold space near some points to connect them.
 			<br>Hold shift when making points to fix them in place.
-			<br>Toggle the 'terrain' to regenerate it. It only looks anything like terrain if you check AutoConnect
+			<br>Toggle the "Terrain" to regenerate it. It only looks anything like terrain if you check Auto-Connect.
 			<br>Press <kbd>P</kbd> to pause/unpause the simulation.
 			<br>Press <kbd>Z</kbd> to undo to a previous state and <kbd>Y</kbd> or <kbd>Shift+Z</kbd> to redo.
 			<br>Press <kbd>C</kbd> to copy the selection (or <kbd>X</kbd> to cut), and <kbd>V</kbd> to paste near the mouse.
 			<br>Press <kbd>Delete</kbd> to remove the selected points.
+			<br>Note that it isn't copied to the clipboard, only an internal clipboard.
 		`).position("top");
 	};
 	ops.$("#make-resizable-window-button").onclick = function () {
