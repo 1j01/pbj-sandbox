@@ -973,18 +973,31 @@ function step() {
 		);
 		ctx.stroke();
 		/**/
-		ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p1.color;
-		ctx.strokeStyle = c.p1.color;
-		ctx.beginPath();
-		ctx.moveTo((c.p2.x - c.p1.x) * 0.2 + c.p1.x, (c.p2.y - c.p1.y) * 0.2 + c.p1.y);
-		ctx.lineTo((c.p2.x - c.p1.x) * 0.4 + c.p1.x, (c.p2.y - c.p1.y) * 0.4 + c.p1.y);
-		ctx.stroke();
-		ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p2.color;
-		ctx.strokeStyle = c.p2.color;
-		ctx.beginPath();
-		ctx.moveTo((c.p2.x - c.p1.x) * 0.8 + c.p1.x, (c.p2.y - c.p1.y) * 0.8 + c.p1.y);
-		ctx.lineTo((c.p2.x - c.p1.x) * 0.6 + c.p1.x, (c.p2.y - c.p1.y) * 0.6 + c.p1.y);
-		ctx.stroke();
+		// draw connections
+		if (c.dist > 60) {
+			const realDist = distance(c.p1.x, c.p1.y, c.p2.x, c.p2.y);
+			const stretch = realDist / c.dist;
+			ctx.strokeStyle = "yellow";
+			ctx.setLineDash([5*stretch, 5*stretch]);
+			ctx.beginPath();
+			ctx.moveTo(c.p1.x, c.p1.y);
+			ctx.lineTo(c.p2.x, c.p2.y);
+			ctx.stroke();
+			ctx.setLineDash([]);
+		} else {
+			ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p1.color;
+			ctx.strokeStyle = c.p1.color;
+			ctx.beginPath();
+			ctx.moveTo((c.p2.x - c.p1.x) * 0.2 + c.p1.x, (c.p2.y - c.p1.y) * 0.2 + c.p1.y);
+			ctx.lineTo((c.p2.x - c.p1.x) * 0.4 + c.p1.x, (c.p2.y - c.p1.y) * 0.4 + c.p1.y);
+			ctx.stroke();
+			ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p2.color;
+			ctx.strokeStyle = c.p2.color;
+			ctx.beginPath();
+			ctx.moveTo((c.p2.x - c.p1.x) * 0.8 + c.p1.x, (c.p2.y - c.p1.y) * 0.8 + c.p1.y);
+			ctx.lineTo((c.p2.x - c.p1.x) * 0.6 + c.p1.x, (c.p2.y - c.p1.y) * 0.6 + c.p1.y);
+			ctx.stroke();
+		}
 		/**/
 	}
 
