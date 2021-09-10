@@ -1147,20 +1147,21 @@ function sqrDistance(x1, y1, x2, y2) {
 function r() { return Math.random() * 2 - 1; }
 
 function guiStuff() {
+	// Note: Options are initialized from variables, not the HTML. To change the defaults, edit the variable declarations.
 	var ops = new Modal().position("left top").title("Options").content(`
 		<h3>Audio:</h3>
 		<label><input type='checkbox' id='sfx-checkbox'/>Audio</label>${"" /* Note: Audio checkbox is mentioned in dialog text */}
 		<br><label><input type='checkbox' id='sfx-viz-checkbox'/>Visualization</label>
 		<br><label>Audio Style: <div class='select-wrapper'><select id='sfx-style-select'>
 			<option value='0'>Scorched Earth</option>
-			<option value='1' selected>Collisions</option>
+			<option value='1'>Collisions</option>
 			<option value='2'>Hybrid</option>
 		</select></div></label>
 		<h3>Simulation:</h3>
-		<label>Gravity: <input type='number' id='gravity-input' value='${gravity}' step='0.05' min='-50' max='50'/></label>
+		<label>Gravity: <input type='number' id='gravity-input' step='0.05' min='-50' max='50'/></label>
 		<br><label><input type='checkbox' id='auto-connect-checkbox'/>AutoConnect</label>
 		<br><label><input type='checkbox' id='terrain-checkbox'/>“Terrain”</label>
-		<br><label><input type='checkbox' id='collision-checkbox' checked/>Poor, Broken Collision</label>
+		<br><label><input type='checkbox' id='collision-checkbox'/>Poor, Broken Collision</label>
 		<br><label><input type='checkbox' id='slowmo-checkbox' title='This is not a physically accurate time scale.'/>Slow Motion (Fake)</label>
 		<h3>Windows:</h3>
 		<button id='make-resizable-window-button'>Resizable Window</button>
@@ -1183,7 +1184,7 @@ function guiStuff() {
 	};
 	// TODO: maybe enable/disable audio related sub-controls based on audio checkbox
 	// ...except maybe just the audio style - not the viz
-	audioEnabled = $audioCheckbox.checked;
+	$audioCheckbox.checked = audioEnabled;
 	$audioCheckbox.onchange = function () {
 		audioEnabled = $audioCheckbox.checked;
 		if (typeof audioSetupError !== "undefined") {
@@ -1191,7 +1192,7 @@ function guiStuff() {
 			return;
 		}
 	};
-	audioStyle = parseInt($audioStyleSelect.value);
+	$audioStyleSelect.value = audioStyle;
 	$audioStyleSelect.onchange = function () {
 		audioStyle = parseInt($audioStyleSelect.value);
 		if (typeof audioSetupError !== "undefined") {
@@ -1205,7 +1206,8 @@ function guiStuff() {
 			return;
 		}
 	};
-	audioViz = $audioVizCheckbox.checked;
+	$audioStyleSelect.value = audioStyle;
+	$audioVizCheckbox.checked = audioViz;
 	$audioVizCheckbox.onchange = function () {
 		audioViz = $audioVizCheckbox.checked;
 		if (!$audioCheckbox.checked && audioViz) {
@@ -1216,15 +1218,19 @@ function guiStuff() {
 			return;
 		}
 	};
+	ops.$("#collision-checkbox").checked = collision;
 	ops.$("#collision-checkbox").onchange = function () {
 		collision = this.checked;
 	};
+	ops.$("#auto-connect-checkbox").checked = autoConnect;
 	ops.$("#auto-connect-checkbox").onchange = function () {
 		autoConnect = this.checked;
 	};
+	ops.$("#slowmo-checkbox").checked = slowmo;
 	ops.$("#slowmo-checkbox").onchange = function () {
 		slowmo = this.checked;
 	};
+	ops.$("#terrain-checkbox").checked = terrain;
 	ops.$("#terrain-checkbox").onchange = function () {
 		if (this.checked) {
 			createTerrain();
@@ -1242,6 +1248,7 @@ function guiStuff() {
 			}
 		}
 	};
+	ops.$("#gravity-input").value = gravity;
 	ops.$("#gravity-input").onchange = function () {
 		gravity = Number(this.value);
 	};
