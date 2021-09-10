@@ -319,15 +319,16 @@ function drawArrow(ctx, x, y, angle, length, headSize = 10) {
 }
 
 function step() {
-	if (canvas.width != innerWidth) {
-		canvas.width = innerWidth;
-	}
-	if (canvas.height != innerHeight) {
-		canvas.height = innerHeight;
-	}
-
 	//Drawing setup
 	var ctx = canvas.getContext("2d");
+
+	if (canvas.width != innerWidth || canvas.height != innerHeight) {
+		canvas.width = innerWidth;
+		canvas.height = innerHeight;
+		// Clear to black immediately (initially and on resize), for ghost trails mode
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+	}
 
 	// Clear, or partially clear, leaving a trail.
 	ctx.fillStyle = `rgba(0,0,20,${ghostTrails ? (play ? 0.02 : 0) : 1})`;
