@@ -59,7 +59,9 @@ Feel free to send pull requests adding weird tools.
 
 * [verlet-js][], a point based physics engine that can have more solid shapes (bodies) because it uses [Verlet integration][]
 
+* [os-gui.js][], the windowing library I use for this project
 
 [Skele2D]: https://github.com/1j01/skele2d
 [verlet-js]: https://github.com/subprotocol/verlet-js
 [Verlet integration]: https://en.wikipedia.org/wiki/Verlet_integration
+[os-gui.js]: https://github.com/1j01/os-gui

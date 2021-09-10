@@ -65,8 +65,6 @@ function deleteSelected() {
 	deselect();
 }
 function main() {
-	gui.overlay();
-
 	canvas = document.createElement("canvas");
 	document.body.appendChild(canvas);
 	canvas.border = 0;
@@ -686,9 +684,10 @@ function step() {
 			// if (Math.sign(p.x - p.px - p.vx) > 0) {
 
 			// }
-			for (var j = 0; j < gui.modals.length; j++) {
-				var m = gui.modals[j];
-				var r = m.$m.getBoundingClientRect();
+			const windowElements = document.querySelectorAll(".os-window");
+			for (var j = 0; j < windowElements.length; j++) {
+				var windowElement = windowElements[j];
+				var r = windowElement.getBoundingClientRect();
 				var o = 3;
 				r = { left: r.left - o, top: r.top - o, right: r.right + o, bottom: r.bottom + o };
 				r.width = r.right - r.left;
@@ -1332,9 +1331,36 @@ function sqrDistance(x1, y1, x2, y2) {
 }
 function r() { return Math.random() * 2 - 1; }
 
+function positionElement(element, positionString) {
+	// setTimeout(() => {
+	const w = element.offsetWidth;
+	const h = element.offsetHeight;
+	const rect = element.getBoundingClientRect();
+	let x = rect.left;
+	let y = rect.top;
+	if (positionString.match(/top|bottom|center/)) x = innerWidth / 2 - w / 2;
+	if (positionString.match(/left|right|center/)) y = innerHeight / 2 - h / 2;
+	if (positionString.match(/top/)) y = 10;
+	if (positionString.match(/bottom/)) y = innerHeight - h - 10;
+	if (positionString.match(/left/)) x = 10;
+	if (positionString.match(/right/)) x = innerWidth - w - 10;
+	x = Math.max(Math.min(x, innerWidth - w - 10), 10);
+	y = Math.max(Math.min(y, innerHeight - h - 10), 10);
+	//y=Math.min(Math.max(y,10),innerHeight-mh-10);
+	element.style.left = x + "px";
+	element.style.top = y + "px";
+	// }, 1);
+}
+
 function guiStuff() {
+	var $optionsWindow = new $Window({
+		title: "Options",
+		resizable: true,
+		maximizeButton: false,
+		minimizeButton: false,
+	});
 	// Note: Options are initialized from variables, not the HTML. To change the defaults, edit the variable declarations.
-	var ops = new Modal().position("left top").title("Options").content(`
+	$optionsWindow.$content.html(`
 		<h3>Audio:</h3>
 		<label><input type='checkbox' id='sfx-checkbox'/>Audio</label>${"" /* Note: Audio checkbox is mentioned in dialog text */}
 		<br><label><input type='checkbox' id='sfx-viz-checkbox'/>Audio Visualization</label>
@@ -1367,78 +1393,99 @@ function guiStuff() {
 		<br><button id='help-button'>Help</button>
 		<button id='todo-button'>Todo</button>
 	`);
+	positionElement($optionsWindow[0], "top left");
 
-	var $audioCheckbox = ops.$("#sfx-checkbox");
-	var $audioVizCheckbox = ops.$("#sfx-viz-checkbox");
-	var $audioStyleSelect = ops.$("#sfx-style-select");
+	const find = (selector) => $optionsWindow.$content.find(selector)[0];
+
+	var audioCheckbox = find("#sfx-checkbox");
+	var audioVizCheckbox = find("#sfx-viz-checkbox");
+	var audioStyleSelect = find("#sfx-style-select");
 
 	var showAudioSetupError = function () {
-		new Modal().position("center").title("Audio Setup Failed").content(`
+		const $errorWindow = new $Window({
+			title: "Audio Setup Failed",
+			resizable: false,
+			maximizeButton: false,
+			minimizeButton: false,
+		});
+		$errorWindow.$content.html(`
 			<p>Initialization failed, audio is not available.</p>
 			<pre class='padded'/>
-		`).$c.querySelector("pre").textContent = audioSetupError.stack;
-		$audioCheckbox.disabled = true;
-		$audioStyleSelect.disabled = true;
-		$audioCheckbox.checked = false;
+		`);
+		const errorText = `${audioSetupError.stack}`.includes(audioSetupError.message) ? audioSetupError.stack : `${audioSetupError.message}\n\n${audioSetupError.stack}`;
+		$errorWindow.$content[0].querySelector("pre").textContent = errorText;
+		$errorWindow.$Button("OK", () => $errorWindow.close()).focus();
+		$errorWindow.center();
+		audioCheckbox.disabled = true;
+		audioStyleSelect.disabled = true;
+		audioCheckbox.checked = false;
 	};
 	// TODO: maybe enable/disable audio related sub-controls based on audio checkbox
 	// ...except maybe just the audio style - not the viz
-	$audioCheckbox.checked = audioEnabled;
-	$audioCheckbox.onchange = function () {
-		audioEnabled = $audioCheckbox.checked;
+	audioCheckbox.checked = audioEnabled;
+	audioCheckbox.onchange = function () {
+		audioEnabled = audioCheckbox.checked;
 		if (typeof audioSetupError !== "undefined") {
 			showAudioSetupError();
 			return;
 		}
 	};
-	$audioStyleSelect.value = audioStyle;
-	$audioStyleSelect.onchange = function () {
-		audioStyle = parseInt($audioStyleSelect.value);
+	audioStyleSelect.value = audioStyle;
+	audioStyleSelect.onchange = function () {
+		audioStyle = parseInt(audioStyleSelect.value);
 		if (typeof audioSetupError !== "undefined") {
 			showAudioSetupError();
 			return;
 		}
-		if (!$audioCheckbox.checked) {
-			new Modal().position("center").title("Audio Not Enabled").content(
-				"<p>Check the box to enable 'Audio' first.</p>"
-			);
-			return;
-		}
-	};
-	$audioStyleSelect.value = audioStyle;
-	$audioVizCheckbox.checked = audioViz;
-	$audioVizCheckbox.onchange = function () {
-		audioViz = $audioVizCheckbox.checked;
-		if (!$audioCheckbox.checked && audioViz) {
-			new Modal().position("center").title("Audio Not Enabled").content(`
-				<p>You <em>can</em> enjoy the viz without sound.</p>
-				<p>Check the box to enable 'Audio' to hear it.</p>
+		if (!audioCheckbox.checked) {
+			const $w = new $Window({ title: "Audio Not Enabled", resizable: false, maximizeButton: false, minimizeButton: false });
+			$w.$content.html(`
+				<p>Check the box to enable 'Audio' first.</p>
 			`);
+			$w.$Button("OK", () => $w.close()).focus();
+			$w.center();
 			return;
 		}
 	};
-	ops.$("#play-checkbox").checked = play;
-	ops.$("#play-checkbox").onchange = function () {
+	audioStyleSelect.value = audioStyle;
+	audioVizCheckbox.checked = audioViz;
+	audioVizCheckbox.onchange = function () {
+		audioViz = audioVizCheckbox.checked;
+		if (!audioCheckbox.checked && audioViz) {
+			setTimeout(() => { // needed for button focus to work (I guess onchange comes before focus is switched to the checkbox?)
+				const $w = new $Window({ title: "Audio Not Enabled", resizable: false, maximizeButton: false, minimizeButton: false });
+				$w.$content.html(`
+					<p>You <em>can</em> enjoy the viz without sound, but...</p>
+					<p>Check the box to enable 'Audio' to hear it.</p>
+				`);
+				$w.$Button("OK", () => $w.close()).focus();
+				$w.center();
+			});
+			return;
+		}
+	};
+	find("#play-checkbox").checked = play;
+	find("#play-checkbox").onchange = function () {
 		play = this.checked;
 	};
-	ops.$("#collision-checkbox").checked = collision;
-	ops.$("#collision-checkbox").onchange = function () {
+	find("#collision-checkbox").checked = collision;
+	find("#collision-checkbox").onchange = function () {
 		collision = this.checked;
 	};
-	ops.$("#auto-connect-checkbox").checked = autoConnect;
-	ops.$("#auto-connect-checkbox").onchange = function () {
+	find("#auto-connect-checkbox").checked = autoConnect;
+	find("#auto-connect-checkbox").onchange = function () {
 		autoConnect = this.checked;
 	};
-	ops.$("#slowmo-checkbox").checked = slowmo;
-	ops.$("#slowmo-checkbox").onchange = function () {
+	find("#slowmo-checkbox").checked = slowmo;
+	find("#slowmo-checkbox").onchange = function () {
 		slowmo = this.checked;
 	};
-	ops.$("#ghost-trails-checkbox").checked = ghostTrails;
-	ops.$("#ghost-trails-checkbox").onchange = function () {
+	find("#ghost-trails-checkbox").checked = ghostTrails;
+	find("#ghost-trails-checkbox").onchange = function () {
 		ghostTrails = this.checked;
 	};
-	// ops.$("#terrain-checkbox").checked = enableTerrain;
-	ops.$("#terrain-checkbox").onchange = function () {
+	// find("#terrain-checkbox").checked = enableTerrain;
+	find("#terrain-checkbox").onchange = function () {
 		if (this.checked) {
 			createTerrain();
 		} else {
@@ -1455,22 +1502,25 @@ function guiStuff() {
 			}
 		}
 	};
-	ops.$("#gravity-input").value = gravity;
-	ops.$("#gravity-input").onchange = function () {
+	find("#gravity-input").value = gravity;
+	find("#gravity-input").onchange = function () {
 		gravity = Number(this.value);
 	};
-	ops.$("#todo-button").onclick = function () {
-		new Modal().title("Todo").content(`
+	find("#todo-button").onclick = function () {
+		const $w = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
+		$w.$content.html(`
 			<li>Drag tool (for touch screens)</li>
 			<li>
 				Ideally (but this would be hard), fix collision.
 				<br>(Things no clip and get stuck in each other.
 				<br>It just doesn't really work.)
 			</li>
-		`).position("top right");
+		`);
+		positionElement($w[0], "top right");
 	};
-	ops.$("#help-button").onclick = function () {
-		new Modal().title("Help").content(`
+	find("#help-button").onclick = function () {
+		const $w = new $Window({ title: "Help", resizable: true, maximizeButton: false, minimizeButton: false });
+		$w.$content.html(`
 			<p>Left Click to use the selected tool.
 			<br>Right Click to drag points.
 			<br>Use the glue tool or hold space near some points to connect them.
@@ -1482,36 +1532,51 @@ function guiStuff() {
 			<br>Press <kbd>Ctrl+C</kbd> to copy the selection (or <kbd>Ctrl+X</kbd> to cut), and <kbd>Ctrl+V</kbd> to paste near the mouse.
 			<br>Press <kbd>Delete</kbd> to remove the selected points.
 			<br>Note that this toy doesn't copy to the system clipboard, only an internal clipboard.
-		`).position("top");
+		`);
+		positionElement($w[0], "top");
 	};
-	ops.$("#make-resizable-window-button").onclick = function () {
-		new Modal().position("center").title("Resizable").content("Windows are collidable. Resize me in the bottom right corner.").resizable();
+	find("#make-resizable-window-button").onclick = function () {
+		new $Window({
+			title: "Resizable Window",
+			resizable: true,
+			minimizeButton: false,
+			maximizeButton: false,
+		}).$content.html(`
+			Windows are collidable. Use this to play.
+		`);
 	};
-	var tools = new Modal().position("left").title("Tools").content(`
-		<button id='create-points-tool'>Create Points (W)</button>
+	var $toolsWindow = new $Window({
+		title: "Tools",
+		resizable: true,
+		maximizeButton: false,
+		minimizeButton: false,
+	});
+	$toolsWindow.$content.html(`
+		<button class="toggle" id='create-points-tool'>Create Points (W)</button>
 		<br>
-		<button id='create-points-fast-tool'>Create Points Quickly (Q)</button>
+		<button class="toggle" id='create-points-fast-tool'>Create Points Quickly (Q)</button>
 		<br>
-		<button id='create-rope-tool'>Create Rope (R)</button>
+		<button class="toggle" id='create-rope-tool'>Create Rope (R)</button>
 		<br>
-		<button id='create-ball-tool'>Create Ball (B)</button>
+		<button class="toggle" id='create-ball-tool'>Create Ball (B)</button>
 		<br>
-		<button id='glue-tool'>Glue (G)</button>
+		<button class="toggle" id='glue-tool'>Glue (G)</button>
 		<br>
-		<button id='precise-connector-tool'>Precise Connector (C)</button>
+		<button class="toggle" id='precise-connector-tool'>Precise Connector (C)</button>
 		<br>
-		<button id='selection-tool'>Select (S)</button>
+		<button class="toggle" id='selection-tool'>Select (S)</button>
 	`);
 	setTimeout(() => {
-		tools.$m.style.top = `${ops.$m.getBoundingClientRect().bottom + 10}px`;
+		$toolsWindow[0].style.top = `${$optionsWindow[0].getBoundingClientRect().bottom + 10}px`;
+		$toolsWindow[0].style.left = "10px";
 	}, 100);
 
-	var toolButtons = tools.$$("button");
+	var $toolButtons = $toolsWindow.$content.find("button");
 
 	selectTool = function (id) {
 		tool = id;
-		for (var i = 0; i < toolButtons.length; i++) {
-			var tb = toolButtons[i];
+		for (var i = 0; i < $toolButtons.length; i++) {
+			var tb = $toolButtons[i];
 			if (tb.id === id) {
 				tb.classList.add("selected");
 			} else {
@@ -1521,8 +1586,8 @@ function guiStuff() {
 	};
 
 	selectTool(tool);
-	for (var i = 0; i < toolButtons.length; i++) {
-		var tb = toolButtons[i];
+	for (var i = 0; i < $toolButtons.length; i++) {
+		var tb = $toolButtons[i];
 		tb.onclick = function () {
 			selectTool(this.id);
 		};
