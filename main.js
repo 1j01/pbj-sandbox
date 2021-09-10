@@ -91,7 +91,7 @@ function main() {
 	debugPolygons = []; // reset per frame
 	debugLines = []; // reset per frame
 
-	tool = "create-points";
+	tool = "create-points-tool";
 	lastRopePoint = null;
 	connectorToolPoint = null;
 	selection = {
