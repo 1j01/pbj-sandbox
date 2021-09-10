@@ -330,7 +330,7 @@ function step() {
 	var ctx = canvas.getContext("2d");
 
 	// Clear, or partially clear, leaving a trail.
-	ctx.fillStyle = `rgba(0,0,20,${ghostTrails ? 0.02 : 1})`;
+	ctx.fillStyle = `rgba(0,0,20,${ghostTrails ? (play ? 0.02 : 0) : 1})`;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	ctx.lineWidth = 1;
 
