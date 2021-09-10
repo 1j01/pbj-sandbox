@@ -155,12 +155,15 @@ function main() {
 						deselect();
 					}
 					break;
-				case "C"://copy selection
+				case "C"://copy selection, connector tool
 					if (ctrl) {
 						if (selection.points.length > 0) {
 							e.preventDefault();
 							copySelected();
 						}
+					} else {
+						e.preventDefault();
+						selectTool("connector-tool");
 					}
 					break;
 				case "X"://cut selection
@@ -1445,7 +1448,7 @@ function guiStuff() {
 		<br>
 		<button id='glue-tool'>Glue (G)</button>
 		<br>
-		<button id='connector-tool'>Precise Connector</button>
+		<button id='connector-tool'>Precise Connector (C)</button>
 		<br>
 		<button id='selection-tool'>Select (S)</button>
 	`);
