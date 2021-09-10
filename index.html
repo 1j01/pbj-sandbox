@@ -35,6 +35,19 @@
 		.tools-window .window-content button {
 			width: 200px;
 		}
+
+		input[type=number] {
+			width: 50px;
+		}
+		
+		/* TODO: this should be part of the os-gui.js library */
+		input[type=text],
+		input[type=number],
+		input:not([type]) {
+			border-image: var(--inset-deep-border-image);
+			background: var(--Window);
+			color: var(--WindowText);
+		}
 	</style>
 	<link rel="stylesheet" href="lib/os-gui/layout.css" />
 	<link rel="stylesheet" href="lib/os-gui/windows-98.css" />
