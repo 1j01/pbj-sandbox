@@ -89,6 +89,9 @@ function main() {
 	audioStyle = 1;
 	audioViz = false;
 
+	debugPolygons = []; // reset per frame
+	debugLines = []; // reset per frame
+
 	tool = "create-points";
 	selection = {
 		points: [],
@@ -847,6 +850,36 @@ function step() {
 		ctx.fillRect(cx + sx - w / 2, cy - h / 2, w, h);
 	}
 
+	if (debugPolygons.length) {
+		for (var i = debugPolygons.length - 1; i >= 0; i--) {
+			const { points, color } = debugPolygons[i]; // note: shadowing `points`
+			ctx.fillStyle = color;
+			ctx.beginPath();
+			ctx.moveTo(points[0].x, points[0].y);
+			for (var j = 1; j < points.length; j++) {
+				ctx.lineTo(points[j].x, points[j].y);
+			}
+			ctx.closePath();
+			ctx.fill();
+		}
+	}
+	if (debugLines.length) {
+		// flash everything else dark to make it clear
+		// ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+		// ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+		for (var i = debugLines.length - 1; i >= 0; i--) {
+			var line = debugLines[i];
+			ctx.strokeStyle = line.color;
+			ctx.beginPath();
+			ctx.moveTo(line.p1.x, line.p1.y);
+			ctx.lineTo(line.p2.x, line.p2.y);
+			ctx.stroke();
+		}
+	}
+	debugPolygons.length = 0;
+	debugLines.length = 0;
+
 	ctx.restore();
 	mousePrevious.left = mouse.left;
 	mousePrevious.right = mouse.right;
@@ -933,7 +966,7 @@ function step() {
 // 	}
 // 	return { x: x, y: y };
 // }
-function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY, debug_ctx) {
+function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
     // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
     var denominator, a, b, numerator1, numerator2, result = {
         x: null,
@@ -944,21 +977,16 @@ function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2
     denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY));
     if (denominator == 0) {
         // return result;
-		// debug
-		if (debug_ctx) {
-			debug_ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-			debug_ctx.fillRect(0, 0, debug_ctx.canvas.width, debug_ctx.canvas.height);
-			debug_ctx.strokeStyle = "yellow";
-			debug_ctx.beginPath();
-			debug_ctx.moveTo(line1StartX, line1StartY);
-			debug_ctx.lineTo(line1EndX, line1EndY);
-			debug_ctx.stroke();
-			debug_ctx.strokeStyle = "aqua";
-			debug_ctx.beginPath();
-			debug_ctx.moveTo(line2StartX, line2StartY);
-			debug_ctx.lineTo(line2EndX, line2EndY);
-			debug_ctx.stroke();
-		}
+		debugLines.push({
+			p1: { x: line1StartX, y: line1StartY },
+			p2: { x: line1EndX, y: line1EndY },
+			color: "yellow",
+		});
+		debugLines.push({
+			p1: { x: line2StartX, y: line2StartY },
+			p2: { x: line2EndX, y: line2EndY },
+			color: "aqua",
+		});
 		return;
     }
     a = line1StartY - line2StartY;
@@ -992,7 +1020,7 @@ function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2
 };
 
 
-function pointInPolygon(x, y, polygon_points, debug_ctx) {
+function pointInPolygon(x, y, polygon_points) {
 	var inside = false;
 	for (var i = 0, j = polygon_points.length - 1; i < polygon_points.length; j = i++) {
 		var xi = polygon_points[i].x, yi = polygon_points[i].y;
@@ -1002,23 +1030,17 @@ function pointInPolygon(x, y, polygon_points, debug_ctx) {
 			&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 		if (intersect) inside = !inside;
 	}
-	// debug
-	debug_ctx.beginPath();
-	debug_ctx.fillStyle = inside ? "rgba(0,255,0,0.6)" : "rgba(255,0,0,0.6)";
-	debug_ctx.moveTo(polygon_points[0].x, polygon_points[0].y);
-	for (var i = 1; i < polygon_points.length; i++) {
-		debug_ctx.lineTo(polygon_points[i].x, polygon_points[i].y);
-	}
-	debug_ctx.closePath();
-	debug_ctx.fill();
-
+	debugPolygons.push({
+		points: polygon_points,
+		color: inside ? "rgba(0,255,0,0.6)" : "rgba(255,0,0,0.6)",
+	});
 	return inside;
 }
-function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4, debug_ctx) {
-	var p1 = intersectLineLine(quad_x1, quad_y1, quad_x2, quad_y2, line_x1, line_y1, line_x2, line_y2, debug_ctx);
-	var p2 = intersectLineLine(quad_x2, quad_y2, quad_x3, quad_y3, line_x1, line_y1, line_x2, line_y2, debug_ctx);
-	var p3 = intersectLineLine(quad_x3, quad_y3, quad_x4, quad_y4, line_x1, line_y1, line_x2, line_y2, debug_ctx);
-	var p4 = intersectLineLine(quad_x4, quad_y4, quad_x1, quad_y1, line_x1, line_y1, line_x2, line_y2, debug_ctx);
+function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4) {
+	var p1 = intersectLineLine(quad_x1, quad_y1, quad_x2, quad_y2, line_x1, line_y1, line_x2, line_y2);
+	var p2 = intersectLineLine(quad_x2, quad_y2, quad_x3, quad_y3, line_x1, line_y1, line_x2, line_y2);
+	var p3 = intersectLineLine(quad_x3, quad_y3, quad_x4, quad_y4, line_x1, line_y1, line_x2, line_y2);
+	var p4 = intersectLineLine(quad_x4, quad_y4, quad_x1, quad_y1, line_x1, line_y1, line_x2, line_y2);
 	// return closest point to line_x1, line_y1
 	var best_dist = Infinity;
 	var best_point = null;
@@ -1040,7 +1062,7 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 		{ x: quad_x2, y: quad_y2 },
 		{ x: quad_x3, y: quad_y3 },
 		{ x: quad_x4, y: quad_y4 },
-	], debug_ctx)) {
+	])) {
 		// uneducated guess ("hopefully it won't matter")
 		return { x: (line_x1 + line_x2) / 2, y: (line_y1 + line_y2) / 2 };
 	}
