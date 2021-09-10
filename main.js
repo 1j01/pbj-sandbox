@@ -82,13 +82,13 @@ function main() {
 
 	play = true;
 	collision = true;
-	slowmo = false; // TODO: generalize to a time scale
+	slowmo = true; // TODO: generalize to a time scale
 	autoConnect = false;
-	gravity = 0.1;
-	audioEnabled = false;
+	gravity = 0;
+	audioEnabled = true;
 	audioStyle = 1;
 	audioViz = false;
-	ghostTrails = false;
+	ghostTrails = true;
 
 	debugPolygons = []; // reset per frame
 	debugLines = []; // reset per frame
