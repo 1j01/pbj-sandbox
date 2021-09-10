@@ -1609,19 +1609,33 @@ function guiStuff() {
 		toolWindow: true,
 	});
 	$toolsWindow.$content.html(`
-		<button class="toggle" id='add-points-tool'>Add Points (A)</button>
+		<button class="toggle" id='add-points-tool' title='Click anywhere to add a point.'>
+			Add Points (A)
+		</button>
 		<br>
-		<button class="toggle" id='add-points-fast-tool'>Add Points Quickly (Q)</button>
+		<button class="toggle" id='add-points-fast-tool' title='Create many points in an unconnected stream.'>
+			Add Points Quickly (Q)
+		</button>
 		<br>
-		<button class="toggle" id='add-rope-tool'>Make Rope (R)</button>
+		<button class="toggle" id='add-rope-tool' title='Create a connected series of points.'>
+			Make Rope (R)
+		</button>
 		<br>
-		<button class="toggle" id='add-ball-tool'>Make Ball (B)</button>
+		<button class="toggle" id='add-ball-tool' title='Create a group of interconnected points forming a round or polygonal shape.'>
+			Make Ball (B)
+		</button>
 		<br>
-		<button class="toggle" id='glue-tool'>Glue (G)</button>
+		<button class="toggle" id='glue-tool' title='Connect any points near the mouse to each other.'>
+			Glue (G)
+		</button>
 		<br>
-		<button class="toggle" id='precise-connector-tool'>Precise Connector (C)</button>
+		<button class="toggle" id='precise-connector-tool' title='Drag from one point to another to connect them, or if they're already connected, to delete the connection.'>
+			Precise Connector (C)
+		</button>
 		<br>
-		<button class="toggle" id='selection-tool'>Select (S)</button>
+		<button class="toggle" id='selection-tool' title='Drag to select points within a rectangle, then Copy (Ctrl+C) and Paste (Ctrl+V) or Delete (Delete).'>
+			Select (S)
+		</button>
 	`);
 	$toolsWindow.addClass("tools-window");
 	setTimeout(() => {
