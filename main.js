@@ -977,16 +977,6 @@ function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2
     denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY));
     if (denominator == 0) {
         // return result;
-		debugLines.push({
-			p1: { x: line1StartX, y: line1StartY },
-			p2: { x: line1EndX, y: line1EndY },
-			color: "yellow",
-		});
-		debugLines.push({
-			p1: { x: line2StartX, y: line2StartY },
-			p2: { x: line2EndX, y: line2EndY },
-			color: "aqua",
-		});
 		return;
     }
     a = line1StartY - line2StartY;
@@ -1014,6 +1004,16 @@ function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2
     }
     // if line1 and line2 are segments, they intersect if both of the above are true
 	if (result.onLine1 && result.onLine2) {
+		debugLines.push({
+			p1: { x: line1StartX, y: line1StartY },
+			p2: { x: line1EndX, y: line1EndY },
+			color: "yellow",
+		});
+		debugLines.push({
+			p1: { x: line2StartX, y: line2StartY },
+			p2: { x: line2EndX, y: line2EndY },
+			color: "aqua",
+		});
 		return result;
 	}
     // return result;
@@ -1030,10 +1030,10 @@ function pointInPolygon(x, y, polygon_points) {
 			&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 		if (intersect) inside = !inside;
 	}
-	debugPolygons.push({
-		points: polygon_points,
-		color: inside ? "rgba(0,255,0,0.6)" : "rgba(255,0,0,0.6)",
-	});
+	// debugPolygons.push({
+	// 	points: polygon_points,
+	// 	color: inside ? "rgba(0,255,0,0.6)" : "rgba(255,0,0,0.6)",
+	// });
 	return inside;
 }
 function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4) {
