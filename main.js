@@ -1373,6 +1373,7 @@ function guiStuff() {
 		resizable: true,
 		maximizeButton: false,
 		minimizeButton: false,
+		toolWindow: true,
 	});
 	// Note: Options are initialized from variables, not the HTML. To change the defaults, edit the variable declarations.
 	$optionsWindow.$content.html(`
@@ -1569,6 +1570,7 @@ function guiStuff() {
 		resizable: true,
 		maximizeButton: false,
 		minimizeButton: false,
+		toolWindow: true,
 	});
 	$toolsWindow.$content.html(`
 		<button class="toggle" id='add-points-tool'>Add Points (A)</button>
