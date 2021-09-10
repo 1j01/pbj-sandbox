@@ -1420,7 +1420,35 @@ function make_fixed_point(x, y) {
 // make_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
 
 // Test scene: collision false negatives
-make_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 8, size: 60 });
-for (let y = innerHeight / 2; y < innerHeight; y += 30) {
-	make_fixed_point(innerWidth / 2 + Math.sin(y) * 50, y);
+// make_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
+// for (let y = innerHeight / 2; y < innerHeight; y += 30) {
+// 	make_fixed_point(innerWidth / 2 + Math.sin(y) * 50, y);
+// }
+
+// Test scene: line rotation on collision
+for (let along_line = 0; along_line < 1; along_line += 0.2) {
+	const base_x = 300 + along_line * 200;
+	const base_y = innerHeight / 2;
+	const line_width = 20;
+	const p1 = {
+		x: base_x,
+		y: base_y,
+		vx: 0,
+		vy: 0,
+		fx: 0,
+		fy: 0,
+		color: "lime",
+	};
+	const p2 = {
+		x: base_x + line_width,
+		y: base_y,
+		vx: 0,
+		vy: 0,
+		fx: 0,
+		fy: 0,
+		color: "lime",
+	};
+	points.push(p1, p2);
+	connect_if_not_connected(p1, p2, connections);
 }
+
