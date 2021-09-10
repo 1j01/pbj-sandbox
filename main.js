@@ -119,81 +119,108 @@ function main() {
 		if (!keys[e.keyCode]) {
 			keys[e.keyCode] = true;
 			// console.log(String.fromCharCode(e.keyCode) + ": ", e.keyCode);
+			const ctrl = e.ctrlKey || e.metaKey;
 			if (e.keyCode === 46) { // delete
+				e.preventDefault();
 				undoable();
 				deleteSelected();
 			} else switch (String.fromCharCode(e.keyCode)) {
 				case "P"://pause/play
+					e.preventDefault();
 					play = !play;
 					document.getElementById("play-checkbox").checked = play;
 					break;
 				case "Z"://undo (+shift=redo)
-					if (e.shiftKey) { redo(); } else { undo(); }
+					if (ctrl) {
+						e.preventDefault();
+						if (e.shiftKey) { redo(); } else { undo(); }
+					}
 					break;
 				case "Y"://redo
-					redo();
+					if (ctrl) {
+						e.preventDefault();
+						redo();
+					}
 					break;
 				case "A"://select all
-					selection.points = Array.from(points);
-					selection.connections = Array.from(connections);
+					if (ctrl) {
+						e.preventDefault();
+						selection.points = Array.from(points);
+						selection.connections = Array.from(connections);
+					}
 					break;
 				case "D"://deselect all
-					deselect();
+					if (ctrl) {
+						e.preventDefault();
+						deselect();
+					}
 					break;
 				case "C"://copy selection
-					if (selection.points.length > 0) {
-						copySelected();
+					if (ctrl) {
+						if (selection.points.length > 0) {
+							e.preventDefault();
+							copySelected();
+						}
 					}
 					break;
 				case "X"://cut selection
-					if (selection.points.length > 0) {
-						copySelected();
-						undoable();
-						deleteSelected();
+					if (ctrl) {
+						if (selection.points.length > 0) {
+							e.preventDefault();
+							copySelected();
+							undoable();
+							deleteSelected();
+						}
 					}
 					break;
 				case "V"://pasta
-					undoable();
-					if (serializedClipboard) {
-						var clipboard = deserialize(serializedClipboard);
-						var minX = Infinity, minY = Infinity;
-						for (var i = 0; i < clipboard.points.length; i++) {
-							var p = clipboard.points[i];
-							minX = Math.min(minX, p.x);
-							minY = Math.min(minY, p.y);
+					if (ctrl) {
+						if (serializedClipboard) {
+							e.preventDefault();
+							undoable();
+							var clipboard = deserialize(serializedClipboard);
+							var minX = Infinity, minY = Infinity;
+							for (var i = 0; i < clipboard.points.length; i++) {
+								var p = clipboard.points[i];
+								minX = Math.min(minX, p.x);
+								minY = Math.min(minY, p.y);
+							}
+							for (var i = 0; i < clipboard.points.length; i++) {
+								var p = clipboard.points[i];
+								p.x -= minX - mouse.x;
+								p.y -= minY - mouse.y;
+							}
+							points = points.concat(clipboard.points);
+							connections = connections.concat(clipboard.connections);
 						}
-						for (var i = 0; i < clipboard.points.length; i++) {
-							var p = clipboard.points[i];
-							p.x -= minX - mouse.x;
-							p.y -= minY - mouse.y;
-						}
-						points = points.concat(clipboard.points);
-						connections = connections.concat(clipboard.connections);
 					}
 					break;
 				case "S":
+					e.preventDefault();
 					selectTool("selection-tool");
 					break;
 				case "Q":
+					e.preventDefault();
 					selectTool("create-points-fast-tool");
 					break;
 				case "W":
+					e.preventDefault();
 					selectTool("create-points-tool");
 					break;
 				case "G":
+					e.preventDefault();
 					selectTool("glue-tool");
 					break;
 				case "B":
+					e.preventDefault();
 					selectTool("create-ball-tool");
 					break;
 				case "R":
+					e.preventDefault();
 					selectTool("create-rope-tool");
 					break;
-				default:
-					return; // don't prevent default
 			}
 		}
-		e.preventDefault();
 	});
 	addEventListener('keypress', function (e) {
 		if (String.fromCharCode(e.keyCode) === "A") {
@@ -1397,10 +1424,11 @@ function guiStuff() {
 			<br>Hold shift when making points to fix them in place.
 			<br>Toggle the "Terrain" to regenerate it. It only looks anything like terrain if you check Auto-Connect.
 			<br>Press <kbd>P</kbd> to pause/unpause the simulation.
-			<br>Press <kbd>Z</kbd> to undo to a previous state and <kbd>Y</kbd> or <kbd>Shift+Z</kbd> to redo.
-			<br>Press <kbd>C</kbd> to copy the selection (or <kbd>X</kbd> to cut), and <kbd>V</kbd> to paste near the mouse.
+			<br>Press <kbd>Ctrl+Z</kbd> to undo to a previous state and <kbd>Ctrl+Y</kbd> or <kbd>Ctrl+Shift+Z</kbd> to redo.
+			<br>Use the Selection tool to select points, or <kbd>Ctrl+A</kbd> to select all points. <kbd>Ctrl+D</kbd> to deselect.
+			<br>Press <kbd>Ctrl+C</kbd> to copy the selection (or <kbd>Ctrl+X</kbd> to cut), and <kbd>Ctrl+V</kbd> to paste near the mouse.
 			<br>Press <kbd>Delete</kbd> to remove the selected points.
-			<br>Note that it isn't copied to the clipboard, only an internal clipboard.
+			<br>Note that this toy doesn't copy to the system clipboard, only an internal clipboard.
 		`).position("top");
 	};
 	ops.$("#make-resizable-window-button").onclick = function () {
