@@ -88,6 +88,7 @@ function main() {
 	audioEnabled = false;
 	audioStyle = 1;
 	audioViz = false;
+	ghostTrails = false;
 
 	debugPolygons = []; // reset per frame
 	debugLines = []; // reset per frame
@@ -327,11 +328,9 @@ function step() {
 
 	//Drawing setup
 	var ctx = canvas.getContext("2d");
-	//ctx.fillStyle = "rgba(0,0,20,0.2)";
-	//ctx.fillRect(0,0,canvas.width,canvas.height);
 
-	//Clear.
-	ctx.fillStyle = "rgba(0,0,20,1)";
+	// Clear, or partially clear, leaving a trail.
+	ctx.fillStyle = `rgba(0,0,20,${ghostTrails ? 0.02 : 1})`;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	ctx.lineWidth = 1;
 
@@ -1151,7 +1150,7 @@ function guiStuff() {
 	var ops = new Modal().position("left top").title("Options").content(`
 		<h3>Audio:</h3>
 		<label><input type='checkbox' id='sfx-checkbox'/>Audio</label>${"" /* Note: Audio checkbox is mentioned in dialog text */}
-		<br><label><input type='checkbox' id='sfx-viz-checkbox'/>Visualization</label>
+		<br><label><input type='checkbox' id='sfx-viz-checkbox'/>Audio Visualization</label>
 		<br><label>Audio Style: <div class='select-wrapper'><select id='sfx-style-select'>
 			<option value='0'>Scorched Earth</option>
 			<option value='1'>Collisions</option>
@@ -1163,6 +1162,8 @@ function guiStuff() {
 		<br><label><input type='checkbox' id='terrain-checkbox'/>“Terrain”</label>
 		<br><label><input type='checkbox' id='collision-checkbox'/>Poor, Broken Collision</label>
 		<br><label><input type='checkbox' id='slowmo-checkbox' title='This is not a physically accurate time scale.'/>Slow Motion (Fake)</label>
+		<h3>Sim Visuals:</h3>
+		<label><input type='checkbox' id='ghost-trails-checkbox'/>Ghost Trails</label>
 		<h3>Windows:</h3>
 		<button id='make-resizable-window-button'>Resizable Window</button>
 		<br><button id='help-button'>Help</button>
@@ -1230,7 +1231,11 @@ function guiStuff() {
 	ops.$("#slowmo-checkbox").onchange = function () {
 		slowmo = this.checked;
 	};
-	ops.$("#terrain-checkbox").checked = terrain;
+	ops.$("#ghost-trails-checkbox").checked = ghostTrails;
+	ops.$("#ghost-trails-checkbox").onchange = function () {
+		ghostTrails = this.checked;
+	};
+	// ops.$("#terrain-checkbox").checked = enableTerrain;
 	ops.$("#terrain-checkbox").onchange = function () {
 		if (this.checked) {
 			createTerrain();
