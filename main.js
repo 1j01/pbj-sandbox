@@ -517,7 +517,9 @@ function step() {
 			connectorToolPoint = null;
 		}
 		const canSelect = closestPoint && closestPoint !== connectorToolPoint;
-		const canConnect = closestPoint && connectorToolPoint && closestPoint !== connectorToolPoint;
+		const canConnect = closestPoint && connectorToolPoint && closestPoint !== connectorToolPoint && !connections.some(c =>
+			(c.p1 === connectorToolPoint && c.p2 === closestPoint) || (c.p1 === closestPoint && c.p2 === connectorToolPoint)
+		);
 		const toPoint = canSelect ? closestPoint : mouse;
 		ctx.save();
 		if (connectorToolPoint) {
