@@ -2,10 +2,13 @@
 	"cSpell.words": [
 		"actx",
 		"collidable",
+		"Mopaint",
 		"shoopen",
+		"Skele",
 		"slowmo",
 		"textareas",
 		"undoable",
-		"undos"
+		"undos",
+		"verlet"
 	]
 }
