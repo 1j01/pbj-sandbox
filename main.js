@@ -181,6 +181,9 @@ function main() {
 				case "G":
 					selectTool("glue-tool");
 					break;
+				case "B":
+					selectTool("create-ball-tool");
+					break;
 				default:
 					return; // don't prevent default
 			}
@@ -398,6 +401,10 @@ function step() {
 				fixed: keys[16],
 				color: keys[16] ? "grey" : `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
 			});
+		}
+	} else if (tool === "create-ball-tool") {
+		if (mouse.left && !mousePrevious.left) {
+			make_ball({ x: mouse.x, y: mouse.y, numPoints: 5 + ~~(Math.random() * 4), size: 20 + Math.random() * 30 });
 		}
 	}
 	if (play) {
@@ -1332,6 +1339,8 @@ function guiStuff() {
 		<button id='create-points-fast-tool'>Create Points Quickly (Q)</button>
 		<!-- <br> -->
 		<!-- <button id='rope-tool' disabled>Rope</button> -->
+		<br>
+		<button id='create-ball-tool'>Create Ball (B)</button>
 		<br>
 		<button id='glue-tool'>Glue (G)</button>
 		<br>
