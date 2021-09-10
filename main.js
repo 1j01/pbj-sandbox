@@ -933,7 +933,7 @@ function step() {
 // 	}
 // 	return { x: x, y: y };
 // }
-function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
+function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY, debug_ctx) {
     // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
     var denominator, a, b, numerator1, numerator2, result = {
         x: null,
@@ -944,6 +944,21 @@ function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2
     denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY));
     if (denominator == 0) {
         // return result;
+		// debug
+		if (debug_ctx) {
+			debug_ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+			debug_ctx.fillRect(0, 0, debug_ctx.canvas.width, debug_ctx.canvas.height);
+			debug_ctx.strokeStyle = "yellow";
+			debug_ctx.beginPath();
+			debug_ctx.moveTo(line1StartX, line1StartY);
+			debug_ctx.lineTo(line1EndX, line1EndY);
+			debug_ctx.stroke();
+			debug_ctx.strokeStyle = "aqua";
+			debug_ctx.beginPath();
+			debug_ctx.moveTo(line2StartX, line2StartY);
+			debug_ctx.lineTo(line2EndX, line2EndY);
+			debug_ctx.stroke();
+		}
 		return;
     }
     a = line1StartY - line2StartY;
@@ -1000,10 +1015,10 @@ function pointInPolygon(x, y, polygon_points, debug_ctx) {
 	return inside;
 }
 function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4, debug_ctx) {
-	var p1 = intersectLineLine(quad_x1, quad_y1, quad_x2, quad_y2, line_x1, line_y1, line_x2, line_y2);
-	var p2 = intersectLineLine(quad_x2, quad_y2, quad_x3, quad_y3, line_x1, line_y1, line_x2, line_y2);
-	var p3 = intersectLineLine(quad_x3, quad_y3, quad_x4, quad_y4, line_x1, line_y1, line_x2, line_y2);
-	var p4 = intersectLineLine(quad_x4, quad_y4, quad_x1, quad_y1, line_x1, line_y1, line_x2, line_y2);
+	var p1 = intersectLineLine(quad_x1, quad_y1, quad_x2, quad_y2, line_x1, line_y1, line_x2, line_y2, debug_ctx);
+	var p2 = intersectLineLine(quad_x2, quad_y2, quad_x3, quad_y3, line_x1, line_y1, line_x2, line_y2, debug_ctx);
+	var p3 = intersectLineLine(quad_x3, quad_y3, quad_x4, quad_y4, line_x1, line_y1, line_x2, line_y2, debug_ctx);
+	var p4 = intersectLineLine(quad_x4, quad_y4, quad_x1, quad_y1, line_x1, line_y1, line_x2, line_y2, debug_ctx);
 	// return closest point to line_x1, line_y1
 	var best_dist = Infinity;
 	var best_point = null;
@@ -1313,13 +1328,13 @@ function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60 }) {
 // make_ball({ x: innerWidth / 2, y: innerHeight / 2 });
 
 // Test scene: a bunch of balls of different types.
-// for (let numPoints = 3, x = 500; numPoints < 10; numPoints+=3, x += 200) {
-// 	for (let size = 30, y = 100; size < 100; size += 30, y += 200, x += 0) {
-// 		make_ball({ numPoints, size, x, y });
-// 	}
-// }
+for (let numPoints = 3, x = 500; numPoints < 5; numPoints+=3, x += 200) {
+	for (let size = 30, y = 100; size < 100; size += 30, y += 200, x += 0) {
+		make_ball({ numPoints, size, x, y });
+	}
+}
 
 // Test scene: Throw two balls at each other
-make_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
-make_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
+// make_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
+// make_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
 
