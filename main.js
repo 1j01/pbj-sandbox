@@ -996,10 +996,14 @@ function step() {
 						var p1_y_off = c.p1.y + Math.cos(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
 						var p2_x_off = c.p2.x + Math.sin(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
 						var p2_y_off = c.p2.y + Math.cos(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
-						c.p1.x = p1_x_off;
-						c.p1.y = p1_y_off;
-						c.p2.x = p2_x_off;
-						c.p2.y = p2_y_off;
+						if (!c.p1.fixed) {
+							c.p1.x = p1_x_off;
+							c.p1.y = p1_y_off;
+						}
+						if (!c.p2.fixed) {
+							c.p2.x = p2_x_off;
+							c.p2.y = p2_y_off;
+						}
 						debugLines.push({
 							p1: { x: p1_x_off, y: p1_y_off },
 							p2: { x: p2_x_off, y: p2_y_off },
