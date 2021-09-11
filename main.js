@@ -1645,6 +1645,7 @@ function guiStuff() {
 	$toolsWindow.addClass("tools-window");
 	$toolsWindow[0].style.top = `${$optionsWindow[0].getBoundingClientRect().bottom + 10}px`;
 	$toolsWindow[0].style.left = "10px";
+	$toolsWindow.bringTitleBarInBounds();
 
 	var $toolButtons = $toolsWindow.$content.find("button");
 
