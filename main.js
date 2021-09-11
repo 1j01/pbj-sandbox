@@ -998,7 +998,7 @@ function step() {
 						debugLines.push({
 							p1: { x: p1_x_off, y: p1_y_off },
 							p2: { x: p2_x_off, y: p2_y_off },
-							color: '#00afff',
+							color: on_one_side_of_line ? '#00afff' : '#ff00ff',
 						});
 
 						// move the point so it doesn't collide immediately again
