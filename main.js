@@ -160,9 +160,27 @@ function main() {
 		},
 		{
 			modifiers: [], code: "Space", action: () => {
-				// For gluing selected points together without selecting the glue tool.
+				// For gluing selected points together without selecting the Glue tool.
 				// This handled elsewhere except for creating an undo state.
 				undoable();
+			}
+		},
+		{
+			modifiers: [], key: ".", action: () => {
+				// Add a point at the mouse position without selecting the Add Points tool.
+				undoable();
+				points.push({
+					x: mouse.x,//position
+					y: mouse.y,
+					px: mouse.x,//previous position
+					py: mouse.y,
+					vx: 0,//velocity
+					vy: 0,
+					fx: 0,//force
+					fy: 0,
+					fixed: keys.Shift,
+					color: keys.Shift ? "grey" : `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
+				});
 			}
 		},
 		{
@@ -1578,9 +1596,6 @@ function guiStuff() {
 				</li>
 				<li>
 					Make "Terrain" option look like terrain. Maybe even give it some flowers.
-				</li>
-				<li>
-					Add shortcut '.' to add a point at the mouse position.
 				</li>
 				<li>
 					Add shortcut '/' to either:
