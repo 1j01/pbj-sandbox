@@ -701,18 +701,26 @@ function step() {
 		}
 	}
 	//Draw and step the points.
+	let time = performance.now();
 	for (var i = points.length - 1; i >= 0; i--) {
 		var p = points[i];
 		if (play && !p.fixed) {
-			//Apply connection forces.
+			// Apply connection forces.
 			p.vx += p.fx;
 			p.vy += p.fy;
-			//"air friction"
+			// "air friction"
 			//p.vx*=0.99;
 			//p.vy*=0.99;
-			//gravity
-			p.vy += gravity;
-			//Move
+			// Gravity, and special handling for flowers
+			if (p.color === "DarkOrchid") {
+				p.vy -= gravity * 3;
+				p.vx *= 0.9;
+				p.vy *= 0.9;
+				p.vx += Math.sin(time/1000 + p.x/1000) * 0.1;
+			} else {
+				p.vy += gravity;
+			}
+			// Move
 			p.px = p.x;
 			p.py = p.y;
 			p.x += p.vx * (slowmo ? 0.06 : 1);
@@ -1314,19 +1322,37 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 	// if (pointInQuad(line_x1, line_y1, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4)) {
 }
 
+var flowerPoints = [];
+function removeTerrain() {
+	for (var i = points.length - 1; i >= 0; i--) {
+		if (points[i].color == "green" || points[i].color == "DarkOrchid") {
+			for (var j = connections.length - 1; j >= 0; j--) {
+				var c = connections[j];
+				if (c.p1 == points[i]) {
+					connections.splice(j, 1);
+				}
+			}
+			points.splice(i, 1);
+		}
+	}
+}
 function createTerrain() {
 	var x = Math.random() * 200;
 	var y = Math.random() * 200 + 200;
 	var y_tend = 0, x_tend = 10;
-	var p, pp;
-	for (var i = 0; i < 50; i++) {
+	var p, prev_p;
+	for (var i = 0; i < 500 && x < innerWidth; i++) {
 		x += Math.random() * 10 - 5 + x_tend;
 		y += Math.random() * 10 - 5 + y_tend;
 		y_tend += Math.random() * 20 - 10;
 		x_tend += Math.random() * 35 - 15;
 		y_tend *= 0.945;
 		x_tend *= 0.9;
-		pp = p;
+		if (y < 200) {
+			y_tend += Math.random() * 20;
+			x_tend += Math.random() * 20;
+		}
+		prev_p = p;
 		p = {
 			x: x,//position
 			y: y,
@@ -1340,7 +1366,24 @@ function createTerrain() {
 			color: "green"
 		};
 		points.push(p);
-		if (pp) connections.push({ p1: p, p2: pp, dist: -1, force: -1 });
+		if (prev_p) connections.push({ p1: p, p2: prev_p, dist: 60, force: 1 });
+
+		if (Math.random() < 0.3) {
+			const flower_p = {
+				x: x,
+				y: y - 10,
+				px: x,
+				py: y - 10,
+				vx: 0,
+				vy: 0,
+				fx: 0,
+				fy: 0,
+				color: "DarkOrchid",
+			};
+			points.push(flower_p);
+			connections.push({ p1: p, p2: flower_p, dist: Math.random() * 20 + 30, force: 1 });
+			flowerPoints.push(flower_p);
+		}
 	}
 }
 function rope(x1, y1, x2, y2, seg, force) {
@@ -1436,7 +1479,7 @@ function guiStuff() {
 		<label title='Connect any points that are near each other. The number of connections is limited per point.'>
 			<input type='checkbox' id='auto-connect-checkbox'/>Auto-Connect
 		</label>
-		<label title='Use together with Auto-Connect. Toggle off and on to regenerate.'>
+		<label title='Generate (or remove) some grassy terrain. Toggle off and on to regenerate.'>
 			<input type='checkbox' id='terrain-checkbox'/>Terrain
 		</label>
 		<label title='The collision system needs a lot of work.'>
@@ -1571,17 +1614,7 @@ function guiStuff() {
 		if (this.checked) {
 			createTerrain();
 		} else {
-			for (var i = points.length - 1; i >= 0; i--) {
-				if (points[i].color == "green") {
-					for (var j = connections.length - 1; j >= 0; j--) {
-						var c = connections[j];
-						if (c.p1 == points[i]) {
-							connections.splice(j, 1);
-						}
-					}
-					points.splice(i, 1);
-				}
-			}
+			removeTerrain();
 		}
 	};
 	find("#gravity-input").value = gravity;
@@ -1592,9 +1625,6 @@ function guiStuff() {
 		const $w = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
 		$w.$content.html(`
 			<ul>
-				<li>
-					Make "Terrain" option look like terrain. Maybe even give it some flowers.
-				</li>
 				<li>
 					Add shortcut '/' to either:
 					Quickly switch to the Precise Connector tool and back when you release.
@@ -1626,7 +1656,7 @@ function guiStuff() {
 			<p>Left Click to use the selected tool, and Right Click to drag points.</p>
 			<p>Use the Glue tool or hold Space near some points to connect them.</p>
 			<p>Hold Shift when making points to fix them in place.</p>
-			<p>Toggle the "Terrain" to regenerate it. It only looks anything like terrain if you check Auto-Connect.</p>
+			<p>Toggle the "Terrain" to regenerate it.</p>
 			<p>Press <kbd>P</kbd> to pause/unpause the simulation.</p>
 			<p>Press <kbd>Ctrl+Z</kbd> to undo to a previous state and <kbd>Ctrl+Y</kbd> or <kbd>Ctrl+Shift+Z</kbd> to redo.</p>
 			<p>Use the Selection tool to select points, or <kbd>Ctrl+A</kbd> to select all points. <kbd>Ctrl+D</kbd> to deselect.</p>
