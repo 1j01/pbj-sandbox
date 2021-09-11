@@ -993,28 +993,51 @@ function step() {
 						// for along_line = 0 (p is closest to p1), generate a forward force for p1, negative for p2
 						// at along_line = 1 (p is closest to p2), generate a forward force for p2, negative for p1
 						// between along_line = 0.25 to 0.75, generate a forward force for both
+						// or something like that anyway
 						// var f1 = along_line * 2 - 1;
 						// var f2 = 1 - along_line * 2;
-						var f1 = (d1 - d2) / (d1 + d2);
-						var f2 = (d2 - d1) / (d1 + d2);
-						f1 *= 10;
-						f2 *= 10;
-						var p1_rot_fx = Math.sin(normal) * f1;
-						var p1_rot_fy = Math.cos(normal) * f1;
-						var p2_rot_fx = Math.sin(normal) * f2;
-						var p2_rot_fy = Math.cos(normal) * f2;
-						c.p1.fx += p1_rot_fx;
-						c.p1.fy += p1_rot_fy;
-						c.p2.fx += p2_rot_fx;
-						c.p2.fy += p2_rot_fy;
-						ctx.strokeStyle = "green";
-						drawArrow(ctx, c.p1.x, c.p1.y, Math.PI / 2 + Math.atan2(p1_rot_fy, p1_rot_fx), Math.abs(f1) * 10);
-						drawArrow(ctx, c.p2.x, c.p2.y, Math.PI / 2 + Math.atan2(p2_rot_fy, p2_rot_fx), Math.abs(f2) * 10);
+						var f1 = (d2 - d1/2) / (d1 + d2);
+						var f2 = (d1 - d2/2) / (d1 + d2);
+						// f1 *= 10;
+						// f2 *= 10;
+						// var p1_rot_fx = Math.sin(normal) * f1;
+						// var p1_rot_fy = Math.cos(normal) * f1;
+						// var p2_rot_fx = Math.sin(normal) * f2;
+						// var p2_rot_fy = Math.cos(normal) * f2;
+						// c.p1.fx += p1_rot_fx;
+						// c.p1.fy += p1_rot_fy;
+						// c.p2.fx += p2_rot_fx;
+						// c.p2.fy += p2_rot_fy;
+						// ctx.strokeStyle = "green";
+						// drawArrow(ctx, c.p1.x, c.p1.y, Math.PI / 2 + Math.atan2(p1_rot_fy, p1_rot_fx), Math.abs(f1) * 10);
+						// drawArrow(ctx, c.p2.x, c.p2.y, Math.PI / 2 + Math.atan2(p2_rot_fy, p2_rot_fx), Math.abs(f2) * 10);
 						// var f = 1;
 						// c.p1.fx -= Math.sin(Math.PI/2-normal-rotational_force) * f;
 						// c.p1.fy -= Math.cos(Math.PI/2-normal-rotational_force) * f;
 						// c.p2.fx -= Math.sin(Math.PI/2-normal+rotational_force) * f;
 						// c.p2.fy -= Math.cos(Math.PI/2-normal+rotational_force) * f;
+
+						var relative_vx_1 = p.vx - c.p1.vx;
+						var relative_vy_1 = p.vy - c.p1.vy;
+						var relative_vx_2 = p.vx - c.p2.vx;
+						var relative_vy_2 = p.vy - c.p2.vy;
+						normal += Math.PI/2;
+						var p1_fx = f1 * relative_vx_1;
+						var p1_fy = f1 * relative_vy_1;
+						var p2_fx = f2 * relative_vx_2;
+						var p2_fy = f2 * relative_vy_2;
+						c.p1.fx += p1_fx;
+						c.p1.fy += p1_fy;
+						c.p2.fx += p2_fx;
+						c.p2.fy += p2_fy;
+						hack = 2;
+						c.p1.x += p1_fx * hack;
+						c.p1.y += p1_fy * hack;
+						c.p2.x += p2_fx * hack;
+						c.p2.y += p2_fy * hack;
+						ctx.strokeStyle = "green";
+						drawArrow(ctx, c.p1.x, c.p1.y, Math.PI / 2 + Math.atan2(p1_fy, p1_fx), Math.abs(f1) * 10);
+						drawArrow(ctx, c.p2.x, c.p2.y, Math.PI / 2 + Math.atan2(p2_fy, p2_fx), Math.abs(f2) * 10);
 
 						// var f = original_speed / 5;
 						// c.p1.fx += Math.sin(Math.PI/2-p_dir) * f;
