@@ -79,14 +79,15 @@ function main() {
 	points = [];
 
 	play = true;
-	collision = true;
-	slowmo = true; // TODO: generalize to a time scale
+	collision = false;
+	slowmo = false; // TODO: generalize to a time scale
 	autoConnect = false;
-	gravity = 0;
-	audioEnabled = true;
+	gravity = 0.1;
+	terrainEnabled = false;
+	audioEnabled = false;
 	audioStyle = 1;
 	audioViz = false;
-	ghostTrails = true;
+	ghostTrails = false;
 	windowTheme = "dark-theme"; // global used by index.html
 
 	debugPolygons = []; // reset per frame
@@ -1636,14 +1637,18 @@ function guiStuff() {
 	find("#ghost-trails-checkbox").onchange = function () {
 		ghostTrails = this.checked;
 	};
-	// find("#terrain-checkbox").checked = enableTerrain;
+	find("#terrain-checkbox").checked = terrainEnabled;
 	find("#terrain-checkbox").onchange = function () {
-		if (this.checked) {
+		terrainEnabled = this.checked;
+		if (terrainEnabled) {
 			createTerrain();
 		} else {
 			removeTerrain();
 		}
 	};
+	if (terrainEnabled) {
+		createTerrain();
+	}
 	find("#gravity-input").value = gravity;
 	find("#gravity-input").onchange = function () {
 		gravity = Number(this.value);
@@ -1855,6 +1860,7 @@ function make_fixed_point(x, y) {
 // }
 
 // Test scene: line rotation on collision
+/*
 const line_width = 50;
 for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 10 < innerWidth; along_line += 0.15, base_x += line_width * 2) {
 	for (let base_y = innerHeight / 3; base_y < innerHeight; base_y += innerHeight / 3) {
@@ -1907,3 +1913,4 @@ for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 
 		}
 	}
 }
+*/
