@@ -952,6 +952,8 @@ function step() {
 					if (is) {
 						hit = true;
 
+						var p_dir = Math.atan2(p.vx, p.vy);
+
 						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
 
 						// apply a force to the line from the particle
@@ -981,21 +983,26 @@ function step() {
 						// need to figure out which side of the line the particle is on
 						var dir_1 = normal;
 						var dir_2 = normal + Math.PI;
-						var p1_x_off_1 = c.p1.px + Math.sin(dir_1) * hack;
-						var p1_y_off_1 = c.p1.py + Math.cos(dir_1) * hack;
-						var p1_x_off_2 = c.p1.px + Math.sin(dir_2) * hack;
-						var p1_y_off_2 = c.p1.py + Math.cos(dir_2) * hack;
-						var p2_x_off_1 = c.p2.px + Math.sin(dir_1) * hack;
-						var p2_y_off_1 = c.p2.py + Math.cos(dir_1) * hack;
-						var p2_x_off_2 = c.p2.px + Math.sin(dir_2) * hack;
-						var p2_y_off_2 = c.p2.py + Math.cos(dir_2) * hack;
+						var p1_x_off_1 = c.p1.x + Math.sin(dir_1) * hack;
+						var p1_y_off_1 = c.p1.y + Math.cos(dir_1) * hack;
+						var p1_x_off_2 = c.p1.x + Math.sin(dir_2) * hack;
+						var p1_y_off_2 = c.p1.y + Math.cos(dir_2) * hack;
+						var p2_x_off_1 = c.p2.x + Math.sin(dir_1) * hack;
+						var p2_y_off_1 = c.p2.y + Math.cos(dir_1) * hack;
+						var p2_x_off_2 = c.p2.x + Math.sin(dir_2) * hack;
+						var p2_y_off_2 = c.p2.y + Math.cos(dir_2) * hack;
 							
 						var p1_off_1_dist = Math.hypot(p1_x_off_1 - p.x, p1_y_off_1 - p.y);
 						var p1_off_2_dist = Math.hypot(p1_x_off_2 - p.x, p1_y_off_2 - p.y);
 						var p2_off_1_dist = Math.hypot(p2_x_off_1 - p.x, p2_y_off_1 - p.y);
 						var p2_off_2_dist = Math.hypot(p2_x_off_2 - p.x, p2_y_off_2 - p.y);
 						// which side the particle is further away from, move the line to that side
-						if (p1_off_1_dist + p2_off_1_dist > p1_off_2_dist + p2_off_2_dist) {
+						// if (p1_off_1_dist + p2_off_1_dist > p1_off_2_dist + p2_off_2_dist) {
+						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy;
+						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
+						console.log(normal - p_dir, normal, p_dir);
+						// if ((normal + p_dir + (window._constant ?? 0)) % Math.PI * 2 > 0) {
+						if (p_vx_connection_space > 0) {
 							// c.p1.x = p1_x_off_1;
 							// c.p1.y = p1_y_off_1;
 							// c.p2.x = p2_x_off_1;
