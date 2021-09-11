@@ -87,7 +87,7 @@ function main() {
 	audioStyle = 1;
 	audioViz = false;
 	ghostTrails = false;
-	windowTheme = "dark-theme";
+	windowTheme = "dark-theme"; // global used by index.html
 
 	debugPolygons = []; // reset per frame
 	debugLines = []; // reset per frame

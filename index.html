@@ -83,6 +83,47 @@
 </head>
 
 <body>
+	<script>
+		// Hack: There's no global window creation / close event in the os-gui library, yet.
+		// This is just for animation on window creation / close.
+		// Note that this makes it impossible to prevent windows from closing, as we always prevent it and then force it to close.
+		let old_$Window = $Window;
+		$Window = function (...args) {
+			let $w = old_$Window(...args);
+			if (window.windowTheme === "windows-98-theme") {
+				return $w; // Windows 98 didn't have these animations!
+			}
+			$w.css({
+				opacity: 0,
+				transition: "none",
+			});
+			setTimeout(() => {
+				$w.css({
+					transition: "opacity 0.2s ease-in-out",
+				});
+				setTimeout(() => {
+					$w.css({
+						opacity: 1,
+					});
+				}, 0);
+			}, 0);
+			$w.on("close", (event) => {
+				event.preventDefault();
+				$w.addClass("closing");
+				$w.css({
+					transition: "opacity .3s ease-out, transform .3s ease-out",
+					opacity: 0,
+					transform: "scale(0.9)",
+				});
+				setTimeout(() => {
+					// $w.remove();
+					$w.close(true); // generates a "closed" event
+				}, 5100);
+			});
+			return $w;
+		};
+	</script>
+
 	<script src="main.js"></script>
 </body>
 
