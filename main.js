@@ -970,6 +970,7 @@ function step() {
 						// TODO: determine this from positions instead of velocities?
 						var on_one_side_of_line = p_vx_connection_space > 0 ? false : p_vx_connection_space < 0 ? true :
 							// for points that are fixed/unmoving, determine the side the point is on from the line's velocity
+							// FIXME: this doesn't make sense if the line is rotating
 							(p1_vx_connection_space + p2_vx_connection_space) / 2 > 0;
 
 						// apply a force to the line from the particle
