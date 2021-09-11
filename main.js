@@ -713,10 +713,17 @@ function step() {
 			//p.vy*=0.99;
 			// Gravity, and special handling for flowers
 			if (p.color === "DarkOrchid") {
+				const wind_x = Math.sin(time / 1000 * (1 + Math.sin(time / 10000)) + p.x / 400) / 20;
+				// const wind_y = Math.sin(time / 1000 * (1 + Math.sin(time / 10000)) + p.y / 400) / 20;
+				// if (p.connections.length) {
 				p.vy -= gravity * 3;
+				// } else {
+				// 	p.vy += wind_y;
+				// }
 				p.vx *= 0.9;
 				p.vy *= 0.9;
-				p.vx += Math.sin(time/1000 + p.x/1000) * 0.1;
+				p.vx += wind_x;
+				// p.vy += wind_y;
 			} else {
 				p.vy += gravity;
 			}
@@ -794,7 +801,18 @@ function step() {
 		}
 		// draw point
 		ctx.fillStyle = p.color;
-		ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+		if (p.color === "DarkOrchid") {
+			ctx.fillRect(p.x - 4, p.y - 4, 8, 8);
+			ctx.save();
+			ctx.translate(p.x, p.y);
+			ctx.rotate(Math.PI / 4);
+			ctx.fillRect(- 4, - 4, 8, 8);
+			ctx.restore();
+			ctx.fillStyle = "yellow";
+			ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+		} else {
+			ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+		}
 		// debug (looks cool btw)
 		// if (groups.has(p)) {
 		// 	ctx.textAlign = "center";
