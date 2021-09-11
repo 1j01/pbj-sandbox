@@ -73,8 +73,8 @@ function main() {
 	mousePrevious = { x: 0, y: 0, d: 0 };
 	keys = {};
 
-	ntm = null;
-	sd2m = 1000;
+	nearToMouse = null;
+	sDistToMouse = 1000;
 	connections = [];
 	points = [];
 
@@ -164,6 +164,9 @@ function main() {
 				// This handled elsewhere except for creating an undo state.
 				undoable();
 			}
+		},
+		{
+			modifiers: [], code: "KeyD", action: () => { selectTool("drag-tool"); }
 		},
 		{
 			modifiers: [], code: "KeyA", action: () => { selectTool("add-points-tool"); }
@@ -579,18 +582,18 @@ function step() {
 		}
 	}
 	if (play) {
-		if (mouse.right && ntm) {
-			ntm.fx += (mouse.x - ntm.x - ntm.vx) / sd2m;
-			ntm.fy += (mouse.y - ntm.y - ntm.vy) / sd2m;
-			//ntm.x=mouse.x;
-			//ntm.y=mouse.y;
+		if ((mouse.right || (mouse.left && tool === "drag-tool")) && nearToMouse) {
+			nearToMouse.fx += (mouse.x - nearToMouse.x - nearToMouse.vx) / sDistToMouse;
+			nearToMouse.fy += (mouse.y - nearToMouse.y - nearToMouse.vy) / sDistToMouse;
+			//nearToMouse.x=mouse.x;
+			//nearToMouse.y=mouse.y;
 		} else {
-			if (mousePrevious.right && ntm) {
-				//ntm.vx=(ntm.x-ntm.px)*10;
-				//ntm.vy=(ntm.y-ntm.py)*10;
+			if ((mousePrevious.right || (mousePrevious.left && tool === "drag-tool")) && nearToMouse) {
+				//nearToMouse.vx=(nearToMouse.x-nearToMouse.px)*10;
+				//nearToMouse.vy=(nearToMouse.y-nearToMouse.py)*10;
 			}
-			ntm = null;
-			sd2m = 100;
+			nearToMouse = null;
+			sDistToMouse = 100;
 		}
 
 		var freq = 440; // or something
@@ -771,12 +774,12 @@ function step() {
 		// 	ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
 		// }
 
-		var d2m = distance(p.x, p.y, mouse.x, mouse.y);
-		d2m = Math.max(d2m, 1); // prevent divide by zero in drag force calculation
-		if (!mouse.right) {
-			if (d2m < sd2m && !p.fixed) {
-				ntm = p;
-				sd2m = d2m;
+		var distToMouse = distance(p.x, p.y, mouse.x, mouse.y);
+		distToMouse = Math.max(distToMouse, 1); // prevent divide by zero in drag force calculation
+		if (!mouse.right && !(mouse.left && tool === "drag-tool")) {
+			if (distToMouse < sDistToMouse && !p.fixed) {
+				nearToMouse = p;
+				sDistToMouse = distToMouse;
 			}
 		}
 
@@ -794,7 +797,7 @@ function step() {
 					return nc;
 				}
 				// Undoable handled elsewhere
-				if ((d2m < 30 && (tool === "glue-tool" && mouse.left || keys.Space)) || (autoConnect && d < 50 && numConn(p) < 6 && numConn(p2) < 3)) {
+				if ((distToMouse < 30 && (tool === "glue-tool" && mouse.left || keys.Space)) || (autoConnect && d < 50 && numConn(p) < 6 && numConn(p2) < 3)) {
 					var connected = false;
 					for (var ci = connections.length - 1; ci >= 0; ci--) {
 						if (
@@ -1570,7 +1573,31 @@ function guiStuff() {
 		const $w = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
 		$w.$content.html(`
 			<ul>
-				<li>Drag tool (for touch screens)</li>
+				<li>
+					Make drag tool work while paused.
+				</li>
+				<li>
+					Make "Terrain" option look like terrain. Maybe even give it some flowers.
+				</li>
+				<li>
+					Add shortcut '.' to add a point at the mouse position.
+				</li>
+				<li>
+					Add shortcut '/' to either:
+					Quickly switch to the Precise Connector tool and back when you release.
+					Or: Add a point at the mouse position connected to the closest point.
+					Or: Connect the two closest points.
+					Probably the first option.
+				</li>
+				<li>
+					Add a Midpoint tool, and/or other ways to get different lengths of lines.
+				</li>
+				<li>
+					Generalize "Slow Motion" to a time scale slider.
+				</li>
+				<li>
+					Generalize "Ghost Trails" to a slider.
+				</li>
 				<li>
 					Ideally (but this would be hard), fix collision.
 					<br>(Things no clip and get stuck in each other.
@@ -1614,6 +1641,10 @@ function guiStuff() {
 		toolWindow: true,
 	});
 	$toolsWindow.$content.html(`
+		<button class="toggle" id='drag-tool' title='Drag stuff around.'>
+			Drag Points (D)
+		</button>
+		<br>
 		<button class="toggle" id='add-points-tool' title='Click anywhere to add a point.'>
 			Add Points (A)
 		</button>
