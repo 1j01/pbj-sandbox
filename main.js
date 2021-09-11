@@ -957,17 +957,17 @@ function step() {
 						// apply a force to the line from the particle
 						const p1_dist = Math.hypot(p.x - c.p1.x, p.y - c.p1.y);
 						const p2_dist = Math.hypot(p.x - c.p2.x, p.y - c.p2.y);
-						const f = 1 / 2 / (p1_dist + p2_dist);
-						c.p1.fx += p.vx * p2_dist * f;
-						c.p1.fy += p.vy * p2_dist * f;
-						c.p2.fx += p.vx * p1_dist * f;
-						c.p2.fy += p.vy * p1_dist * f;
+						// const f = 1 / 2 / (p1_dist + p2_dist);
+						// c.p1.fx += p.vx * p2_dist * f;
+						// c.p1.fy += p.vy * p2_dist * f;
+						// c.p2.fx += p.vx * p1_dist * f;
+						// c.p2.fy += p.vy * p1_dist * f;
 
-						const line_bounce_force = 2;
-						c.p1.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
-						c.p1.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
-						c.p2.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
-						c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
+						// const line_bounce_force = 2;
+						// c.p1.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
+						// c.p1.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
+						// c.p2.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
+						// c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
 
 						// move the line so it doesn't collide immediately again
 						// var hack = 10;
@@ -981,29 +981,42 @@ function step() {
 						// need to figure out which side of the line the particle is on
 						var dir_1 = normal;
 						var dir_2 = normal + Math.PI;
-						var p1_x_off_1 = c.p1.x + Math.sin(dir_1) * hack;
-						var p1_y_off_1 = c.p1.y + Math.cos(dir_1) * hack;
-						var p1_x_off_2 = c.p1.x + Math.sin(dir_2) * hack;
-						var p1_y_off_2 = c.p1.y + Math.cos(dir_2) * hack;
-						var p2_x_off_1 = c.p2.x + Math.sin(dir_1) * hack;
-						var p2_y_off_1 = c.p2.y + Math.cos(dir_1) * hack;
-						var p2_x_off_2 = c.p2.x + Math.sin(dir_2) * hack;
-						var p2_y_off_2 = c.p2.y + Math.cos(dir_2) * hack;
-						var p1_off_1_dist = Math.hypot(p1_x_off_1 - is.x, p1_y_off_1 - is.y);
-						var p1_off_2_dist = Math.hypot(p1_x_off_2 - is.x, p1_y_off_2 - is.y);
-						var p2_off_1_dist = Math.hypot(p2_x_off_1 - is.x, p2_y_off_1 - is.y);
-						var p2_off_2_dist = Math.hypot(p2_x_off_2 - is.x, p2_y_off_2 - is.y);
+						var p1_x_off_1 = c.p1.px + Math.sin(dir_1) * hack;
+						var p1_y_off_1 = c.p1.py + Math.cos(dir_1) * hack;
+						var p1_x_off_2 = c.p1.px + Math.sin(dir_2) * hack;
+						var p1_y_off_2 = c.p1.py + Math.cos(dir_2) * hack;
+						var p2_x_off_1 = c.p2.px + Math.sin(dir_1) * hack;
+						var p2_y_off_1 = c.p2.py + Math.cos(dir_1) * hack;
+						var p2_x_off_2 = c.p2.px + Math.sin(dir_2) * hack;
+						var p2_y_off_2 = c.p2.py + Math.cos(dir_2) * hack;
+							
+						var p1_off_1_dist = Math.hypot(p1_x_off_1 - p.x, p1_y_off_1 - p.y);
+						var p1_off_2_dist = Math.hypot(p1_x_off_2 - p.x, p1_y_off_2 - p.y);
+						var p2_off_1_dist = Math.hypot(p2_x_off_1 - p.x, p2_y_off_1 - p.y);
+						var p2_off_2_dist = Math.hypot(p2_x_off_2 - p.x, p2_y_off_2 - p.y);
 						// which side the particle is further away from, move the line to that side
-						if (p1_off_1_dist + p1_off_1_dist > p2_off_2_dist + p2_off_2_dist) {
-							c.p1.x = p1_x_off_1;
-							c.p1.y = p1_y_off_1;
-							c.p2.x = p2_x_off_1;
-							c.p2.y = p2_y_off_1;
+						if (p1_off_1_dist + p2_off_1_dist > p1_off_2_dist + p2_off_2_dist) {
+							// c.p1.x = p1_x_off_1;
+							// c.p1.y = p1_y_off_1;
+							// c.p2.x = p2_x_off_1;
+							// c.p2.y = p2_y_off_1;
+
+							debugLines.push({
+								p1: { x: p1_x_off_1, y: p1_y_off_1 },
+								p2: { x: p2_x_off_1, y: p2_y_off_1 },
+								color: '#00afff',
+							});
 						} else {
-							c.p1.x = p1_x_off_2;
-							c.p1.y = p1_y_off_2;
-							c.p2.x = p2_x_off_2;
-							c.p2.y = p2_y_off_2;
+							// c.p1.x = p1_x_off_2;
+							// c.p1.y = p1_y_off_2;
+							// c.p2.x = p2_x_off_2;
+							// c.p2.y = p2_y_off_2;
+
+							debugLines.push({
+								p1: { x: p1_x_off_2, y: p1_y_off_2 },
+								p2: { x: p2_x_off_2, y: p2_y_off_2 },
+								color: '#ff00ff',
+							});
 						}
 
 						// Note: normal can point either way
@@ -1304,10 +1317,10 @@ function pointInPolygon(x, y, polygon_points) {
 			&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 		if (intersect) inside = !inside;
 	}
-	debugPolygons.push({
-		points: polygon_points,
-		color: inside ? "rgba(0,255,0,0.6)" : "rgba(255,0,0,0.6)",
-	});
+	// debugPolygons.push({
+	// 	points: polygon_points,
+	// 	color: inside ? "rgba(0,255,0,0.6)" : "rgba(255,0,0,0.6)",
+	// });
 	return inside;
 }
 function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4) {
