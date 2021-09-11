@@ -987,10 +987,10 @@ function step() {
 						// move the line so it doesn't collide immediately again
 						var hack = 10;
 						// which side the particle is further away from, move the line to that side
-						var p1_x_off = c.p1.x + Math.sin(normal + on_one_side_of_line ? 0 : Math.PI) * hack;
-						var p1_y_off = c.p1.y + Math.cos(normal + on_one_side_of_line ? 0 : Math.PI) * hack;
-						var p2_x_off = c.p2.x + Math.sin(normal + on_one_side_of_line ? 0 : Math.PI) * hack;
-						var p2_y_off = c.p2.y + Math.cos(normal + on_one_side_of_line ? 0 : Math.PI) * hack;
+						var p1_x_off = c.p1.x + Math.sin(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
+						var p1_y_off = c.p1.y + Math.cos(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
+						var p2_x_off = c.p2.x + Math.sin(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
+						var p2_y_off = c.p2.y + Math.cos(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
 						c.p1.x = p1_x_off;
 						c.p1.y = p1_y_off;
 						c.p2.x = p2_x_off;
