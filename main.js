@@ -970,10 +970,10 @@ function step() {
 						// move the line so it doesn't collide immediately again
 						// var hack = 10;
 						// var p_speed_denom = Math.max(1, Math.hypot(p.vx, p.vy));
-						// c.p1.x += p.vx / p_speed_denom * hack;
-						// c.p1.y += p.vy / p_speed_denom * hack;
-						// c.p2.x += p.vx / p_speed_denom * hack;
-						// c.p2.y += p.vy / p_speed_denom * hack;
+						// c.p1.x += p.vx / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
+						// c.p1.y += p.vy / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
+						// c.p2.x += p.vx / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
+						// c.p2.y += p.vy / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
 
 						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
 						// Note: normal can point either way
@@ -990,7 +990,7 @@ function step() {
 						var bounce_angle = bounce_angle_connection_space - normal;
 
 						// move the point so it doesn't collide immediately again
-						var hack = 1;
+						var hack = p.fixed ? 0 : 10;
 						p.x = is.x + -Math.sin(-bounce_angle) * hack;
 						p.y = is.y + -Math.cos(-bounce_angle) * hack;
 						// apply the bounce angle to the particle
