@@ -82,7 +82,7 @@ function main() {
 	collision = true;
 	slowmo = true; // TODO: generalize to a time scale
 	autoConnect = false;
-	gravity = 0;
+	gravity = 0.1;
 	audioEnabled = true;
 	audioStyle = 1;
 	audioViz = false;
@@ -961,6 +961,20 @@ function step() {
 						c.p2.fx += p.vx * p1_dist * f;
 						c.p2.fy += p.vy * p1_dist * f;
 
+						const line_bounce_force = 2;
+						c.p1.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
+						c.p1.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
+						c.p2.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
+						c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
+
+						// move the line so it doesn't collide immediately again
+						// var hack = 10;
+						// var p_speed_denom = Math.max(1, Math.hypot(p.vx, p.vy));
+						// c.p1.x += p.vx / p_speed_denom * hack;
+						// c.p1.y += p.vy / p_speed_denom * hack;
+						// c.p2.x += p.vx / p_speed_denom * hack;
+						// c.p2.y += p.vy / p_speed_denom * hack;
+
 						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
 						// Note: normal can point either way
 						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
@@ -1808,12 +1822,13 @@ function make_fixed_point(x, y) {
 // make_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
 
 // Test scene: collision false negatives
-// make_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
-// for (let y = innerHeight / 2; y < innerHeight; y += 30) {
-// 	make_fixed_point(innerWidth / 2 + Math.sin(y) * 50, y);
-// }
+make_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
+for (let y = innerHeight / 2; y < innerHeight; y += 30) {
+	make_fixed_point(innerWidth / 2 + Math.sin(y) * 50, y);
+}
 
 // Test scene: line rotation on collision
+/*
 const line_width = 50;
 for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 10 < innerWidth; along_line += 0.15, base_x += line_width * 2) {
 	for (let base_y = innerHeight / 3; base_y < innerHeight; base_y += innerHeight / 3) {
@@ -1866,4 +1881,4 @@ for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 
 		}
 	}
 }
-
+*/
