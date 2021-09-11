@@ -963,11 +963,16 @@ function step() {
 						// Maybe later I'll go at it again.
 						// (Keep in mind, the drawArrow function is also arbitrary in its base angle)
 						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
-						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy;
+						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy; // normal-aligned space
 						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
+						var p1_vx_connection_space = Math.sin(normal) * c.p1.vx + Math.cos(normal) * c.p1.vy;
+						var p2_vx_connection_space = Math.sin(normal) * c.p2.vx + Math.cos(normal) * c.p2.vy;
 						var p_bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
 						var p_bounce_angle = p_bounce_angle_connection_space - normal;
-						var on_one_side_of_line = p_vx_connection_space > 0; // (not sure if this is the side opposed to the normal or towards the normal)
+						// TODO: determine this from positions instead of velocities?
+						var on_one_side_of_line = p_vx_connection_space > 0 ? false : p_vx_connection_space < 0 ? true :
+							// for points that are fixed/unmoving, determine the side the point is on from the line's velocity
+							(p1_vx_connection_space + p2_vx_connection_space) / 2 < 0;
 
 						// apply a force to the line from the particle
 						const p1_dist = Math.hypot(p.x - c.p1.x, p.y - c.p1.y);
