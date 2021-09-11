@@ -1052,12 +1052,6 @@ function step() {
 	ctx.strokeStyle = "rgba(0,255,200,0.5)";
 	for (var j = selection.connections.length - 1; j >= 0; j--) {
 		var c = selection.connections[j];
-		if (keys.Delete) {
-			var idx = connections.indexOf(c);
-			if (idx >= 0) connections.splice(idx, 1);
-			selection.connections.splice(j, 1);
-			continue;
-		}
 		ctx.beginPath();
 		ctx.moveTo(c.p1.x, c.p1.y);
 		ctx.lineTo(c.p2.x, c.p2.y);
