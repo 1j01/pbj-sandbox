@@ -147,11 +147,14 @@ function main() {
 						redo();
 					}
 					break;
-				case "A"://select all
+				case "A"://select all, add points tool
 					if (ctrl && !e.shiftKey && !e.altKey) {
 						e.preventDefault();
 						selection.points = Array.from(points);
 						selection.connections = Array.from(connections);
+					} else if (!ctrl && !e.shiftKey && !e.altKey) {
+						e.preventDefault();
+						selectTool("add-points-tool");
 					}
 					break;
 				case "D"://deselect all
@@ -213,12 +216,6 @@ function main() {
 					if (!ctrl && !e.shiftKey && !e.altKey) {
 						e.preventDefault();
 						selectTool("add-points-fast-tool");
-					}
-					break;
-				case "A":
-					if (!ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						selectTool("add-points-tool");
 					}
 					break;
 				case "G":
