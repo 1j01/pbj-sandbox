@@ -976,7 +976,7 @@ function step() {
 						// c.p1.y += p.vy / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
 						// c.p2.x += p.vx / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
 						// c.p2.y += p.vy / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
-						var hack = 1;
+						var hack = 10;
 						// base it on the position of the particle, not the velocity
 						// need to figure out which side of the line the particle is on
 						var dir_1 = normal;
@@ -989,19 +989,19 @@ function step() {
 						var p2_y_off_1 = c.p2.y + Math.cos(dir_1) * hack;
 						var p2_x_off_2 = c.p2.x + Math.sin(dir_2) * hack;
 						var p2_y_off_2 = c.p2.y + Math.cos(dir_2) * hack;
-						var p1_off_1_dist = Math.hypot(p1_x_off_1 - p.x, p1_y_off_1 - p.y);
-						var p1_off_2_dist = Math.hypot(p1_x_off_2 - p.x, p1_y_off_2 - p.y);
-						var p2_off_1_dist = Math.hypot(p2_x_off_1 - p.x, p2_y_off_1 - p.y);
-						var p2_off_2_dist = Math.hypot(p2_x_off_2 - p.x, p2_y_off_2 - p.y);
+						var p1_off_1_dist = Math.hypot(p1_x_off_1 - is.x, p1_y_off_1 - is.y);
+						var p1_off_2_dist = Math.hypot(p1_x_off_2 - is.x, p1_y_off_2 - is.y);
+						var p2_off_1_dist = Math.hypot(p2_x_off_1 - is.x, p2_y_off_1 - is.y);
+						var p2_off_2_dist = Math.hypot(p2_x_off_2 - is.x, p2_y_off_2 - is.y);
 						// which side the particle is further away from, move the line to that side
-						if (p1_off_1_dist + p1_off_2_dist > p2_off_1_dist + p2_off_2_dist) {
+						if (p1_off_1_dist + p1_off_1_dist > p2_off_2_dist + p2_off_2_dist) {
 							c.p1.x = p1_x_off_1;
 							c.p1.y = p1_y_off_1;
-							c.p2.x = p1_x_off_2;
-							c.p2.y = p1_y_off_2;
+							c.p2.x = p2_x_off_1;
+							c.p2.y = p2_y_off_1;
 						} else {
-							c.p1.x = p2_x_off_1;
-							c.p1.y = p2_y_off_1;
+							c.p1.x = p1_x_off_2;
+							c.p1.y = p1_y_off_2;
 							c.p2.x = p2_x_off_2;
 							c.p2.y = p2_y_off_2;
 						}
