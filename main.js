@@ -1005,11 +1005,11 @@ function step() {
 							c.p2.x = p2_x_off;
 							c.p2.y = p2_y_off;
 						}
-						debugLines.push({
-							p1: { x: p1_x_off, y: p1_y_off },
-							p2: { x: p2_x_off, y: p2_y_off },
-							color: on_one_side_of_line ? '#00afff' : '#ff00ff',
-						});
+						// debugLines.push({
+						// 	p1: { x: p1_x_off, y: p1_y_off },
+						// 	p2: { x: p2_x_off, y: p2_y_off },
+						// 	color: on_one_side_of_line ? '#00afff' : '#ff00ff',
+						// });
 
 						// more accurate bounce, right? if we use the intersection point
 						p.x = is.x;
@@ -1027,10 +1027,10 @@ function step() {
 						p.vy = -Math.cos(-p_bounce_angle) * speed;
 
 						// some debug
-						ctx.strokeStyle = "aqua";
-						drawArrow(ctx, is.x, is.y, -normal, 50);
-						ctx.strokeStyle = "red";
-						drawArrow(ctx, is.x, is.y, p_bounce_angle, 50);
+						// ctx.strokeStyle = "aqua";
+						// drawArrow(ctx, is.x, is.y, -normal, 50);
+						// ctx.strokeStyle = "red";
+						// drawArrow(ctx, is.x, is.y, p_bounce_angle, 50);
 					}
 				}
 			}
@@ -1275,16 +1275,16 @@ function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2
 	}
 	// if line1 and line2 are segments, they intersect if both of the above are true
 	if (result.onLine1 && result.onLine2) {
-		debugLines.push({
-			p1: { x: line1StartX, y: line1StartY },
-			p2: { x: line1EndX, y: line1EndY },
-			color: "yellow",
-		});
-		debugLines.push({
-			p1: { x: line2StartX, y: line2StartY },
-			p2: { x: line2EndX, y: line2EndY },
-			color: "aqua",
-		});
+		// debugLines.push({
+		// 	p1: { x: line1StartX, y: line1StartY },
+		// 	p2: { x: line1EndX, y: line1EndY },
+		// 	color: "yellow",
+		// });
+		// debugLines.push({
+		// 	p1: { x: line2StartX, y: line2StartY },
+		// 	p2: { x: line2EndX, y: line2EndY },
+		// 	color: "aqua",
+		// });
 		return result;
 	}
 	// return result;
@@ -1334,15 +1334,15 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 		{ x: quad_x3, y: quad_y3 },
 		{ x: quad_x4, y: quad_y4 },
 	])) {
-		debugPolygons.push({
-			points: [
-				{ x: quad_x1, y: quad_y1 },
-				{ x: quad_x2, y: quad_y2 },
-				{ x: quad_x3, y: quad_y3 },
-				{ x: quad_x4, y: quad_y4 },
-			],
-			color: "#ff00ff",
-		});
+		// debugPolygons.push({
+		// 	points: [
+		// 		{ x: quad_x1, y: quad_y1 },
+		// 		{ x: quad_x2, y: quad_y2 },
+		// 		{ x: quad_x3, y: quad_y3 },
+		// 		{ x: quad_x4, y: quad_y4 },
+		// 	],
+		// 	color: "#ff00ff",
+		// });
 		// uneducated guess ("hopefully it won't matter")
 		return { x: (line_x1 + line_x2) / 2, y: (line_y1 + line_y2) / 2 };
 	}
