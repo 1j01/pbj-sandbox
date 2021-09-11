@@ -1649,10 +1649,8 @@ function guiStuff() {
 		</button>
 	`);
 	$toolsWindow.addClass("tools-window");
-	setTimeout(() => {
-		$toolsWindow[0].style.top = `${$optionsWindow[0].getBoundingClientRect().bottom + 10}px`;
-		$toolsWindow[0].style.left = "10px";
-	}, 100);
+	$toolsWindow[0].style.top = `${$optionsWindow[0].getBoundingClientRect().bottom + 10}px`;
+	$toolsWindow[0].style.left = "10px";
 
 	var $toolButtons = $toolsWindow.$content.find("button");
 
