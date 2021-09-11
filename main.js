@@ -990,19 +990,26 @@ function step() {
 						var d1 = distance(p.x, p.y, c.p1.x, c.p1.y);
 						var d2 = distance(p.x, p.y, c.p2.x, c.p2.y);
 						var along_line = d1 / (d1 + d2);
-						var rotational_force = along_line * 2 - 1;  //(along_line * p.vx + (1 - along_line) * c.p1.vx);// * p.mass;
-						rotational_force *= 10;
-						var p1_rot_fx = Math.sin(normal) * rotational_force;
-						var p1_rot_fy = Math.cos(normal) * rotational_force;
-						var p2_rot_fx = Math.sin(normal) * -rotational_force;
-						var p2_rot_fy = Math.cos(normal) * -rotational_force;
+						// for along_line = 0 (p is closest to p1), generate a forward force for p1, negative for p2
+						// at along_line = 1 (p is closest to p2), generate a forward force for p2, negative for p1
+						// between along_line = 0.25 to 0.75, generate a forward force for both
+						// var f1 = along_line * 2 - 1;
+						// var f2 = 1 - along_line * 2;
+						var f1 = (d1 - d2) / (d1 + d2);
+						var f2 = (d2 - d1) / (d1 + d2);
+						f1 *= 10;
+						f2 *= 10;
+						var p1_rot_fx = Math.sin(normal) * f1;
+						var p1_rot_fy = Math.cos(normal) * f1;
+						var p2_rot_fx = Math.sin(normal) * f2;
+						var p2_rot_fy = Math.cos(normal) * f2;
 						c.p1.fx += p1_rot_fx;
 						c.p1.fy += p1_rot_fy;
 						c.p2.fx += p2_rot_fx;
 						c.p2.fy += p2_rot_fy;
 						ctx.strokeStyle = "green";
-						drawArrow(ctx, c.p1.x, c.p1.y, Math.PI / 2 + Math.atan2(p1_rot_fy, p1_rot_fx), Math.abs(rotational_force) * 10);
-						drawArrow(ctx, c.p2.x, c.p2.y, Math.PI / 2 + Math.atan2(p2_rot_fy, p2_rot_fx), Math.abs(rotational_force) * 10);
+						drawArrow(ctx, c.p1.x, c.p1.y, Math.PI / 2 + Math.atan2(p1_rot_fy, p1_rot_fx), Math.abs(f1) * 10);
+						drawArrow(ctx, c.p2.x, c.p2.y, Math.PI / 2 + Math.atan2(p2_rot_fy, p2_rot_fx), Math.abs(f2) * 10);
 						// var f = 1;
 						// c.p1.fx -= Math.sin(Math.PI/2-normal-rotational_force) * f;
 						// c.p1.fy -= Math.cos(Math.PI/2-normal-rotational_force) * f;
@@ -1847,7 +1854,7 @@ function make_fixed_point(x, y) {
 
 // Test scene: line rotation on collision
 const line_width = 50;
-for (let along_line = 0, base_x = 300; along_line <= 1 && base_x + line_width + 10 < innerWidth; along_line += 0.2, base_x += line_width * 2) {
+for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 10 < innerWidth; along_line += 0.15, base_x += line_width * 2) {
 	for (let base_y = innerHeight / 3; base_y < innerHeight; base_y += innerHeight / 3) {
 
 		// make a line to throw a point at
