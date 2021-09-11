@@ -952,6 +952,8 @@ function step() {
 					if (is) {
 						hit = true;
 
+						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
+
 						// apply a force to the line from the particle
 						const p1_dist = Math.hypot(p.x - c.p1.x, p.y - c.p1.y);
 						const p2_dist = Math.hypot(p.x - c.p2.x, p.y - c.p2.y);
@@ -974,8 +976,36 @@ function step() {
 						// c.p1.y += p.vy / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
 						// c.p2.x += p.vx / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
 						// c.p2.y += p.vy / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
+						var hack = 1;
+						// base it on the position of the particle, not the velocity
+						// need to figure out which side of the line the particle is on
+						var dir_1 = normal;
+						var dir_2 = normal + Math.PI;
+						var p1_x_off_1 = c.p1.x + Math.sin(dir_1) * hack;
+						var p1_y_off_1 = c.p1.y + Math.cos(dir_1) * hack;
+						var p1_x_off_2 = c.p1.x + Math.sin(dir_2) * hack;
+						var p1_y_off_2 = c.p1.y + Math.cos(dir_2) * hack;
+						var p2_x_off_1 = c.p2.x + Math.sin(dir_1) * hack;
+						var p2_y_off_1 = c.p2.y + Math.cos(dir_1) * hack;
+						var p2_x_off_2 = c.p2.x + Math.sin(dir_2) * hack;
+						var p2_y_off_2 = c.p2.y + Math.cos(dir_2) * hack;
+						var p1_off_1_dist = Math.hypot(p1_x_off_1 - p.x, p1_y_off_1 - p.y);
+						var p1_off_2_dist = Math.hypot(p1_x_off_2 - p.x, p1_y_off_2 - p.y);
+						var p2_off_1_dist = Math.hypot(p2_x_off_1 - p.x, p2_y_off_1 - p.y);
+						var p2_off_2_dist = Math.hypot(p2_x_off_2 - p.x, p2_y_off_2 - p.y);
+						// which side the particle is further away from, move the line to that side
+						if (p1_off_1_dist + p1_off_2_dist > p2_off_1_dist + p2_off_2_dist) {
+							c.p1.x = p1_x_off_1;
+							c.p1.y = p1_y_off_1;
+							c.p2.x = p1_x_off_2;
+							c.p2.y = p1_y_off_2;
+						} else {
+							c.p1.x = p2_x_off_1;
+							c.p1.y = p2_y_off_1;
+							c.p2.x = p2_x_off_2;
+							c.p2.y = p2_y_off_2;
+						}
 
-						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
 						// Note: normal can point either way
 						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
 						// hence the negation when rendering the normal's arrow
