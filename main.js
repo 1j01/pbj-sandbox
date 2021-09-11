@@ -74,7 +74,7 @@ function main() {
 	keys = {};
 
 	nearToMouse = null;
-	sDistToMouse = 1000;
+	startingDistToMouse = 1000;
 	connections = [];
 	points = [];
 
@@ -602,8 +602,8 @@ function step() {
 	}
 	if ((mouse.right || (mouse.left && tool === "drag-tool")) && nearToMouse) {
 		if (play) {
-			nearToMouse.fx += (mouse.x - nearToMouse.x - nearToMouse.vx) / sDistToMouse;
-			nearToMouse.fy += (mouse.y - nearToMouse.y - nearToMouse.vy) / sDistToMouse;
+			nearToMouse.fx += (mouse.x - nearToMouse.x - nearToMouse.vx) / startingDistToMouse;
+			nearToMouse.fy += (mouse.y - nearToMouse.y - nearToMouse.vy) / startingDistToMouse;
 		} else {
 			nearToMouse.x = mouse.x;
 			nearToMouse.y = mouse.y;
@@ -614,7 +614,7 @@ function step() {
 			//nearToMouse.vy=(nearToMouse.y-nearToMouse.py)*10;
 		}
 		nearToMouse = null;
-		sDistToMouse = 100;
+		startingDistToMouse = 100;
 	}
 
 	if (play) {
@@ -826,9 +826,9 @@ function step() {
 		var distToMouse = distance(p.x, p.y, mouse.x, mouse.y);
 		distToMouse = Math.max(distToMouse, 1); // prevent divide by zero in drag force calculation
 		if (!mouse.right && !(mouse.left && tool === "drag-tool")) {
-			if (distToMouse < sDistToMouse && !p.fixed) {
+			if (distToMouse < startingDistToMouse && !p.fixed) {
 				nearToMouse = p;
-				sDistToMouse = distToMouse;
+				startingDistToMouse = distToMouse;
 			}
 		}
 
@@ -1657,6 +1657,10 @@ function guiStuff() {
 		const $w = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
 		$w.$content.html(`
 			<ul>
+				<li>
+					Make drag tool behave consistently regardless of the starting distance between the mouse and the point.
+					I don't know why I made it like I did. Maybe I enjoyed the variation.
+				</li>
 				<li>
 					Add shortcut '/' to either:
 					Quickly switch to the Precise Connector tool and back when you release.
