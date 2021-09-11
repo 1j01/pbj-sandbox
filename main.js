@@ -367,9 +367,9 @@ function drawArrow(ctx, x, y, angle, length, headSize = 10) {
 	ctx.rotate(angle);
 	ctx.moveTo(0, 0);
 	ctx.lineTo(0, -length);
-	ctx.moveTo(-headSize, -length+headSize);
+	ctx.moveTo(-headSize, -length + headSize);
 	ctx.lineTo(0, -length);
-	ctx.lineTo(headSize, -length+headSize);
+	ctx.lineTo(headSize, -length + headSize);
 	ctx.restore();
 	ctx.stroke();
 }
@@ -962,14 +962,14 @@ function step() {
 						c.p2.fx += p2_rot_fx;
 						c.p2.fy += p2_rot_fy;
 						ctx.strokeStyle = "green";
-						drawArrow(ctx, c.p1.x, c.p1.y, Math.PI/2+Math.atan2(p1_rot_fy, p1_rot_fx), Math.abs(rotational_force) * 10);
-						drawArrow(ctx, c.p2.x, c.p2.y, Math.PI/2+Math.atan2(p2_rot_fy, p2_rot_fx), Math.abs(rotational_force) * 10);
+						drawArrow(ctx, c.p1.x, c.p1.y, Math.PI / 2 + Math.atan2(p1_rot_fy, p1_rot_fx), Math.abs(rotational_force) * 10);
+						drawArrow(ctx, c.p2.x, c.p2.y, Math.PI / 2 + Math.atan2(p2_rot_fy, p2_rot_fx), Math.abs(rotational_force) * 10);
 						// var f = 1;
 						// c.p1.fx -= Math.sin(Math.PI/2-normal-rotational_force) * f;
 						// c.p1.fy -= Math.cos(Math.PI/2-normal-rotational_force) * f;
 						// c.p2.fx -= Math.sin(Math.PI/2-normal+rotational_force) * f;
 						// c.p2.fy -= Math.cos(Math.PI/2-normal+rotational_force) * f;
-						
+
 						// var f = original_speed / 5;
 						// c.p1.fx += Math.sin(Math.PI/2-p_dir) * f;
 						// c.p1.fy += Math.cos(Math.PI/2-p_dir) * f;
@@ -978,7 +978,7 @@ function step() {
 
 						// oh um, yeah I don't know what I'm doing
 						// maybe add a force to the point that is perpendicular to the line? but in which direction?
-						
+
 						// add a force based on the connection's points' velocities
 						// var f = 0.3;
 						// p.fx += (c.p1.vx + c.p2.vx) * f;
@@ -1023,7 +1023,7 @@ function step() {
 			const realDist = distance(c.p1.x, c.p1.y, c.p2.x, c.p2.y);
 			const stretch = realDist / c.dist;
 			ctx.strokeStyle = "yellow";
-			ctx.setLineDash([5*stretch, 5*stretch]);
+			ctx.setLineDash([5 * stretch, 5 * stretch]);
 			ctx.beginPath();
 			ctx.moveTo(c.p1.x, c.p1.y);
 			ctx.lineTo(c.p2.x, c.p2.y);
@@ -1196,42 +1196,42 @@ function step() {
 // 	return { x: x, y: y };
 // }
 function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
-    // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
-    var denominator, a, b, numerator1, numerator2, result = {
-        x: null,
-        y: null,
-        onLine1: false,
+	// if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
+	var denominator, a, b, numerator1, numerator2, result = {
+		x: null,
+		y: null,
+		onLine1: false,
 		onLine2: false,
-    };
-    denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY));
-    if (denominator == 0) {
-        // return result;
+	};
+	denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) - ((line2EndX - line2StartX) * (line1EndY - line1StartY));
+	if (denominator == 0) {
+		// return result;
 		return;
-    }
-    a = line1StartY - line2StartY;
-    b = line1StartX - line2StartX;
-    numerator1 = ((line2EndX - line2StartX) * a) - ((line2EndY - line2StartY) * b);
-    numerator2 = ((line1EndX - line1StartX) * a) - ((line1EndY - line1StartY) * b);
-    a = numerator1 / denominator;
-    b = numerator2 / denominator;
+	}
+	a = line1StartY - line2StartY;
+	b = line1StartX - line2StartX;
+	numerator1 = ((line2EndX - line2StartX) * a) - ((line2EndY - line2StartY) * b);
+	numerator2 = ((line1EndX - line1StartX) * a) - ((line1EndY - line1StartY) * b);
+	a = numerator1 / denominator;
+	b = numerator2 / denominator;
 
-    // if we cast these lines infinitely in both directions, they intersect here:
-    result.x = line1StartX + (a * (line1EndX - line1StartX));
-    result.y = line1StartY + (a * (line1EndY - line1StartY));
-/*
-        // it is worth noting that this should be the same as:
-        x = line2StartX + (b * (line2EndX - line2StartX));
-        y = line2StartX + (b * (line2EndY - line2StartY));
-        */
-    // if line1 is a segment and line2 is infinite, they intersect if:
-    if (a > 0 && a < 1) {
-        result.onLine1 = true;
-    }
-    // if line2 is a segment and line1 is infinite, they intersect if:
-    if (b > 0 && b < 1) {
-        result.onLine2 = true;
-    }
-    // if line1 and line2 are segments, they intersect if both of the above are true
+	// if we cast these lines infinitely in both directions, they intersect here:
+	result.x = line1StartX + (a * (line1EndX - line1StartX));
+	result.y = line1StartY + (a * (line1EndY - line1StartY));
+	/*
+			// it is worth noting that this should be the same as:
+			x = line2StartX + (b * (line2EndX - line2StartX));
+			y = line2StartX + (b * (line2EndY - line2StartY));
+			*/
+	// if line1 is a segment and line2 is infinite, they intersect if:
+	if (a > 0 && a < 1) {
+		result.onLine1 = true;
+	}
+	// if line2 is a segment and line1 is infinite, they intersect if:
+	if (b > 0 && b < 1) {
+		result.onLine2 = true;
+	}
+	// if line1 and line2 are segments, they intersect if both of the above are true
 	if (result.onLine1 && result.onLine2) {
 		debugLines.push({
 			p1: { x: line1StartX, y: line1StartY },
@@ -1245,7 +1245,7 @@ function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2
 		});
 		return result;
 	}
-    // return result;
+	// return result;
 };
 
 
@@ -1254,7 +1254,7 @@ function pointInPolygon(x, y, polygon_points) {
 	for (var i = 0, j = polygon_points.length - 1; i < polygon_points.length; j = i++) {
 		var xi = polygon_points[i].x, yi = polygon_points[i].y;
 		var xj = polygon_points[j].x, yj = polygon_points[j].y;
-        
+
 		var intersect = ((yi > y) != (yj > y))
 			&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 		if (intersect) inside = !inside;
@@ -1797,7 +1797,7 @@ for (let along_line = 0, base_x = 300; along_line <= 1 && base_x + line_width + 
 		};
 		points.push(p1, p2);
 		connect_if_not_connected(p1, p2, connections, { dist: line_width });
-		
+
 		// and throw a point at it
 		// I'm not testing the edge case of whether it collides when x positions are the same, I want it to definitely collide
 		const projectile_x = base_x + 0.005 + along_line * (line_width - 0.01);

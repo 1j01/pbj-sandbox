@@ -9,10 +9,10 @@
 .window {
 	transition: opacity .5s ease-in-out;
 	position: absolute;
-	background: rgba(0,0,0,0.3);
+	background: rgba(0, 0, 0, 0.3);
 	color: white;
 	opacity: 0.8;
-	outline: 1px solid rgba(255,255,255,0.4);
+	outline: 1px solid rgba(255, 255, 255, 0.4);
 	padding: 4px;
 }
 .window:hover,
@@ -23,7 +23,7 @@
 	transition: opacity .8s ease;
 }
 .window .content {
-	background: rgba(0,0,0,0.9);
+	background: rgba(0, 0, 0, 0.9);
 	color: #AAA;
 }
 .window .content.resizable {
@@ -34,9 +34,9 @@
 	resize: default;
 }
 .window .window-titlebar {
-	background: rgba(0,0,0,0.5);
+	background: rgba(0, 0, 0, 0.5);
 	cursor: move;
-	border-bottom: 1px solid rgba(255,255,255,0.4);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 	padding-bottom: 4px;
 }
 .window .title {
@@ -45,11 +45,11 @@
 	font-weight: lighter;
 }
 .window:hover .window-titlebar {
-	background: rgba(0,0,0,0.7);
+	background: rgba(0, 0, 0, 0.7);
 }
 .window .window-titlebar.window-titlebar.window-titlebar:hover,
 .window.dragging .window-titlebar.window-titlebar.window-titlebar {
-	background: rgba(55,55,55,0.8);
+	background: rgba(55, 55, 55, 0.8);
 	color: #FFF;
 }
 .window-close-button {
@@ -90,12 +90,12 @@
 
 .window button,
 .window .button,
-.window input[type="submit"]{
-	background: rgba(0,0,0,0.1);
+.window input[type="submit"] {
+	background: rgba(0, 0, 0, 0.1);
 	color: #CCC;
 	border: 0;
 	cursor: pointer;
-	outline: 1px solid rgba(255,255,255,0.4);
+	outline: 1px solid rgba(255, 255, 255, 0.4);
 }
 .window button:hover,
 .window button:focus,
@@ -104,14 +104,14 @@
 .window input[type="submit"]:hover,
 .window input[type="submit"]:focus {
 	background: #555;
-	background: rgba(255,255,255,0.2);
+	background: rgba(255, 255, 255, 0.2);
 	color: white;
 }
 .window button:active,
 .window .button:active,
 .window input[type="submit"]:active {
 	background: #333;
-	background: rgba(255,255,255,0.1);
+	background: rgba(255, 255, 255, 0.1);
 	color: #FFF;
 }
 .window button.selected {
@@ -125,19 +125,19 @@
 .window textarea {
 	color: #FFF;
 	background: #000;
-	box-shadow: 0 0 10px 1px rgba(0,155,255,0);
-	outline: solid 1px rgba(255,255,255,0.3);
+	box-shadow: 0 0 10px 1px rgba(0, 155, 255, 0);
+	outline: solid 1px rgba(255, 255, 255, 0.3);
 	border: 0;
 }
 
 .window input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):focus,
 .window textarea:focus {
-	box-shadow: 0 0 10px 1px rgba(0,155,255,0.9);
-	outline: solid 1px rgba(255,255,255,0.3);
+	box-shadow: 0 0 10px 1px rgba(0, 155, 255, 0.9);
+	outline: solid 1px rgba(255, 255, 255, 0.3);
 	outline-offset: 0;
 }
 
-.window input[type="checkbox"]{
+.window input[type="checkbox"] {
 	background:#000;
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -145,29 +145,29 @@
 	font-size: 24px;
 	line-height: 10px;
 	vertical-align: top;
-	border: solid 1px rgba(255,255,255,0.3);
+	border: solid 1px rgba(255, 255, 255, 0.3);
 }
-.window input[type="checkbox"]:checked{
+.window input[type="checkbox"]:checked {
 	box-shadow: 0 0 5px #0CF;
 }
-.window input[type="checkbox"]::after{
+.window input[type="checkbox"]::after {
 	content: "x";
-	color: rgb(0,155,255);
+	color: rgb(0, 155, 255);
 	opacity: 0;
 }
-.window input[type="checkbox"]:checked::after{
+.window input[type="checkbox"]:checked::after {
 	content: "✓";
-	color: rgb(0,155,255);
+	color: rgb(0, 155, 255);
 	opacity: 1;
 }
-.window textarea{
+.window textarea {
 	transition: outline, box-shadow .2s ease;
 }
 .window ::selection {
-	background: rgba(0,200,255,0.5);
+	background: rgba(0, 200, 255, 0.5);
 }
 .window ::-moz-selection {
-	background: rgba(0,200,255,0.5);
+	background: rgba(0, 200, 255, 0.5);
 }
 
 .select-wrapper {
@@ -184,7 +184,7 @@
 	line-height: 1.2;
 	background: #000;
 	color: white;
-	border: 1px solid rgba(255,255,255,0.4);
+	border: 1px solid rgba(255, 255, 255, 0.4);
 }
 .select-wrapper::after {
 	content: "▼";
@@ -208,10 +208,10 @@
 	display: block;
 }
 ::-webkit-scrollbar-thumb {
-	background: rgba(255,255,255,0.1);
-	border: 1px solid rgba(255,255,255,0.2);
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.2);
 }
 ::-webkit-scrollbar-thumb:hover {
-	background: rgba(255,255,255,0.2);
-	border: 1px solid rgba(255,255,255,0.3);
+	background: rgba(255, 255, 255, 0.2);
+	border: 1px solid rgba(255, 255, 255, 0.3);
 }
