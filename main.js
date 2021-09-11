@@ -236,11 +236,6 @@ function main() {
 			console.log("No shortcut matched:", e);
 		}
 	});
-	addEventListener('keypress', function (e) {
-		if (String.fromCharCode(e.keyCode) === "A") {
-			return false;
-		}
-	});
 	addEventListener('keyup', function (e) { delete keys[e.key]; delete keys[e.code]; });
 	var removeSelectionAndBlur = function () {
 		if (window.getSelection) {
