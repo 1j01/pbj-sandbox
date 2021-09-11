@@ -104,6 +104,90 @@ function main() {
 	serializedClipboard = null;
 
 	canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+	const keyboardShortcuts = [
+		{ modifiers: ["CtrlCmd"], code: "KeyZ", action: undo, enable: () => undos.length > 0 },
+		{ modifiers: ["CtrlCmd"], code: "KeyY", action: redo, enable: () => redos.length > 0 },
+		{ modifiers: ["CtrlCmd", "Shift"], code: "KeyZ", action: redo, enable: () => redos.length > 0 },
+		{ modifiers: ["CtrlCmd"], code: "KeyC", action: copySelected, enable: () => selection.points.length > 0 },
+		{
+			modifiers: ["CtrlCmd"], code: "KeyX", action: () => {
+				copySelected();
+				undoable();
+				deleteSelected();
+			}, enable: () => selection.points.length > 0
+		},
+		{
+			modifiers: ["CtrlCmd"], code: "KeyV", action: () => {
+				undoable();
+				var clipboard = deserialize(serializedClipboard);
+				var minX = Infinity, minY = Infinity;
+				for (var i = 0; i < clipboard.points.length; i++) {
+					var p = clipboard.points[i];
+					minX = Math.min(minX, p.x);
+					minY = Math.min(minY, p.y);
+				}
+				for (var i = 0; i < clipboard.points.length; i++) {
+					var p = clipboard.points[i];
+					p.x -= minX - mouse.x;
+					p.y -= minY - mouse.y;
+				}
+				points = points.concat(clipboard.points);
+				connections = connections.concat(clipboard.connections);
+			}, enable: () => !!serializedClipboard,
+		},
+		{
+			modifiers: ["CtrlCmd"], code: "KeyA", action() {
+				selection.points = Array.from(points);
+				selection.connections = Array.from(connections);
+			}, enable: () => points.length > 0
+		},
+		{
+			modifiers: ["CtrlCmd"], code: "KeyD", action: deselect,
+			enable: () => selection.points.length > 0 || selection.connections.length > 0,
+		},
+		{
+			modifiers: [], code: "Delete", action: () => {
+				undoable();
+				deleteSelected();
+			}
+		},
+		{
+			modifiers: [], code: "KeyP", action() {
+				play = !play;
+				document.getElementById("play-checkbox").checked = play;
+			}
+		},
+		{
+			modifiers: [], code: "Space", action: () => {
+				// For gluing selected points together without selecting the glue tool.
+				// This handled elsewhere except for creating an undo state.
+				undoable();
+			}
+		},
+		{
+			modifiers: [], code: "KeyA", action: () => { selectTool("add-points-tool"); }
+		},
+		{
+			modifiers: [], code: "KeyQ", action: () => { selectTool("add-points-fast-tool"); }
+		},
+		{
+			modifiers: [], code: "KeyR", action: () => { selectTool("add-rope-tool"); }
+		},
+		{
+			modifiers: [], code: "KeyB", action: () => { selectTool("add-ball-tool"); }
+		},
+		{
+			modifiers: [], code: "KeyG", action: () => { selectTool("glue-tool"); }
+		},
+		{
+			modifiers: [], code: "KeyC", action: () => { selectTool("precise-connector-tool"); }
+		},
+		{
+			modifiers: [], code: "KeyS", action: () => { selectTool("selection-tool"); }
+		},
+	];
+
 	addEventListener('keydown', function (e) {
 		if (e.defaultPrevented) {
 			return;
@@ -115,128 +199,41 @@ function main() {
 		) {
 			return; // don't prevent interaction with inputs or textareas, or copying text in windows
 		}
-		if (!keys[e.keyCode]) {
-			keys[e.keyCode] = true;
-			// console.log(String.fromCharCode(e.keyCode) + ": ", e.keyCode);
-			const ctrl = e.ctrlKey || e.metaKey;
-			if (e.keyCode === 46) { // delete
+
+		keys[e.key] = true;
+		keys[e.code] = true;
+		// console.log(`key '${e.key}', code '${e.code}', keyCode ${e.keyCode}`);
+
+		let matched = false;
+		for (const shortcut of keyboardShortcuts) {
+			if (
+				(
+					shortcut.modifiers.includes("CtrlCmd") ? (
+						e.ctrlKey || e.metaKey
+					) : (
+						e.ctrlKey === shortcut.modifiers.includes("Ctrl") &&
+						e.metaKey === shortcut.modifiers.includes("Meta")
+					)
+				) &&
+				e.shiftKey === shortcut.modifiers.includes("Shift") &&
+				e.altKey === shortcut.modifiers.includes("Alt") &&
+				(
+					("code" in shortcut && e.code === shortcut.code) ||
+					("key" in shortcut && e.key === shortcut.key) ||
+					("keyCode" in shortcut && e.keyCode === shortcut.keyCode)
+				) &&
+				(shortcut.repeatable || !e.repeat) &&
+				(typeof shortcut.enable === "function" ? shortcut.enable() : (shortcut.enable ?? true))
+			) {
 				e.preventDefault();
-				undoable();
-				deleteSelected();
-			} else if (e.keyCode === 32) { // space
-				// glue selected points together without selecting the glue tool
-				// handled elsewhere except for creating an undo state
-				undoable();
-			} else switch (String.fromCharCode(e.keyCode)) {
-				case "P"://pause/play
-					if (!ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						play = !play;
-						document.getElementById("play-checkbox").checked = play;
-					}
-					break;
-				case "Z"://undo & redo
-					if (ctrl && !e.altKey) {
-						e.preventDefault();
-						if (e.shiftKey) { redo(); } else { undo(); }
-					}
-					break;
-				case "Y"://redo
-					if (ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						redo();
-					}
-					break;
-				case "A"://select all, add points tool
-					if (ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						selection.points = Array.from(points);
-						selection.connections = Array.from(connections);
-					} else if (!ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						selectTool("add-points-tool");
-					}
-					break;
-				case "D"://deselect all
-					if (ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						deselect();
-					}
-					break;
-				case "C"://copy selection, connector tool
-					if (ctrl && !e.shiftKey && !e.altKey) {
-						if (selection.points.length > 0) {
-							e.preventDefault();
-							copySelected();
-						}
-					} else if (!ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						selectTool("precise-connector-tool");
-					}
-					break;
-				case "X"://cut selection
-					if (ctrl && !e.shiftKey && !e.altKey) {
-						if (selection.points.length > 0) {
-							e.preventDefault();
-							copySelected();
-							undoable();
-							deleteSelected();
-						}
-					}
-					break;
-				case "V"://pasta
-					if (ctrl && !e.shiftKey && !e.altKey) {
-						if (serializedClipboard) {
-							e.preventDefault();
-							undoable();
-							var clipboard = deserialize(serializedClipboard);
-							var minX = Infinity, minY = Infinity;
-							for (var i = 0; i < clipboard.points.length; i++) {
-								var p = clipboard.points[i];
-								minX = Math.min(minX, p.x);
-								minY = Math.min(minY, p.y);
-							}
-							for (var i = 0; i < clipboard.points.length; i++) {
-								var p = clipboard.points[i];
-								p.x -= minX - mouse.x;
-								p.y -= minY - mouse.y;
-							}
-							points = points.concat(clipboard.points);
-							connections = connections.concat(clipboard.connections);
-						}
-					}
-					break;
-				case "S":
-					if (!ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						selectTool("selection-tool");
-					}
-					break;
-				case "Q":
-					if (!ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						selectTool("add-points-fast-tool");
-					}
-					break;
-				case "G":
-					if (!ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						selectTool("glue-tool");
-					}
-					break;
-				case "B":
-					if (!ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						selectTool("add-ball-tool");
-					}
-					break;
-				case "R":
-					if (!ctrl && !e.shiftKey && !e.altKey) {
-						e.preventDefault();
-						selectTool("add-rope-tool");
-					}
-					break;
+				shortcut.action();
+				console.log("Triggered shortcut:", shortcut);
+				matched = true;
+				break;
 			}
+		}
+		if (!matched) {
+			console.log("No shortcut matched:", e);
 		}
 	});
 	addEventListener('keypress', function (e) {
@@ -244,7 +241,7 @@ function main() {
 			return false;
 		}
 	});
-	addEventListener('keyup', function (e) { delete keys[e.keyCode]; });
+	addEventListener('keyup', function (e) { delete keys[e.key]; delete keys[e.code]; });
 	var removeSelectionAndBlur = function () {
 		if (window.getSelection) {
 			if (window.getSelection().empty) {  // Chrome
@@ -447,8 +444,8 @@ function step() {
 				vy: 0,
 				fx: 0,//force
 				fy: 0,
-				fixed: keys[16],
-				color: keys[16] ? "grey" : `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
+				fixed: keys.Shift,
+				color: keys.Shift ? "grey" : `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
 			});
 		}
 	} else if (tool === "add-ball-tool") {
@@ -475,8 +472,8 @@ function step() {
 					vy: 0,
 					fx: 0,//force
 					fy: 0,
-					fixed: keys[16],
-					color: keys[16] ? "grey" : `hsl(${Math.random() * 50},${Math.random() * 50 + 15}%,${Math.random() * 50 + 50}%)`,
+					fixed: keys.Shift,
+					color: keys.Shift ? "grey" : `hsl(${Math.random() * 50},${Math.random() * 50 + 15}%,${Math.random() * 50 + 50}%)`,
 				};
 				points.push(newRopePoint);
 				if (lastRopePoint) {
@@ -510,7 +507,7 @@ function step() {
 		const distBetweenPoints = (connectorToolPoint && closestPoint) ? Math.hypot(connectorToolPoint.x - closestPoint.x, connectorToolPoint.y - closestPoint.y) : 0;
 		// going with a standard distance for connections, unless it's too long (would break), and in that case a custom distance
 		const standardDistance = 60;
-		const useCustomDistance = keys[16] || distBetweenPoints > standardDistance * 2;
+		const useCustomDistance = keys.Shift || distBetweenPoints > standardDistance * 2;
 
 		const canSelect = closestPoint && closestPoint !== connectorToolPoint;
 		let canConnect = closestPoint && connectorToolPoint && closestPoint !== connectorToolPoint;
@@ -801,9 +798,8 @@ function step() {
 					}
 					return nc;
 				}
-				// 32 = Space bar
 				// Undoable handled elsewhere
-				if ((d2m < 30 && (tool === "glue-tool" && mouse.left || keys[32])) || (autoConnect && d < 50 && numConn(p) < 6 && numConn(p2) < 3)) {
+				if ((d2m < 30 && (tool === "glue-tool" && mouse.left || keys.Space)) || (autoConnect && d < 50 && numConn(p) < 6 && numConn(p2) < 3)) {
 					var connected = false;
 					for (var ci = connections.length - 1; ci >= 0; ci--) {
 						if (
@@ -1056,7 +1052,7 @@ function step() {
 	ctx.strokeStyle = "rgba(0,255,200,0.5)";
 	for (var j = selection.connections.length - 1; j >= 0; j--) {
 		var c = selection.connections[j];
-		if (keys[46]) {
+		if (keys.Delete) {
 			var idx = connections.indexOf(c);
 			if (idx >= 0) connections.splice(idx, 1);
 			selection.connections.splice(j, 1);
