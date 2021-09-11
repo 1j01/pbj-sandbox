@@ -1431,7 +1431,7 @@ function guiStuff() {
 			<button id='help-button' title='Get help on using this application.'>Help</button>
 			<button id='todo-button' title='See noted future improvements.'>Todo</button>
 		</div>
-		<div style="padding-top: 3px;">
+		<div style="padding-top: 3px; padding-bottom: 3px;">
 			<label title="Change the look of the windows.">
 				Theme:
 				<div class='select-wrapper'><select id='theme-select'>
@@ -1440,11 +1440,23 @@ function guiStuff() {
 				</select></div>
 			</label>
 		</div>
+		<div style="padding-top: 3px;">
+			<button id='fullscreen-button' title='Make the application fill the entire screen. Useful especially for mobile, where screens are smaller and browser address bars can cause problems due to their scroll-to-hide feature.'>
+				Fullscreen
+			</button>
+		</div>
 	`);
 	positionElement($optionsWindow[0], "top left");
 
 	const find = (selector) => $optionsWindow.$content.find(selector)[0];
 
+	find("#fullscreen-button").onclick = () => {
+		if (document.fullscreenElement) {
+			document.exitFullscreen();
+		} else {
+			document.documentElement.requestFullscreen();
+		}
+	};
 	var audioCheckbox = find("#sfx-checkbox");
 	var audioVizCheckbox = find("#sfx-viz-checkbox");
 	var audioStyleSelect = find("#sfx-style-select");
