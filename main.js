@@ -1010,10 +1010,15 @@ function step() {
 							color: on_one_side_of_line ? '#00afff' : '#ff00ff',
 						});
 
+						// more accurate bounce, right? if we use the intersection point
+						p.x = is.x;
+						p.y = is.y;
 						// move the point so it doesn't collide immediately again
-						var hack = p.fixed ? 0 : 10;
-						p.x = is.x + -Math.sin(-p_bounce_angle) * hack;
-						p.y = is.y + -Math.cos(-p_bounce_angle) * hack;
+						var hack = 10;
+						if (!p.fixed) {
+							p.x += Math.sin(normal + (on_one_side_of_line ? 0 : Math.PI)) * hack;
+							p.y += Math.cos(normal + (on_one_side_of_line ? 0 : Math.PI)) * hack;
+						}
 						// apply the bounce angle to the particle
 						var original_speed = Math.hypot(p.vx, p.vy);
 						var speed = original_speed * 0.7;
