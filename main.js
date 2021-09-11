@@ -952,8 +952,6 @@ function step() {
 					if (is) {
 						hit = true;
 
-						var p_dir = Math.atan2(p.vx, p.vy);
-
 						// Note: normal can point either way
 						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
 						// hence the negation when rendering the normal's arrow
@@ -977,20 +975,20 @@ function step() {
 						// apply a force to the line from the particle
 						const p1_dist = Math.hypot(p.x - c.p1.x, p.y - c.p1.y);
 						const p2_dist = Math.hypot(p.x - c.p2.x, p.y - c.p2.y);
-						// const f = 1 / 2 / (p1_dist + p2_dist);
-						// c.p1.fx += p.vx * p2_dist * f;
-						// c.p1.fy += p.vy * p2_dist * f;
-						// c.p2.fx += p.vx * p1_dist * f;
-						// c.p2.fy += p.vy * p1_dist * f;
+						const f = 1 / 2 / (p1_dist + p2_dist);
+						c.p1.fx += p.vx * p2_dist * f;
+						c.p1.fy += p.vy * p2_dist * f;
+						c.p2.fx += p.vx * p1_dist * f;
+						c.p2.fy += p.vy * p1_dist * f;
 
-						// const line_bounce_force = 2;
-						// c.p1.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
-						// c.p1.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
-						// c.p2.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
-						// c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
+						const line_bounce_force = 2;
+						c.p1.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
+						c.p1.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
+						c.p2.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
+						c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
 
 						// move the line so it doesn't collide immediately again
-						var hack = 10;
+						var hack = 1;
 						// which side the particle is further away from, move the line to that side
 						var towards_a_side_x = Math.sin(normal + (on_one_side_of_line ? Math.PI : 0));
 						var towards_a_side_y = Math.cos(normal + (on_one_side_of_line ? Math.PI : 0));
@@ -1016,7 +1014,7 @@ function step() {
 						p.x = is.x;
 						p.y = is.y;
 						// move the point so it doesn't collide immediately again
-						var hack = 10;
+						var hack = 1;
 						if (!p.fixed) {
 							p.x -= towards_a_side_x * hack;
 							p.y -= towards_a_side_y * hack;
