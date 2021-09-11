@@ -954,7 +954,20 @@ function step() {
 
 						var p_dir = Math.atan2(p.vx, p.vy);
 
+						// Note: normal can point either way
+						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
+						// hence the negation when rendering the normal's arrow
+						// THIS IS NOT INTENTIONAL, it's just bad math.
+						// I tried flipping the signs and sines and cosines for a while
+						// but didn't get it to work while being more sensible.
+						// Maybe later I'll go at it again.
+						// (Keep in mind, the drawArrow function is also arbitrary in its base angle)
 						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
+						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy;
+						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
+						var p_bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
+						var p_bounce_angle = p_bounce_angle_connection_space - normal;
+						var on_one_side_of_line = p_vx_connection_space > 0; // (not sure if this is the side opposed to the normal or towards the normal)
 
 						// apply a force to the line from the particle
 						const p1_dist = Math.hypot(p.x - c.p1.x, p.y - c.p1.y);
@@ -972,88 +985,37 @@ function step() {
 						// c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
 
 						// move the line so it doesn't collide immediately again
-						// var hack = 10;
-						// var p_speed_denom = Math.max(1, Math.hypot(p.vx, p.vy));
-						// c.p1.x += p.vx / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
-						// c.p1.y += p.vy / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
-						// c.p2.x += p.vx / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
-						// c.p2.y += p.vy / p_speed_denom * hack * (c.p1.fixed ? 0 : 1);
 						var hack = 10;
-						// base it on the position of the particle, not the velocity
-						// need to figure out which side of the line the particle is on
-						var dir_1 = normal;
-						var dir_2 = normal + Math.PI;
-						var p1_x_off_1 = c.p1.x + Math.sin(dir_1) * hack;
-						var p1_y_off_1 = c.p1.y + Math.cos(dir_1) * hack;
-						var p1_x_off_2 = c.p1.x + Math.sin(dir_2) * hack;
-						var p1_y_off_2 = c.p1.y + Math.cos(dir_2) * hack;
-						var p2_x_off_1 = c.p2.x + Math.sin(dir_1) * hack;
-						var p2_y_off_1 = c.p2.y + Math.cos(dir_1) * hack;
-						var p2_x_off_2 = c.p2.x + Math.sin(dir_2) * hack;
-						var p2_y_off_2 = c.p2.y + Math.cos(dir_2) * hack;
-							
-						var p1_off_1_dist = Math.hypot(p1_x_off_1 - p.x, p1_y_off_1 - p.y);
-						var p1_off_2_dist = Math.hypot(p1_x_off_2 - p.x, p1_y_off_2 - p.y);
-						var p2_off_1_dist = Math.hypot(p2_x_off_1 - p.x, p2_y_off_1 - p.y);
-						var p2_off_2_dist = Math.hypot(p2_x_off_2 - p.x, p2_y_off_2 - p.y);
 						// which side the particle is further away from, move the line to that side
-						// if (p1_off_1_dist + p2_off_1_dist > p1_off_2_dist + p2_off_2_dist) {
-						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy;
-						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
-						console.log(normal - p_dir, normal, p_dir);
-						// if ((normal + p_dir + (window._constant ?? 0)) % Math.PI * 2 > 0) {
-						if (p_vx_connection_space > 0) {
-							// c.p1.x = p1_x_off_1;
-							// c.p1.y = p1_y_off_1;
-							// c.p2.x = p2_x_off_1;
-							// c.p2.y = p2_y_off_1;
-
-							debugLines.push({
-								p1: { x: p1_x_off_1, y: p1_y_off_1 },
-								p2: { x: p2_x_off_1, y: p2_y_off_1 },
-								color: '#00afff',
-							});
-						} else {
-							// c.p1.x = p1_x_off_2;
-							// c.p1.y = p1_y_off_2;
-							// c.p2.x = p2_x_off_2;
-							// c.p2.y = p2_y_off_2;
-
-							debugLines.push({
-								p1: { x: p1_x_off_2, y: p1_y_off_2 },
-								p2: { x: p2_x_off_2, y: p2_y_off_2 },
-								color: '#ff00ff',
-							});
-						}
-
-						// Note: normal can point either way
-						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
-						// hence the negation when rendering the normal's arrow
-						// THIS IS NOT INTENTIONAL, it's just bad math.
-						// I tried flipping the signs and sines and cosines for a while
-						// but didn't get it to work while being more sensible.
-						// Maybe later I'll go at it again.
-						// (Keep in mind, the drawArrow function is also arbitrary in its base angle)
-						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy;
-						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
-						var bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
-						var bounce_angle = bounce_angle_connection_space - normal;
+						var p1_x_off = c.p1.x + Math.sin(normal + on_one_side_of_line ? Math.PI * 2 : 0) * hack;
+						var p1_y_off = c.p1.y + Math.cos(normal + on_one_side_of_line ? Math.PI * 2 : 0) * hack;
+						var p2_x_off = c.p2.x + Math.sin(normal + on_one_side_of_line ? Math.PI * 2 : 0) * hack;
+						var p2_y_off = c.p2.y + Math.cos(normal + on_one_side_of_line ? Math.PI * 2 : 0) * hack;
+						c.p1.x = p1_x_off;
+						c.p1.y = p1_y_off;
+						c.p2.x = p2_x_off;
+						c.p2.y = p2_y_off;
+						debugLines.push({
+							p1: { x: p1_x_off, y: p1_y_off },
+							p2: { x: p2_x_off, y: p2_y_off },
+							color: '#00afff',
+						});
 
 						// move the point so it doesn't collide immediately again
 						var hack = p.fixed ? 0 : 10;
-						p.x = is.x + -Math.sin(-bounce_angle) * hack;
-						p.y = is.y + -Math.cos(-bounce_angle) * hack;
+						p.x = is.x + -Math.sin(-p_bounce_angle) * hack;
+						p.y = is.y + -Math.cos(-p_bounce_angle) * hack;
 						// apply the bounce angle to the particle
 						var original_speed = Math.hypot(p.vx, p.vy);
 						var speed = original_speed * 0.7;
-						p.vx = -Math.sin(-bounce_angle) * speed;
-						p.vy = -Math.cos(-bounce_angle) * speed;
+						p.vx = -Math.sin(-p_bounce_angle) * speed;
+						p.vy = -Math.cos(-p_bounce_angle) * speed;
 
 						// some debug
 						ctx.strokeStyle = "aqua";
 						drawArrow(ctx, is.x, is.y, -normal, 50);
 						ctx.strokeStyle = "red";
-						drawArrow(ctx, is.x, is.y, bounce_angle, 50);
+						drawArrow(ctx, is.x, is.y, p_bounce_angle, 50);
 					}
 				}
 			}
