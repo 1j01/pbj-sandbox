@@ -1446,9 +1446,6 @@ function guiStuff() {
 		<label title='Leave a visual trail behind all objects.'><input type='checkbox' id='ghost-trails-checkbox'/>Ghost Trails</label>
 		<h3>Windows:</h3>
 		<div style="padding-bottom: 3px;">
-			<button id='make-resizable-window-button' title='Make a new window that you can drag around and hit points with, and drape points over, etc.'>Resizable Window</button>
-		</div>
-		<div style="padding-bottom: 3px;">
 			<button id='help-button' title='Get help on using this application.'>Help</button>
 			<button id='todo-button' title='See noted future improvements.'>Todo</button>
 		</div>
@@ -1637,16 +1634,6 @@ function guiStuff() {
 			<p>Note that this toy doesn't copy to the system clipboard, only an internal clipboard.</p>
 		`);
 		positionElement($w[0], "top");
-	};
-	find("#make-resizable-window-button").onclick = function () {
-		new $Window({
-			title: "Resizable Window",
-			resizable: true,
-			minimizeButton: false,
-			maximizeButton: false,
-		}).$content.html(`
-			Windows are collidable. Use this to play.
-		`);
 	};
 	var $toolsWindow = new $Window({
 		title: "Tools",
