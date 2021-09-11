@@ -82,7 +82,7 @@ function main() {
 	collision = true;
 	slowmo = true; // TODO: generalize to a time scale
 	autoConnect = false;
-	gravity = 0.1;
+	gravity = 0;
 	audioEnabled = true;
 	audioStyle = 1;
 	audioViz = false;
@@ -1852,23 +1852,22 @@ function make_fixed_point(x, y) {
 // make_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
 
 // Test scene: collision false negatives
-make_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
-for (let y = innerHeight / 2; y < innerHeight; y += 30) {
-	make_fixed_point(innerWidth / 2 + Math.sin(y) * 50, y);
-}
+// make_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
+// for (let y = innerHeight / 2; y < innerHeight; y += 30) {
+// 	make_fixed_point(innerWidth / 2 + Math.sin(y) * 50, y);
+// }
 
 // Test scene: line rotation on collision
-/*
 const line_width = 50;
 for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 10 < innerWidth; along_line += 0.15, base_x += line_width * 2) {
 	for (let base_y = innerHeight / 3; base_y < innerHeight; base_y += innerHeight / 3) {
 
-		// make a line to throw a point at
+		// make a line to throw a point at (OR TO THROW AT A POINT)
 		const p1 = {
 			x: base_x,
 			y: base_y,
 			vx: 0,
-			vy: 0,
+			vy: 20 * (base_y < innerHeight / 2 ? -1 : 1),
 			fx: 0,
 			fy: 0,
 			color: "lime",
@@ -1877,7 +1876,7 @@ for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 
 			x: base_x + line_width,
 			y: base_y,
 			vx: 0,
-			vy: 0,
+			vy: 20 * (base_y < innerHeight / 2 ? -1 : 1),
 			fx: 0,
 			fy: 0,
 			color: "lime",
@@ -1885,15 +1884,15 @@ for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 
 		points.push(p1, p2);
 		connect_if_not_connected(p1, p2, connections, { dist: line_width });
 
-		// and throw a point at it
+		// make a point to throw at the line (OR LET BE HIT BY A LINE)
 		// I'm not testing the edge case of whether it collides when x positions are the same, I want it to definitely collide
 		const projectile_x = base_x + 0.005 + along_line * (line_width - 0.01);
 		if (base_y < innerHeight / 2) {
 			points.push({
 				x: projectile_x,
-				y: innerHeight - 20,
+				y: innerHeight * 3/4,
 				vx: 0,
-				vy: -20,
+				vy: 0,
 				fx: 0,
 				fy: 0,
 				color: "white",
@@ -1901,9 +1900,9 @@ for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 
 		} else {
 			points.push({
 				x: projectile_x,
-				y: 20,
+				y: innerHeight / 4,
 				vx: 0,
-				vy: 20,
+				vy: 0,
 				fx: 0,
 				fy: 0,
 				color: "white",
@@ -1911,4 +1910,3 @@ for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 
 		}
 	}
 }
-*/
