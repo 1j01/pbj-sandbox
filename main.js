@@ -952,8 +952,14 @@ function step() {
 					if (is) {
 						hit = true;
 
-						// var p_dir = Math.atan2(p.x - p.px, p.y - p.py);
-						var p_dir = Math.atan2(p.vy, p.vx);
+						// apply a force to the line from the particle
+						const p1_dist = Math.hypot(p.x - c.p1.x, p.y - c.p1.y);
+						const p2_dist = Math.hypot(p.x - c.p2.x, p.y - c.p2.y);
+						const f = 1 / 2 / (p1_dist + p2_dist);
+						c.p1.fx += p.vx * p2_dist * f;
+						c.p1.fy += p.vy * p2_dist * f;
+						c.p2.fx += p.vx * p1_dist * f;
+						c.p2.fy += p.vy * p1_dist * f;
 
 						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
 						// Note: normal can point either way
@@ -969,89 +975,21 @@ function step() {
 						var bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
 						var bounce_angle = bounce_angle_connection_space - normal;
 
-						var hack = 0.1;
+						// move the point so it doesn't collide immediately again
+						var hack = 1;
 						p.x = is.x + -Math.sin(-bounce_angle) * hack;
 						p.y = is.y + -Math.cos(-bounce_angle) * hack;
-						// var speed = distance(p.x, p.y, p.px, p.py) / (p.friction = 2); // + 1;
+						// apply the bounce angle to the particle
 						var original_speed = Math.hypot(p.vx, p.vy);
 						var speed = original_speed * 0.7;
 						p.vx = -Math.sin(-bounce_angle) * speed;
 						p.vy = -Math.cos(-bounce_angle) * speed;
-						// p.fx += -Math.sin(-bounce_angle) * speed;
-						// p.fy += -Math.cos(-bounce_angle) * speed;
 
+						// some debug
 						ctx.strokeStyle = "aqua";
 						drawArrow(ctx, is.x, is.y, -normal, 50);
 						ctx.strokeStyle = "red";
 						drawArrow(ctx, is.x, is.y, bounce_angle, 50);
-
-						// impart force to the connection's points
-						// WIP: elastic collision physics
-						var d1 = distance(p.x, p.y, c.p1.x, c.p1.y);
-						var d2 = distance(p.x, p.y, c.p2.x, c.p2.y);
-						var along_line = d1 / (d1 + d2);
-						// for along_line = 0 (p is closest to p1), generate a forward force for p1, negative for p2
-						// at along_line = 1 (p is closest to p2), generate a forward force for p2, negative for p1
-						// between along_line = 0.25 to 0.75, generate a forward force for both
-						// or something like that anyway
-						// var f1 = along_line * 2 - 1;
-						// var f2 = 1 - along_line * 2;
-						var f1 = (d2 - d1/2) / (d1 + d2);
-						var f2 = (d1 - d2/2) / (d1 + d2);
-						// f1 *= 10;
-						// f2 *= 10;
-						// var p1_rot_fx = Math.sin(normal) * f1;
-						// var p1_rot_fy = Math.cos(normal) * f1;
-						// var p2_rot_fx = Math.sin(normal) * f2;
-						// var p2_rot_fy = Math.cos(normal) * f2;
-						// c.p1.fx += p1_rot_fx;
-						// c.p1.fy += p1_rot_fy;
-						// c.p2.fx += p2_rot_fx;
-						// c.p2.fy += p2_rot_fy;
-						// ctx.strokeStyle = "green";
-						// drawArrow(ctx, c.p1.x, c.p1.y, Math.PI / 2 + Math.atan2(p1_rot_fy, p1_rot_fx), Math.abs(f1) * 10);
-						// drawArrow(ctx, c.p2.x, c.p2.y, Math.PI / 2 + Math.atan2(p2_rot_fy, p2_rot_fx), Math.abs(f2) * 10);
-						// var f = 1;
-						// c.p1.fx -= Math.sin(Math.PI/2-normal-rotational_force) * f;
-						// c.p1.fy -= Math.cos(Math.PI/2-normal-rotational_force) * f;
-						// c.p2.fx -= Math.sin(Math.PI/2-normal+rotational_force) * f;
-						// c.p2.fy -= Math.cos(Math.PI/2-normal+rotational_force) * f;
-
-						var relative_vx_1 = p.vx - c.p1.vx;
-						var relative_vy_1 = p.vy - c.p1.vy;
-						var relative_vx_2 = p.vx - c.p2.vx;
-						var relative_vy_2 = p.vy - c.p2.vy;
-						normal += Math.PI/2;
-						var p1_fx = f1 * relative_vx_1;
-						var p1_fy = f1 * relative_vy_1;
-						var p2_fx = f2 * relative_vx_2;
-						var p2_fy = f2 * relative_vy_2;
-						c.p1.fx += p1_fx;
-						c.p1.fy += p1_fy;
-						c.p2.fx += p2_fx;
-						c.p2.fy += p2_fy;
-						hack = 2;
-						c.p1.x += p1_fx * hack;
-						c.p1.y += p1_fy * hack;
-						c.p2.x += p2_fx * hack;
-						c.p2.y += p2_fy * hack;
-						ctx.strokeStyle = "green";
-						drawArrow(ctx, c.p1.x, c.p1.y, Math.PI / 2 + Math.atan2(p1_fy, p1_fx), Math.abs(f1) * 10);
-						drawArrow(ctx, c.p2.x, c.p2.y, Math.PI / 2 + Math.atan2(p2_fy, p2_fx), Math.abs(f2) * 10);
-
-						// var f = original_speed / 5;
-						// c.p1.fx += Math.sin(Math.PI/2-p_dir) * f;
-						// c.p1.fy += Math.cos(Math.PI/2-p_dir) * f;
-						// c.p2.fx += Math.sin(Math.PI/2-p_dir) * f;
-						// c.p2.fy += Math.cos(Math.PI/2-p_dir) * f;
-
-						// oh um, yeah I don't know what I'm doing
-						// maybe add a force to the point that is perpendicular to the line? but in which direction?
-
-						// add a force based on the connection's points' velocities
-						// var f = 0.3;
-						// p.fx += (c.p1.vx + c.p2.vx) * f;
-						// p.fy += (c.p1.vy + c.p2.vy) * f;
 					}
 				}
 			}
