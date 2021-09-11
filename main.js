@@ -992,10 +992,12 @@ function step() {
 						// move the line so it doesn't collide immediately again
 						var hack = 10;
 						// which side the particle is further away from, move the line to that side
-						var p1_x_off = c.p1.x + Math.sin(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
-						var p1_y_off = c.p1.y + Math.cos(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
-						var p2_x_off = c.p2.x + Math.sin(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
-						var p2_y_off = c.p2.y + Math.cos(normal + (on_one_side_of_line ? Math.PI : 0)) * hack;
+						var towards_a_side_x = Math.sin(normal + (on_one_side_of_line ? Math.PI : 0));
+						var towards_a_side_y = Math.cos(normal + (on_one_side_of_line ? Math.PI : 0));
+						var p1_x_off = c.p1.x + towards_a_side_x * hack;
+						var p1_y_off = c.p1.y + towards_a_side_y * hack;
+						var p2_x_off = c.p2.x + towards_a_side_x * hack;
+						var p2_y_off = c.p2.y + towards_a_side_y * hack;
 						if (!c.p1.fixed) {
 							c.p1.x = p1_x_off;
 							c.p1.y = p1_y_off;
@@ -1016,8 +1018,8 @@ function step() {
 						// move the point so it doesn't collide immediately again
 						var hack = 10;
 						if (!p.fixed) {
-							p.x += Math.sin(normal + (on_one_side_of_line ? 0 : Math.PI)) * hack;
-							p.y += Math.cos(normal + (on_one_side_of_line ? 0 : Math.PI)) * hack;
+							p.x -= towards_a_side_x * hack;
+							p.y -= towards_a_side_y * hack;
 						}
 						// apply the bounce angle to the particle
 						var original_speed = Math.hypot(p.vx, p.vy);
