@@ -1405,15 +1405,23 @@ function guiStuff() {
 		toolWindow: true,
 	});
 	// Note: Options are initialized from variables, not the HTML. To change the defaults, edit the variable declarations.
+	// Note: Some controls are mentioned by name in dialog text.
 	$optionsWindow.$content.html(`
 		<h3>Audio:</h3>
-		<label><input type='checkbox' id='sfx-checkbox'/>Audio</label>${"" /* Note: Audio checkbox is mentioned in dialog text */}
-		<label><input type='checkbox' id='sfx-viz-checkbox'/>Audio Visualization</label>
-		<label>Audio Style: <div class='select-wrapper'><select id='sfx-style-select'>
-			<option value='0'>Scorched Earth</option>
-			<option value='1'>Collisions</option>
-			<option value='2'>Hybrid</option>
-		</select></div></label>
+		<label title='Enables or disables sound generation. Note that you need connections between points for sound to work.'>
+			<input type='checkbox' id='sfx-checkbox'/>Audio
+		</label>
+		<label title='Shows some internals of how the sound is generated. It looks kind of like a classic frequency analyzer, but it's not.'>
+			<input type='checkbox' id='sfx-viz-checkbox'/>Audio Visualization
+		</label>
+		<label title='Changes the quality of generated sound.'>
+			Audio Style:
+			<div class='select-wrapper'><select id='sfx-style-select'>
+				<option value='0'>Scorched Earth</option>
+				<option value='1'>Collisions</option>
+				<option value='2'>Hybrid</option>
+			</select></div>
+		</label>
 		<h3>Simulation:</h3>
 		<label title='Hint: Try zero gravity!'>
 			Gravity: <input type='number' id='gravity-input' step='0.05' min='-50' max='50' style="margin-bottom: 4px"/>
@@ -1435,17 +1443,20 @@ function guiStuff() {
 		<label title='Leave a visual trail behind all objects.'><input type='checkbox' id='ghost-trails-checkbox'/>Ghost Trails</label>
 		<h3>Windows:</h3>
 		<div style="padding-bottom: 3px;">
-			<button id='make-resizable-window-button'>Resizable Window</button>
+			<button id='make-resizable-window-button' title='Make a new window that you can drag around and hit points with, and drape points over, etc.'>Resizable Window</button>
 		</div>
 		<div style="padding-bottom: 3px;">
-			<button id='help-button'>Help</button>
-			<button id='todo-button'>Todo</button>
+			<button id='help-button' title='Get help on using this application.'>Help</button>
+			<button id='todo-button' title='See noted future improvements.'>Todo</button>
 		</div>
 		<div style="padding-top: 3px;">
-			<label>Theme: <div class='select-wrapper'><select id='theme-select'>
-				<option value='dark-theme'>Dark</option>
-				<option value='windows-98-theme'>Windows 98</option>
-			</select></div></label>
+			<label title="Change the look of the windows.">
+				Theme:
+				<div class='select-wrapper'><select id='theme-select'>
+					<option value='dark-theme'>Dark</option>
+					<option value='windows-98-theme'>Windows 98</option>
+				</select></div>
+			</label>
 		</div>
 	`);
 	positionElement($optionsWindow[0], "top left");
