@@ -599,20 +599,24 @@ function step() {
 			undoable();
 		}
 	}
-	if (play) {
-		if ((mouse.right || (mouse.left && tool === "drag-tool")) && nearToMouse) {
+	if ((mouse.right || (mouse.left && tool === "drag-tool")) && nearToMouse) {
+		if (play) {
 			nearToMouse.fx += (mouse.x - nearToMouse.x - nearToMouse.vx) / sDistToMouse;
 			nearToMouse.fy += (mouse.y - nearToMouse.y - nearToMouse.vy) / sDistToMouse;
-			//nearToMouse.x=mouse.x;
-			//nearToMouse.y=mouse.y;
 		} else {
-			if ((mousePrevious.right || (mousePrevious.left && tool === "drag-tool")) && nearToMouse) {
-				//nearToMouse.vx=(nearToMouse.x-nearToMouse.px)*10;
-				//nearToMouse.vy=(nearToMouse.y-nearToMouse.py)*10;
-			}
-			nearToMouse = null;
-			sDistToMouse = 100;
+			nearToMouse.x = mouse.x;
+			nearToMouse.y = mouse.y;
 		}
+	} else {
+		if ((mousePrevious.right || (mousePrevious.left && tool === "drag-tool")) && nearToMouse) {
+			//nearToMouse.vx=(nearToMouse.x-nearToMouse.px)*10;
+			//nearToMouse.vy=(nearToMouse.y-nearToMouse.py)*10;
+		}
+		nearToMouse = null;
+		sDistToMouse = 100;
+	}
+
+	if (play) {
 
 		var freq = 440; // or something
 		var amplitude = 0;
@@ -1589,9 +1593,6 @@ function guiStuff() {
 		$w.$content.html(`
 			<ul>
 				<li>
-					Make drag tool work while paused.
-				</li>
-				<li>
 					Make "Terrain" option look like terrain. Maybe even give it some flowers.
 				</li>
 				<li>
@@ -1643,7 +1644,7 @@ function guiStuff() {
 		toolWindow: true,
 	});
 	$toolsWindow.$content.html(`
-		<button class="toggle" id='drag-tool' title='Drag stuff around.'>
+		<button class="toggle" id='drag-tool' title='Drag stuff around. Works when paused or playing. You can also use Right Click as a shortcut.'>
 			Drag Points (D)
 		</button>
 		<br>
