@@ -431,6 +431,27 @@ function toolDraw(ctx, intent, dragging, bold, p1, p2) {
 	ctx.restore();
 }
 
+function computeGroups() {
+	// find connected groups of points
+	groups.clear();
+	for (var i = points.length - 1; i >= 0; i--) {
+		var p = points[i];
+		groups.set(p, i);
+	}
+	for (var i = connections.length - 1; i >= 0; i--) {
+		var c = connections[i];
+		var g1 = groups.get(c.p1);
+		var g2 = groups.get(c.p2);
+		if (g1 != g2) {
+			for (var j = points.length - 1; j >= 0; j--) {
+				if (groups.get(points[j]) == g2) {
+					groups.set(points[j], g1);
+				}
+			}
+		}
+	}
+}
+
 function step() {
 	//Drawing setup
 	var ctx = canvas.getContext("2d");
@@ -449,6 +470,8 @@ function step() {
 	ctx.lineWidth = 1;
 
 	ctx.save();
+
+	let groupsComputedThisFrame = false;
 
 	if (tool === "selection-tool" && mouse.left && mousePrevious.left) {
 		selection = {
@@ -627,8 +650,10 @@ function step() {
 				dragging = [nearToMouse];
 				// select all connected points with Shift
 				if (keys.Shift) {
-					// TODO: make this work when collision disabled,
-					// i.e. compute connected groups if not computed yet
+					if (!groupsComputedThisFrame) {
+						computeGroups();
+						groupsComputedThisFrame = true;
+					}
 					dragging = points.filter(p => groups.get(p) === groups.get(nearToMouse));
 				}
 				// if there's a selection, drag the whole selection
@@ -1213,29 +1238,10 @@ function step() {
 	mousePrevious.x = mouse.x;
 	mousePrevious.y = mouse.y;
 
-	if (play) {
-		// find connected groups of points
-		groups.clear();
-		if (collision) {
-			for (var i = points.length - 1; i >= 0; i--) {
-				var p = points[i];
-				groups.set(p, i);
-			}
-			for (var i = connections.length - 1; i >= 0; i--) {
-				var c = connections[i];
-				var g1 = groups.get(c.p1);
-				var g2 = groups.get(c.p2);
-				if (g1 != g2) {
-					for (var j = points.length - 1; j >= 0; j--) {
-						if (groups.get(points[j]) == g2) {
-							groups.set(points[j], g1);
-						}
-					}
-				}
-			}
-		}
+	if (play && collision && !groupsComputedThisFrame) {
+		computeGroups();
+		groupsComputedThisFrame = true;
 	}
-
 
 	if (audioEnabled && play) {
 		if (actx.state === "suspended") {
