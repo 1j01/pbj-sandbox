@@ -182,21 +182,15 @@ function main() {
 			}
 		},
 		{
+			// TODO: shift+. too
 			modifiers: [], key: ".", action: () => {
 				// Add a point at the mouse position without selecting the Add Points tool.
 				undoable();
-				points.push({
-					x: mouse.x,//position
+				points.push(make_point({
+					x: mouse.x,
 					y: mouse.y,
-					px: mouse.x,//previous position
-					py: mouse.y,
-					vx: 0,//velocity
-					vy: 0,
-					fx: 0,//force
-					fy: 0,
 					fixed: keys.Shift,
-					color: keys.Shift ? "grey" : `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
-				});
+				}));
 			}
 		},
 		{
@@ -536,18 +530,11 @@ function step() {
 	} else if (tool.match(/add-points/)) {
 		if (mouse.left && (!mousePrevious.left || tool === "add-points-fast-tool")) {
 			if (!mousePrevious.left) undoable();
-			points.push({
-				x: mouse.x,//position
+			points.push(make_point({
+				x: mouse.x,
 				y: mouse.y,
-				px: mouse.x,//previous position
-				py: mouse.y,
-				vx: 0,//velocity
-				vy: 0,
-				fx: 0,//force
-				fy: 0,
 				fixed: keys.Shift,
-				color: keys.Shift ? "grey" : `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
-			});
+			}));
 		}
 	} else if (tool === "add-ball-tool") {
 		if (mouse.left && !mousePrevious.left) {
@@ -564,18 +551,12 @@ function step() {
 			while (distToLast > distBetweenPoints) {
 				const newX = lastRopePoint ? lastRopePoint.x + (mouse.x - lastRopePoint.x) / distToLast * distBetweenPoints : mouse.x;
 				const newY = lastRopePoint ? lastRopePoint.y + (mouse.y - lastRopePoint.y) / distToLast * distBetweenPoints : mouse.y;
-				const newRopePoint = {
-					x: newX,//position
+				const newRopePoint = make_point({
+					x: newX,
 					y: newY,
-					px: newX,//previous position
-					py: newY,
-					vx: 0,//velocity
-					vy: 0,
-					fx: 0,//force
-					fy: 0,
 					fixed: keys.Shift,
 					color: keys.Shift ? "grey" : `hsl(${Math.random() * 50},${Math.random() * 50 + 15}%,${Math.random() * 50 + 50}%)`,
-				};
+				});
 				points.push(newRopePoint);
 				if (lastRopePoint) {
 					connections.push({
@@ -1485,58 +1466,36 @@ function createTerrain() {
 			x_tend += Math.random() * 20;
 		}
 		prev_p = p;
-		p = {
-			x: x,//position
-			y: y,
-			px: x,//previous position
-			py: y,
-			vx: 0,//velocity
-			vy: 0,
-			fx: 0,//force
-			fy: 0,
+		p = make_point({
+			x, y,
 			fixed: true,
 			color: "green"
-		};
+		});
 		points.push(p);
 		if (prev_p) connections.push({ p1: p, p2: prev_p, dist: 60, force: 1 });
 
 		if (Math.random() < 0.3) {
-			const flower_p = {
+			const flower_p = make_point({
 				x: x,
 				y: y - 10,
-				px: x,
-				py: y - 10,
-				vx: 0,
-				vy: 0,
-				fx: 0,
-				fy: 0,
 				color: "DarkOrchid",
-			};
+			});
 			points.push(flower_p);
 			connections.push({ p1: p, p2: flower_p, dist: Math.random() * 20 + 30, force: 1 });
 			flowerPoints.push(flower_p);
 		}
 	}
 }
-function rope(x1, y1, x2, y2, seg, force) {
-	force = force || 1;
+function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
 	var pp, p;
 	for (var i = 0; i < seg; i++) {
 		var x = (x2 - x1) * (i / seg) + x1;
 		var y = (y2 - y1) * (i / seg) + y1;
 		pp = p;
-		p = {
-			x: x,//position
-			y: y,
-			px: x,//previous position
-			py: y,
-			vx: 0,//velocity
-			vy: 0,
-			fx: 0,//force
-			fy: 0,
-			fixed: false,
+		p = make_point({
+			x, y,
 			color: "#FC5"
-		};
+		});
 		points.push(p);
 		if (pp) connections.push({ p1: p, p2: pp, dist: distance(p.x, p.y, pp.x, pp.y), force: force });
 	}
@@ -1899,24 +1858,45 @@ function connect_if_not_connected(p1, p2, connections, options = {}) {
 	}
 }
 
+function make_point(options) {
+	return Object.assign({
+		// position
+		x: 0,
+		y: 0,
+		// previous position
+		px: options.x ?? 0,
+		py: options.y ?? 0,
+		// velocity
+		vx: 0,
+		vy: 0,
+		// force
+		fx: 0,
+		fy: 0,
+		// whether point is static/unmoving/fixated/"glued to the background"
+		fixed: false,
+		// visual
+		color: options.fixed ? "gray" : `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
+	}, options);
+}
+
 // Note: radius is not directly proportional to size or numPoints.
-function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60 }) {
+function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60, ...pointOptions }) {
 	const ballPoints = [];
 	const ballConnections = [];
 	for (let i = 0; i < numPoints; i++) {
-		ballPoints.push({
+		ballPoints.push(make_point({
 			// position could be random but the sin/cos is to help relax it initially.
-			x: x + Math.sin(i / numPoints * Math.PI * 2) * size,//position
+			x: x + Math.sin(i / numPoints * Math.PI * 2) * size,
 			y: y + Math.cos(i / numPoints * Math.PI * 2) * size,
-			px: x,//previous position
+			// previous position gives a nice initial springy feel
+			px: x,
 			py: y,
-			vx,//velocity
+			// velocity
+			vx,
 			vy,
-			fx: 0,//force
-			fy: 0,
-			fixed: false,
-			color: `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
-		});
+			// remaining options are passed to make_point
+			...pointOptions
+		}));
 	}
 	for (let i = 0; i < numPoints; i++) {
 		const p1 = ballPoints[i];
@@ -1929,21 +1909,6 @@ function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60 }) {
 	}
 	points.push(...ballPoints);
 	connections.push(...ballConnections);
-}
-
-function make_fixed_point(x, y) {
-	points.push({
-		x: x,
-		y: y,
-		px: x,
-		py: y,
-		vx: 0,
-		vy: 0,
-		fx: 0,
-		fy: 0,
-		fixed: true,
-		color: "gray",
-	});
 }
 
 // Test scene: a bunch of balls of different types.
@@ -1960,7 +1925,7 @@ function make_fixed_point(x, y) {
 // Test scene: collision false negatives
 // make_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
 // for (let y = innerHeight / 2; y < innerHeight; y += 30) {
-// 	make_fixed_point(innerWidth / 2 + Math.sin(y) * 50, y);
+// 	points.push(make_point({ x: innerWidth / 2 + Math.sin(y) * 50, y, fixed: true }));
 // }
 
 // Test scene: line rotation on collision
