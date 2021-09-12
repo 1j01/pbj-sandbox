@@ -182,15 +182,31 @@ function main() {
 			}
 		},
 		{
-			// TODO: shift+. too
-			modifiers: [], key: ".", action: () => {
-				// Add a point at the mouse position without selecting the Add Points tool.
+			modifiers: [], code: "Period", action: () => {
+				// Add a point at the mouse without selecting the Add Points tool.
 				undoable();
-				points.push(make_point({
-					x: mouse.x,
-					y: mouse.y,
-					fixed: keys.Shift,
-				}));
+				points.push(make_point({ x: mouse.x, y: mouse.y }));
+			}
+		},
+		{
+			modifiers: ["Shift"], code: "Period", action: () => {
+				// Add a fixed point at the mouse without selecting the Add Points tool.
+				undoable();
+				points.push(make_point({ x: mouse.x, y: mouse.y, fixed: true }));
+			}
+		},
+		{
+			modifiers: [], code: "NumpadDecimal", action: () => {
+				// Add a point at the mouse without selecting the Add Points tool.
+				undoable();
+				points.push(make_point({ x: mouse.x, y: mouse.y }));
+			}
+		},
+		{
+			modifiers: ["Shift"], code: "NumpadDecimal", action: () => {
+				// Add a fixed point at the mouse without selecting the Add Points tool.
+				undoable();
+				points.push(make_point({ x: mouse.x, y: mouse.y, fixed: true }));
 			}
 		},
 		{
