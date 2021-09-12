@@ -95,6 +95,7 @@ function main() {
 	autoConnect = false;
 
 	glueMaxDistToMouse = 30;
+	glueMaxDist = 50;
 	autoConnectMaxDist = 50;
 	gravity = 0.1;
 	terrainEnabled = false;
@@ -937,11 +938,16 @@ function step() {
 			if (i == j) continue;
 			var p2 = points[j];
 			var d = distance(p.x, p.y, p2.x, p2.y);
+			
+			// Note: Auto-Connect is not Glue (but Spacebar is Glue)
+			// also these are definite "can" and "will do" booleans
+			let canGlue = distToMouse < glueMaxDistToMouse && d < glueMaxDist;
+			let doGlue = canGlue &&
+				((tool === "glue-tool" && mouse.left) || keys.Space);
+
 			if (
 				// Glue tool (undoable handled elsewhere)
-				(distToMouse < glueMaxDistToMouse &&
-					((tool === "glue-tool" && mouse.left) || keys.Space)
-				) ||
+				doGlue ||
 				// Auto-Connect behavior
 				(autoConnect && d < autoConnectMaxDist && numConn(p) < 6 && numConn(p2) < 3)
 			) {
@@ -958,6 +964,26 @@ function step() {
 				if (!connected) {
 					connections.push({ p1: p, p2: p2, dist: 60, force: 1 });
 					//connections.push({p1:p,p2:p2,dist:Math.ceil(d*.15)*10});
+				} else {
+					canGlue = doGlue = false;
+				}
+			} else {
+				// TODO: DRY
+				var connected = false;
+				for (var ci = connections.length - 1; ci >= 0; ci--) {
+					if (
+						(connections[ci].p1 === p && connections[ci].p2 === p2) ||
+						(connections[ci].p1 === p2 && connections[ci].p2 === p)
+					) {
+						connected = true;
+						break;
+					}
+				}
+				if (connected) {
+					canGlue = doGlue = false;
+				}
+				if (canGlue && tool === "glue-tool") {
+					toolDraw(ctx, "connect", false, false, p, p2);
 				}
 			}
 		}
