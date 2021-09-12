@@ -399,30 +399,19 @@ function toolDraw(ctx, intent, bold, p1, p2) {
 	// `intent` can be "disconnect", "connect", "connect-varying-length", or "drag"
 
 	ctx.save();
+	ctx.strokeStyle =
+		intent === "disconnect" ? "#f00" :
+			intent === "connect-varying-length" ?
+			`rgba(255,255,0,${bold ? 1 : 0.5})` :
+			`rgba(0,255,200,${bold ? 1 : 0.5})`;
 	if (p1) {
-		if (intent === "disconnect") {
-			ctx.lineWidth = 2;
-			ctx.strokeStyle = "rgba(255,0,0,1)";
-		} else {
-			ctx.lineWidth = p1 ? 2 : 1;
-			ctx.strokeStyle = intent === "connect-varying-length" ?
-				`rgba(255,255,0,${bold ? 1 : 0.5})` :
-				`rgba(0,255,200,${bold ? 1 : 0.5})`;
-		}
+		ctx.lineWidth = 2;//bold ? 2 : 1;
 		ctx.beginPath();
 		ctx.arc(p1.x, p1.y, 5, 0, 2 * Math.PI);
 		ctx.stroke();
 	}
 	if (p2) {
-		if (intent === "disconnect") {
-			ctx.lineWidth = bold ? 2 : 1;
-			ctx.strokeStyle = "rgba(255,0,0,1)";
-		} else {
-			ctx.lineWidth = bold ? 2 : 1;
-			ctx.strokeStyle = intent === "connect-varying-length" ?
-				`rgba(255,255,0,${bold ? 1 : 0.5})` :
-				`rgba(0,255,200,${bold ? 1 : 0.5})`;
-		}
+		ctx.lineWidth = bold ? 2 : 1;
 		ctx.beginPath();
 		ctx.arc(p2.x, p2.y, 5, 0, 2 * Math.PI);
 		ctx.stroke();
@@ -430,12 +419,8 @@ function toolDraw(ctx, intent, bold, p1, p2) {
 	if (p1 && p2) {
 		if (intent === "disconnect") {
 			ctx.lineWidth = 4; // has to be visible together with the existing connection's line
-			ctx.strokeStyle = "rgba(255,0,0,1)";
 		} else {
 			ctx.lineWidth = bold ? 2 : 1;
-			ctx.strokeStyle = intent === "connect-varying-length" ?
-				`rgba(255,255,0,${bold ? 1 : 0.5})` :
-				`rgba(0,255,200,${bold ? 1 : 0.5})`;
 		}
 		ctx.beginPath();
 		ctx.moveTo(p1.x, p1.y);
