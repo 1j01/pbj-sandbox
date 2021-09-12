@@ -174,41 +174,21 @@ function main() {
 				document.getElementById("play-checkbox").checked = play;
 			}
 		},
+		
 		{
-			modifiers: [], code: "Space", action: () => {
-				// For gluing selected points together without selecting the Glue tool.
-				// This handled elsewhere except for creating an undo state.
-				undoable();
-			}
+			// Glue selected points together without selecting the Glue tool.
+			// This handled elsewhere except for creating an undo state.
+			modifiers: [], code: "Space", action: undoable,
 		},
-		{
-			modifiers: [], code: "Period", action: () => {
-				// Add a point at the mouse without selecting the Add Points tool.
-				undoable();
-				points.push(make_point({ x: mouse.x, y: mouse.y }));
-			}
-		},
-		{
-			modifiers: ["Shift"], code: "Period", action: () => {
-				// Add a fixed point at the mouse without selecting the Add Points tool.
-				undoable();
-				points.push(make_point({ x: mouse.x, y: mouse.y, fixed: true }));
-			}
-		},
-		{
-			modifiers: [], code: "NumpadDecimal", action: () => {
-				// Add a point at the mouse without selecting the Add Points tool.
-				undoable();
-				points.push(make_point({ x: mouse.x, y: mouse.y }));
-			}
-		},
-		{
-			modifiers: ["Shift"], code: "NumpadDecimal", action: () => {
-				// Add a fixed point at the mouse without selecting the Add Points tool.
-				undoable();
-				points.push(make_point({ x: mouse.x, y: mouse.y, fixed: true }));
-			}
-		},
+
+		// Add points without selecting the Add Points tool.
+		{ modifiers: [], code: "Period", action: add_point_at_mouse, },
+		{ modifiers: ["Shift"], code: "Period", action: add_point_at_mouse, },
+		{ modifiers: [], code: "NumpadDecimal", action: add_point_at_mouse, },
+		// this one may not work because it sends "Delete" instead, but it's awkward to use anyways
+		{ modifiers: ["Shift"], code: "NumpadDecimal", action: add_point_at_mouse, },
+
+		// Select tools
 		{
 			modifiers: [], code: "KeyD", action: () => { selectTool("drag-tool"); }
 		},
@@ -546,11 +526,7 @@ function step() {
 	} else if (tool.match(/add-points/)) {
 		if (mouse.left && (!mousePrevious.left || tool === "add-points-fast-tool")) {
 			if (!mousePrevious.left) undoable();
-			points.push(make_point({
-				x: mouse.x,
-				y: mouse.y,
-				fixed: keys.Shift,
-			}));
+			add_point_at_mouse();
 		}
 	} else if (tool === "add-ball-tool") {
 		if (mouse.left && !mousePrevious.left) {
@@ -1896,6 +1872,14 @@ function make_point(options) {
 		// visual
 		color: options.fixed ? "gray" : `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`,
 	}, options);
+}
+
+function add_point_at_mouse() {
+	points.push(make_point({
+		x: mouse.x,
+		y: mouse.y,
+		fixed: keys.Shift,
+	}));
 }
 
 // Note: radius is not directly proportional to size or numPoints.
