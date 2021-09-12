@@ -403,8 +403,8 @@ function toolDraw(ctx, intent, dragging, bold, p1, p2) {
 	ctx.strokeStyle =
 		intent === "disconnect" ? `rgba(255, 0, 0, ${alpha})` :
 			intent === "connect-varying-length" ?
-			`rgba(255, 255, 0, ${alpha})` :
-			`rgba(0, 255, 200, ${alpha})`;
+				`rgba(255, 255, 0, ${alpha})` :
+				`rgba(0, 255, 200, ${alpha})`;
 	if (p1) {
 		ctx.lineWidth = bold ? 2 : 1;
 		ctx.beginPath();
@@ -539,7 +539,7 @@ function step() {
 	} else if (tool === "add-ball-tool") {
 		if (mouse.left && !mousePrevious.left) {
 			undoable();
-			make_ball({ x: mouse.x, y: mouse.y, numPoints: 5 + ~~(Math.random() * 4), size: 20 + Math.random() * 30 });
+			add_ball({ x: mouse.x, y: mouse.y, numPoints: 5 + ~~(Math.random() * 4), size: 20 + Math.random() * 30 });
 		}
 	} else if (tool === "add-rope-tool") {
 		if (mouse.left) {
@@ -919,7 +919,7 @@ function step() {
 			if (i == j) continue;
 			var p2 = points[j];
 			var d = distance(p.x, p.y, p2.x, p2.y);
-			
+
 			// Note: Auto-Connect is not Glue (but Spacebar is Glue)
 			// also these are definite "can" and "will do" booleans
 			let canGlue = distToMouse < glueMaxDistToMouse && d < glueMaxDist;
@@ -1487,6 +1487,8 @@ function createTerrain() {
 	}
 }
 function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
+	var ropePoints = [];
+	var ropeConnections = [];
 	var pp, p;
 	for (var i = 0; i < seg; i++) {
 		var x = (x2 - x1) * (i / seg) + x1;
@@ -1496,9 +1498,10 @@ function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
 			x, y,
 			color: "#FC5"
 		});
-		points.push(p);
-		if (pp) connections.push({ p1: p, p2: pp, dist: distance(p.x, p.y, pp.x, pp.y), force: force });
+		ropePoints.push(p);
+		if (pp) ropeConnections.push({ p1: p, p2: pp, dist: distance(p.x, p.y, pp.x, pp.y), force: force });
 	}
+	return { points: ropePoints, connections: ropeConnections };
 }
 
 // Note: `groups` is only computed when collision is enabled
@@ -1907,23 +1910,30 @@ function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60, ...pointOpt
 			connect_if_not_connected(p1, p2, ballConnections, { dist: size, force: 1 });
 		}
 	}
-	points.push(...ballPoints);
-	connections.push(...ballConnections);
+	return {
+		points: ballPoints,
+		connections: ballConnections,
+	};
+}
+function add_ball(options) {
+	const ball = make_ball(options);
+	points.push(...ball.points);
+	connections.push(...ball.connections);
 }
 
 // Test scene: a bunch of balls of different types.
 // for (let numPoints = 3, x = 500; numPoints < 10; numPoints+=3, x += 200) {
 // 	for (let size = 30, y = 100; size < 100; size += 30, y += 200, x += 0) {
-// 		make_ball({ numPoints, size, x, y });
+// 		add_ball({ numPoints, size, x, y });
 // 	}
 // }
 
 // Test scene: Throw two balls at each other
-// make_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
-// make_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
+// add_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
+// add_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
 
 // Test scene: collision false negatives
-// make_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
+// add_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
 // for (let y = innerHeight / 2; y < innerHeight; y += 30) {
 // 	points.push(make_point({ x: innerWidth / 2 + Math.sin(y) * 50, y, fixed: true }));
 // }
