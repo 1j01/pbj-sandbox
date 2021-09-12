@@ -394,18 +394,19 @@ function drawArrow(ctx, x, y, angle, length, headSize = 10) {
 	ctx.stroke();
 }
 
-function toolDraw(ctx, intent, bold, p1, p2) {
+function toolDraw(ctx, intent, dragging, bold, p1, p2) {
 	// Highlight a point or line segment for Precise Connector, Glue, and Drag tools.
 	// `intent` can be "disconnect", "connect", "connect-varying-length", or "drag"
 
 	ctx.save();
+	const alpha = bold ? 1 : dragging ? 0.7 : 0.5;
 	ctx.strokeStyle =
-		intent === "disconnect" ? "#f00" :
+		intent === "disconnect" ? `rgba(255, 0, 0, ${alpha})` :
 			intent === "connect-varying-length" ?
-			`rgba(255,255,0,${bold ? 1 : 0.5})` :
-			`rgba(0,255,200,${bold ? 1 : 0.5})`;
+			`rgba(255, 255, 0, ${alpha})` :
+			`rgba(0, 255, 200, ${alpha})`;
 	if (p1) {
-		ctx.lineWidth = 2;//bold ? 2 : 1;
+		ctx.lineWidth = bold ? 2 : 1;
 		ctx.beginPath();
 		ctx.arc(p1.x, p1.y, 5, 0, 2 * Math.PI);
 		ctx.stroke();
@@ -607,6 +608,7 @@ function step() {
 			toolDraw(ctx,
 				existingConnection ? "disconnect" :
 					useCustomDistance ? "connect-varying-length" : "connect",
+				!!connectorToolPoint,
 				canConnect || existingConnection,
 				connectorToolPoint,
 				canSelect ? closestPoint : mouse
@@ -662,7 +664,7 @@ function step() {
 		dragging = [];
 	}
 	if (tool === "drag-tool" && !dragging.length && nearToMouse) {
-		toolDraw(ctx, "drag", false, nearToMouse);
+		toolDraw(ctx, "drag", false, false, nearToMouse);
 	}
 
 	if (play) {
