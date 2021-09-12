@@ -82,6 +82,7 @@ function main() {
 	dragging = [];
 	dragOffsets = [];
 	mouseDragForce = 0.1;
+	mouseDragDamping = 0.5;
 	maxDistToMouse = 100; // for picking points to drag, not while dragging
 
 	connections = [];
@@ -679,6 +680,8 @@ function step() {
 				if (play) {
 					p.fx += (target_x - p.x - p.vx) * mouseDragForce;
 					p.fy += (target_y - p.y - p.vy) * mouseDragForce;
+					p.vx *= mouseDragDamping;
+					p.vy *= mouseDragDamping;
 				} else {
 					p.x = target_x;
 					p.y = target_y;
