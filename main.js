@@ -644,6 +644,8 @@ function step() {
 				}
 			}
 		}
+	} else {
+		dragging = [];
 	}
 
 	if (play) {
@@ -732,6 +734,7 @@ function step() {
 	}
 	//Draw and step the points.
 	let time = performance.now();
+	nearToMouse = null;
 	let closestToMouseDist = maxDistToMouse;
 	for (var i = points.length - 1; i >= 0; i--) {
 		var p = points[i];
