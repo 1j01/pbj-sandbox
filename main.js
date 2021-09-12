@@ -1,3 +1,13 @@
+
+const TOOL_SELECT = "TOOL_SELECT";
+const TOOL_ADD_POINTS = "TOOL_ADD_POINTS";
+const TOOL_ADD_POINTS_QUICKLY = "TOOL_ADD_POINTS_QUICKLY";
+const TOOL_ADD_BALL = "TOOL_ADD_BALL";
+const TOOL_ADD_ROPE = "TOOL_ADD_ROPE";
+const TOOL_PRECISE_CONNECTOR = "TOOL_PRECISE_CONNECTOR";
+const TOOL_GLUE = "TOOL_GLUE";
+const TOOL_DRAG = "TOOL_DRAG";
+
 function serialize(points, connections, isSelection) {
 	// Note: if I ever change this to JSON,
 	// I should bump the version to >2, since ARSON stringifies as JSON but with values as indices,
@@ -108,7 +118,7 @@ function main() {
 	debugPolygons = []; // reset per frame
 	debugLines = []; // reset per frame
 
-	tool = "add-points-tool";
+	tool = TOOL_ADD_POINTS;
 	lastRopePoint = null;
 	connectorToolPoint = null;
 	selection = {
@@ -174,7 +184,7 @@ function main() {
 				document.getElementById("play-checkbox").checked = play;
 			}
 		},
-		
+
 		{
 			// Glue selected points together without selecting the Glue tool.
 			// This handled elsewhere except for creating an undo state.
@@ -190,28 +200,28 @@ function main() {
 
 		// Select tools
 		{
-			modifiers: [], code: "KeyD", action: () => { selectTool("drag-tool"); }
+			modifiers: [], code: "KeyD", action: () => { selectTool(TOOL_DRAG); }
 		},
 		{
-			modifiers: [], code: "KeyA", action: () => { selectTool("add-points-tool"); }
+			modifiers: [], code: "KeyA", action: () => { selectTool(TOOL_ADD_POINTS); }
 		},
 		{
-			modifiers: [], code: "KeyQ", action: () => { selectTool("add-points-fast-tool"); }
+			modifiers: [], code: "KeyQ", action: () => { selectTool(TOOL_ADD_POINTS_QUICKLY); }
 		},
 		{
-			modifiers: [], code: "KeyR", action: () => { selectTool("add-rope-tool"); }
+			modifiers: [], code: "KeyR", action: () => { selectTool(TOOL_ADD_ROPE); }
 		},
 		{
-			modifiers: [], code: "KeyB", action: () => { selectTool("add-ball-tool"); }
+			modifiers: [], code: "KeyB", action: () => { selectTool(TOOL_ADD_BALL); }
 		},
 		{
-			modifiers: [], code: "KeyG", action: () => { selectTool("glue-tool"); }
+			modifiers: [], code: "KeyG", action: () => { selectTool(TOOL_GLUE); }
 		},
 		{
-			modifiers: [], code: "KeyC", action: () => { selectTool("precise-connector-tool"); }
+			modifiers: [], code: "KeyC", action: () => { selectTool(TOOL_PRECISE_CONNECTOR); }
 		},
 		{
-			modifiers: [], code: "KeyS", action: () => { selectTool("selection-tool"); }
+			modifiers: [], code: "KeyS", action: () => { selectTool(TOOL_SELECT); }
 		},
 	];
 
@@ -478,7 +488,7 @@ function step() {
 
 	let groupsComputedThisFrame = false;
 
-	if (tool === "selection-tool" && mouse.left && mousePrevious.left) {
+	if (tool === TOOL_SELECT && mouse.left && mousePrevious.left) {
 		selection = {
 			x: selection.x, y: selection.y,
 			x1: Math.min(selection.x, mouse.x),
@@ -519,21 +529,21 @@ function step() {
 		ctx.stroke();
 	}
 
-	if (tool === "selection-tool") {
+	if (tool === TOOL_SELECT) {
 		if (mouse.left && !mousePrevious.left) {
 			selection = { x: mouse.x, y: mouse.y, points: [], connections: [] };
 		}
-	} else if (tool.match(/add-points/)) {
-		if (mouse.left && (!mousePrevious.left || tool === "add-points-fast-tool")) {
+	} else if (tool === TOOL_ADD_POINTS || tool === TOOL_ADD_POINTS_QUICKLY) {
+		if (mouse.left && (!mousePrevious.left || tool === TOOL_ADD_POINTS_QUICKLY)) {
 			if (!mousePrevious.left) undoable();
 			add_point_at_mouse();
 		}
-	} else if (tool === "add-ball-tool") {
+	} else if (tool === TOOL_ADD_BALL) {
 		if (mouse.left && !mousePrevious.left) {
 			undoable();
 			add_ball({ x: mouse.x, y: mouse.y, numPoints: 5 + ~~(Math.random() * 4), size: 20 + Math.random() * 30 });
 		}
-	} else if (tool === "add-rope-tool") {
+	} else if (tool === TOOL_ADD_ROPE) {
 		if (mouse.left) {
 			if (!mousePrevious.left) {
 				undoable();
@@ -564,7 +574,7 @@ function step() {
 		} else {
 			lastRopePoint = null;
 		}
-	} else if (tool === "precise-connector-tool") {
+	} else if (tool === TOOL_PRECISE_CONNECTOR) {
 		// I feel like angular similarity should also factor into this,
 		// maybe use polar coordinates and weigh the angle vs distance?
 		let closestPoint = null;
@@ -625,13 +635,13 @@ function step() {
 				canSelect ? closestPoint : mouse
 			);
 		}
-	} else if (tool === "glue-tool") {
+	} else if (tool === TOOL_GLUE) {
 		// handled elsewhere, except for creating undoable state
 		if (mouse.left && !mousePrevious.left) {
 			undoable();
 		}
 	}
-	if ((mouse.right || (mouse.left && tool === "drag-tool"))) {
+	if ((mouse.right || (mouse.left && tool === TOOL_DRAG))) {
 		if (!mousePrevious.right && !mousePrevious.left) {
 			if (nearToMouse) {
 				undoable();
@@ -683,7 +693,7 @@ function step() {
 	} else {
 		dragging = [];
 	}
-	if (tool === "drag-tool" && !dragging.length && nearToMouse) {
+	if (tool === TOOL_DRAG && !dragging.length && nearToMouse) {
 		toolDraw(ctx, "drag", false, false, nearToMouse);
 	} else if (dragging.length) {
 		for (const p of dragging) {
@@ -900,7 +910,7 @@ function step() {
 		// }
 
 		var distToMouse = distance(p.x, p.y, mouse.x, mouse.y);
-		if (!mouse.right && !(mouse.left && tool === "drag-tool")) {
+		if (!mouse.right && !(mouse.left && tool === TOOL_DRAG)) {
 			if (distToMouse < closestToMouseDist && !p.fixed) {
 				nearToMouse = p;
 				closestToMouseDist = distToMouse;
@@ -916,7 +926,7 @@ function step() {
 			// also these are definite "can" and "will do" booleans
 			let canGlue = distToMouse < glueMaxDistToMouse && d < glueMaxDist;
 			let doGlue = canGlue &&
-				((tool === "glue-tool" && mouse.left) || keys.Space);
+				((tool === TOOL_GLUE && mouse.left) || keys.Space);
 
 			if (
 				// Glue tool (undoable handled elsewhere)
@@ -955,7 +965,7 @@ function step() {
 				if (connected) {
 					canGlue = doGlue = false;
 				}
-				if (canGlue && tool === "glue-tool") {
+				if (canGlue && tool === TOOL_GLUE) {
 					toolDraw(ctx, "connect", false, false, p, p2);
 				}
 			}
@@ -1764,35 +1774,35 @@ function guiStuff() {
 		toolWindow: true,
 	});
 	$toolsWindow.$content.html(`
-		<button class="toggle" id='drag-tool' title='Drag stuff around. Works when paused or playing. You can also use Right Click as a shortcut. Hold Shift before dragging to drag multiple points (or you can drag a selection).'>
+		<button class="toggle" data-tool-id='TOOL_DRAG' title='Drag stuff around. Works when paused or playing. You can also use Right Click as a shortcut. Hold Shift before dragging to drag multiple points (or you can drag a selection).'>
 			Drag Points (D)
 		</button>
 		<br>
-		<button class="toggle" id='add-points-tool' title='Click anywhere to add a point. Hold Shift to make fixed points.'>
+		<button class="toggle" data-tool-id='TOOL_ADD_POINTS' title='Click anywhere to add a point. Hold Shift to make fixed points.'>
 			Add Points (A)
 		</button>
 		<br>
-		<button class="toggle" id='add-points-fast-tool' title='Create many unconnected points. Hold Shift to make fixed points.'>
+		<button class="toggle" data-tool-id='TOOL_ADD_POINTS_QUICKLY' title='Create many unconnected points. Hold Shift to make fixed points.'>
 			Add Points Quickly (Q)
 		</button>
 		<br>
-		<button class="toggle" id='add-rope-tool' title='Create a connected series of points. Hold Shift to make fixed points.'>
+		<button class="toggle" data-tool-id='TOOL_ADD_ROPE' title='Create a connected series of points. Hold Shift to make fixed points.'>
 			Make Rope (R)
 		</button>
 		<br>
-		<button class="toggle" id='add-ball-tool' title='Create a group of interconnected points forming a round or polygonal shape.'>
+		<button class="toggle" data-tool-id='TOOL_ADD_BALL' title='Create a group of interconnected points forming a round or polygonal shape.'>
 			Make Ball (B)
 		</button>
 		<br>
-		<button class="toggle" id='glue-tool' title='Connect any points near the mouse to each other.'>
+		<button class="toggle" data-tool-id='TOOL_GLUE' title='Connect any points near the mouse to each other.'>
 			Glue (G)
 		</button>
 		<br>
-		<button class="toggle" id='precise-connector-tool' title='Drag from one point to another to connect them, or if they're already connected, to delete the connection. Hold Shift to create arbitrary-length connections.'>
+		<button class="toggle" data-tool-id='TOOL_PRECISE_CONNECTOR' title='Drag from one point to another to connect them, or if they're already connected, to delete the connection. Hold Shift to create arbitrary-length connections.'>
 			Precise Connector (C)
 		</button>
 		<br>
-		<button class="toggle" id='selection-tool' title='Drag to select points within a rectangle, then Copy (Ctrl+C) and Paste (Ctrl+V) or Delete (Delete). You can also drag the selected points together.'>
+		<button class="toggle" data-tool-id='TOOL_SELECT' title='Drag to select points within a rectangle, then Copy (Ctrl+C) and Paste (Ctrl+V) or Delete (Delete). You can also drag the selected points together.'>
 			Select (S)
 		</button>
 	`);
@@ -1807,7 +1817,7 @@ function guiStuff() {
 		tool = id;
 		for (var i = 0; i < $toolButtons.length; i++) {
 			var tb = $toolButtons[i];
-			if (tb.id === id) {
+			if (tb.dataset.toolId === id) {
 				tb.classList.add("selected");
 			} else {
 				tb.classList.remove("selected");
@@ -1819,7 +1829,7 @@ function guiStuff() {
 	for (var i = 0; i < $toolButtons.length; i++) {
 		var tb = $toolButtons[i];
 		tb.onclick = function () {
-			selectTool(this.id);
+			selectTool(this.dataset.toolId);
 		};
 	}
 
