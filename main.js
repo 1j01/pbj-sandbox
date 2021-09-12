@@ -665,6 +665,10 @@ function step() {
 	}
 	if (tool === "drag-tool" && !dragging.length && nearToMouse) {
 		toolDraw(ctx, "drag", false, false, nearToMouse);
+	} else if (dragging.length) {
+		for (const p of dragging) {
+			toolDraw(ctx, "drag", true, false, p);
+		}
 	}
 
 	if (play) {
