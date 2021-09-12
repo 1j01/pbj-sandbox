@@ -394,6 +394,57 @@ function drawArrow(ctx, x, y, angle, length, headSize = 10) {
 	ctx.stroke();
 }
 
+function toolDraw(ctx, intent, bold, p1, p2) {
+	// Highlight a point or line segment for Precise Connector, Glue, and Drag tools.
+	// `intent` can be "disconnect", "connect", "connect-varying-length", or "drag"
+
+	ctx.save();
+	if (p1) {
+		if (intent === "disconnect") {
+			ctx.lineWidth = 2;
+			ctx.strokeStyle = "rgba(255,0,0,1)";
+		} else {
+			ctx.lineWidth = p1 ? 2 : 1;
+			ctx.strokeStyle = intent === "connect-varying-length" ?
+				`rgba(255,255,0,${bold ? 1 : 0.5})` :
+				`rgba(0,255,200,${bold ? 1 : 0.5})`;
+		}
+		ctx.beginPath();
+		ctx.arc(p1.x, p1.y, 5, 0, 2 * Math.PI);
+		ctx.stroke();
+	}
+	if (p2) {
+		if (intent === "disconnect") {
+			ctx.lineWidth = bold ? 2 : 1;
+			ctx.strokeStyle = "rgba(255,0,0,1)";
+		} else {
+			ctx.lineWidth = bold ? 2 : 1;
+			ctx.strokeStyle = intent === "connect-varying-length" ?
+				`rgba(255,255,0,${bold ? 1 : 0.5})` :
+				`rgba(0,255,200,${bold ? 1 : 0.5})`;
+		}
+		ctx.beginPath();
+		ctx.arc(p2.x, p2.y, 5, 0, 2 * Math.PI);
+		ctx.stroke();
+	}
+	if (p1 && p2) {
+		if (intent === "disconnect") {
+			ctx.lineWidth = 4; // has to be visible together with the existing connection's line
+			ctx.strokeStyle = "rgba(255,0,0,1)";
+		} else {
+			ctx.lineWidth = bold ? 2 : 1;
+			ctx.strokeStyle = intent === "connect-varying-length" ?
+				`rgba(255,255,0,${bold ? 1 : 0.5})` :
+				`rgba(0,255,200,${bold ? 1 : 0.5})`;
+		}
+		ctx.beginPath();
+		ctx.moveTo(p1.x, p1.y);
+		ctx.lineTo(p2.x, p2.y);
+		ctx.stroke();
+	}
+	ctx.restore();
+}
+
 function step() {
 	//Drawing setup
 	var ctx = canvas.getContext("2d");
@@ -517,6 +568,8 @@ function step() {
 			lastRopePoint = null;
 		}
 	} else if (tool === "precise-connector-tool") {
+		// I feel like angular similarity should also factor into this,
+		// maybe use polar coordinates and weigh the angle vs distance?
 		let closestPoint = null;
 		{
 			const maxDistanceToSelect = 60;
@@ -530,20 +583,20 @@ function step() {
 				}
 			}
 		}
-		const distBetweenPoints = (connectorToolPoint && closestPoint) ? Math.hypot(connectorToolPoint.x - closestPoint.x, connectorToolPoint.y - closestPoint.y) : 0;
-		// going with a standard distance for connections, unless it's too long (would break), and in that case a custom distance
+		const distBetweenPoints =
+			(connectorToolPoint && closestPoint) ?
+				Math.hypot(connectorToolPoint.x - closestPoint.x, connectorToolPoint.y - closestPoint.y) :
+				0;
+		// going with a standard distance for connections, unless it's too long
+		// (at some point it would break), and in that case a custom distance
 		const standardDistance = 60;
 		const useCustomDistance = keys.Shift || distBetweenPoints > standardDistance * 2;
-
-		const canSelect = closestPoint && closestPoint !== connectorToolPoint;
-		let canConnect = closestPoint && connectorToolPoint && closestPoint !== connectorToolPoint;
 		const existingConnection = connections.find(c =>
 			(c.p1 === connectorToolPoint && c.p2 === closestPoint) ||
 			(c.p2 === connectorToolPoint && c.p1 === closestPoint)
 		);
-		if (existingConnection) {
-			canConnect = false;
-		}
+		const canSelect = closestPoint && closestPoint !== connectorToolPoint;
+		const canConnect = connectorToolPoint && canSelect && !existingConnection;
 
 		if (mouse.left && !mousePrevious.left) {
 			connectorToolPoint = closestPoint;
@@ -565,44 +618,15 @@ function step() {
 			}
 			connectorToolPoint = null;
 		}
-		const toPoint = canSelect ? closestPoint : mouse;
-		ctx.save();
-		if (connectorToolPoint) {
-			if (existingConnection) {
-				ctx.lineWidth = 2;
-				ctx.strokeStyle = "rgba(255,0,0,1)";
-			} else {
-				ctx.lineWidth = connectorToolPoint ? 2 : 1;
-				ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect ? 1 : 0.5})` : `rgba(0,255,200,${canConnect ? 1 : 0.5})`;
-			}
-			ctx.beginPath();
-			ctx.arc(connectorToolPoint.x, connectorToolPoint.y, 5, 0, 2 * Math.PI);
-			ctx.stroke();
+		if (canSelect || connectorToolPoint) {
+			toolDraw(ctx,
+				existingConnection ? "disconnect" :
+					useCustomDistance ? "connect-varying-length" : "connect",
+				canConnect || existingConnection,
+				connectorToolPoint,
+				canSelect ? closestPoint : mouse
+			);
 		}
-		if (existingConnection) {
-			ctx.lineWidth = canSelect ? 2 : 1;
-			ctx.strokeStyle = "rgba(255,0,0,1)";
-		} else {
-			ctx.lineWidth = canSelect ? 2 : 1;
-			ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect ? 1 : 0.5})` : `rgba(0,255,200,${canConnect ? 1 : 0.5})`;
-		}
-		ctx.beginPath();
-		ctx.arc(toPoint.x, toPoint.y, 5, 0, 2 * Math.PI);
-		ctx.stroke();
-		if (connectorToolPoint && closestPoint) {
-			if (existingConnection) {
-				ctx.lineWidth = 4; // has to be visible together with the existing connection's line
-				ctx.strokeStyle = "rgba(255,0,0,1)";
-			} else {
-				ctx.lineWidth = canSelect ? 2 : 1;
-				ctx.strokeStyle = useCustomDistance ? `rgba(255,255,0,${canConnect ? 1 : 0.5})` : `rgba(0,255,200,${canConnect ? 1 : 0.5})`;
-			}
-			ctx.beginPath();
-			ctx.moveTo(connectorToolPoint.x, connectorToolPoint.y);
-			ctx.lineTo(toPoint.x, toPoint.y);
-			ctx.stroke();
-		}
-		ctx.restore();
 	} else if (tool === "glue-tool") {
 		// handled elsewhere, except for creating undoable state
 		if (mouse.left && !mousePrevious.left) {
