@@ -82,7 +82,7 @@ function main() {
 	dragging = [];
 	dragOffsets = [];
 	mouseDragForce = 0.1;
-	mouseDragDamping = 0.5;
+	mouseDragDampingFactor = 0.5;
 	mouseDragLerpDistance = 30;
 	dragStartMaxDistToMouse = 100; // for picking points to drag, not while dragging
 
@@ -693,8 +693,8 @@ function step() {
 				if (play) {
 					p.fx += (target_x - p.x) * mouseDragForce;
 					p.fy += (target_y - p.y) * mouseDragForce;
-					p.vx *= mouseDragDamping;
-					p.vy *= mouseDragDamping;
+					p.vx *= mouseDragDampingFactor;
+					p.vy *= mouseDragDampingFactor;
 					// within a certain distance, lerp to the target
 					const dist = Math.hypot(target_x - p.x, target_y - p.y);
 					const factor = 1 - Math.min(1, dist / mouseDragLerpDistance);
