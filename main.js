@@ -74,7 +74,11 @@ function main() {
 	keys = {};
 
 	nearToMouse = null;
-	startingDistToMouse = 1000;
+	dragging = [];
+	dragOffsets = [];
+	mouseDragForce = 0.1;
+	maxDistToMouse = 100; // for picking points to drag, not while dragging
+
 	connections = [];
 	points = [];
 
@@ -600,21 +604,46 @@ function step() {
 			undoable();
 		}
 	}
-	if ((mouse.right || (mouse.left && tool === "drag-tool")) && nearToMouse) {
-		if (play) {
-			nearToMouse.fx += (mouse.x - nearToMouse.x - nearToMouse.vx) / startingDistToMouse;
-			nearToMouse.fy += (mouse.y - nearToMouse.y - nearToMouse.vy) / startingDistToMouse;
-		} else {
-			nearToMouse.x = mouse.x;
-			nearToMouse.y = mouse.y;
+	if ((mouse.right || (mouse.left && tool === "drag-tool"))) {
+		if (!mousePrevious.right && !mousePrevious.left) {
+			if (nearToMouse) {
+				undoable();
+				dragging = [nearToMouse];
+				// select all connected points with Shift
+				if (keys.Shift) {
+					// TODO: make this work when collision disabled,
+					// i.e. compute connected groups if not computed yet
+					dragging = points.filter(p => groups.get(p) === groups.get(nearToMouse));
+				}
+				// if there's a selection, drag the whole selection
+				if (selection.points.includes(nearToMouse)) {
+					dragging = Array.from(selection.points);
+				}
+
+				if (dragging.length === 1) {
+					dragOffsets = [{ x: 0, y: 0 }];
+				} else {
+					dragOffsets = dragging.map(p => ({
+						x: p.x - mouse.x,
+						y: p.y - mouse.y,
+					}));
+				}
+			}
+		} else if (dragging.length) {
+			for (let i = 0; i < dragging.length; i++) {
+				const p = dragging[i];
+				const target_x = mouse.x + dragOffsets[i].x;
+				const target_y = mouse.y + dragOffsets[i].y;
+
+				if (play) {
+					p.fx += (target_x - p.x - p.vx) * mouseDragForce;
+					p.fy += (target_y - p.y - p.vy) * mouseDragForce;
+				} else {
+					p.x = target_x;
+					p.y = target_y;
+				}
+			}
 		}
-	} else {
-		if ((mousePrevious.right || (mousePrevious.left && tool === "drag-tool")) && nearToMouse) {
-			//nearToMouse.vx=(nearToMouse.x-nearToMouse.px)*10;
-			//nearToMouse.vy=(nearToMouse.y-nearToMouse.py)*10;
-		}
-		nearToMouse = null;
-		startingDistToMouse = 100;
 	}
 
 	if (play) {
@@ -703,6 +732,7 @@ function step() {
 	}
 	//Draw and step the points.
 	let time = performance.now();
+	let closestToMouseDist = maxDistToMouse;
 	for (var i = points.length - 1; i >= 0; i--) {
 		var p = points[i];
 		if (play && !p.fixed) {
@@ -824,11 +854,10 @@ function step() {
 		// }
 
 		var distToMouse = distance(p.x, p.y, mouse.x, mouse.y);
-		distToMouse = Math.max(distToMouse, 1); // prevent divide by zero in drag force calculation
 		if (!mouse.right && !(mouse.left && tool === "drag-tool")) {
-			if (distToMouse < startingDistToMouse && !p.fixed) {
+			if (distToMouse < closestToMouseDist && !p.fixed) {
 				nearToMouse = p;
-				startingDistToMouse = distToMouse;
+				closestToMouseDist = distToMouse;
 			}
 		}
 
@@ -1658,10 +1687,6 @@ function guiStuff() {
 		$w.$content.html(`
 			<ul>
 				<li>
-					Make drag tool behave consistently regardless of the starting distance between the mouse and the point.
-					I don't know why I made it like I did. Maybe I enjoyed the variation.
-				</li>
-				<li>
 					Add shortcut '/' to either:
 					Quickly switch to the Precise Connector tool and back when you release.
 					Or: Add a point at the mouse position connected to the closest point.
@@ -1710,19 +1735,19 @@ function guiStuff() {
 		toolWindow: true,
 	});
 	$toolsWindow.$content.html(`
-		<button class="toggle" id='drag-tool' title='Drag stuff around. Works when paused or playing. You can also use Right Click as a shortcut.'>
+		<button class="toggle" id='drag-tool' title='Drag stuff around. Works when paused or playing. You can also use Right Click as a shortcut. Hold Shift before dragging to drag multiple points (or you can drag a selection).'>
 			Drag Points (D)
 		</button>
 		<br>
-		<button class="toggle" id='add-points-tool' title='Click anywhere to add a point.'>
+		<button class="toggle" id='add-points-tool' title='Click anywhere to add a point. Hold Shift to make fixed points.'>
 			Add Points (A)
 		</button>
 		<br>
-		<button class="toggle" id='add-points-fast-tool' title='Create many points in an unconnected stream.'>
+		<button class="toggle" id='add-points-fast-tool' title='Create many unconnected points. Hold Shift to make fixed points.'>
 			Add Points Quickly (Q)
 		</button>
 		<br>
-		<button class="toggle" id='add-rope-tool' title='Create a connected series of points.'>
+		<button class="toggle" id='add-rope-tool' title='Create a connected series of points. Hold Shift to make fixed points.'>
 			Make Rope (R)
 		</button>
 		<br>
@@ -1734,11 +1759,11 @@ function guiStuff() {
 			Glue (G)
 		</button>
 		<br>
-		<button class="toggle" id='precise-connector-tool' title='Drag from one point to another to connect them, or if they're already connected, to delete the connection.'>
+		<button class="toggle" id='precise-connector-tool' title='Drag from one point to another to connect them, or if they're already connected, to delete the connection. Hold Shift to create arbitrary-length connections.'>
 			Precise Connector (C)
 		</button>
 		<br>
-		<button class="toggle" id='selection-tool' title='Drag to select points within a rectangle, then Copy (Ctrl+C) and Paste (Ctrl+V) or Delete (Delete).'>
+		<button class="toggle" id='selection-tool' title='Drag to select points within a rectangle, then Copy (Ctrl+C) and Paste (Ctrl+V) or Delete (Delete). You can also drag the selected points together.'>
 			Select (S)
 		</button>
 	`);
