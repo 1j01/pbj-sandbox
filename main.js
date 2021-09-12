@@ -1176,12 +1176,12 @@ function step() {
 	}
 
 	ctx.lineWidth = 1;
-	ctx.strokeStyle = "rgba(0,255,200,0.5)";
+	ctx.fillStyle = "rgba(0,255,200,0.5)";
 	for (var i = selection.points.length - 1; i >= 0; i--) {
 		var p = selection.points[i];
 		ctx.beginPath();
-		ctx.arc(p.x, p.y, 3, 0, Math.PI * 2, false);
-		ctx.stroke();
+		ctx.arc(p.x, p.y, 5, 0, Math.PI * 2, false);
+		ctx.fill();
 	}
 
 	ctx.lineWidth = 3;
