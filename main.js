@@ -84,7 +84,7 @@ function main() {
 	mouseDragForce = 0.1;
 	mouseDragDamping = 0.5;
 	mouseDragLerpDistance = 30;
-	maxDistToMouse = 100; // for picking points to drag, not while dragging
+	dragStartMaxDistToMouse = 100; // for picking points to drag, not while dragging
 
 	connections = [];
 	points = [];
@@ -93,6 +93,9 @@ function main() {
 	collision = false;
 	slowmo = false; // TODO: generalize to a time scale
 	autoConnect = false;
+
+	glueMaxDistToMouse = 30;
+	autoConnectMaxDist = 50;
 	gravity = 0.1;
 	terrainEnabled = false;
 	audioEnabled = false;
@@ -454,6 +457,15 @@ function computeGroups() {
 	}
 }
 
+function numConn(p) {
+	var nc = 0;
+	for (var i = 0; i < connections.length; i++) {
+		if (connections[i].p1 === p) nc++;
+		if (connections[i].p2 === p) nc++;
+	}
+	return nc;
+}
+
 function step() {
 	//Drawing setup
 	var ctx = canvas.getContext("2d");
@@ -792,7 +804,7 @@ function step() {
 	//Draw and step the points.
 	let time = performance.now();
 	nearToMouse = null;
-	let closestToMouseDist = maxDistToMouse;
+	let closestToMouseDist = dragStartMaxDistToMouse;
 	for (var i = points.length - 1; i >= 0; i--) {
 		var p = points[i];
 		if (play && !p.fixed) {
@@ -925,31 +937,27 @@ function step() {
 			if (i == j) continue;
 			var p2 = points[j];
 			var d = distance(p.x, p.y, p2.x, p2.y);
-			if (d < 50) {
-				function numConn(p) {
-					var nc = 0;
-					for (var i = 0; i < connections.length; i++) {
-						if (connections[i].p1 === p) nc++;
-						if (connections[i].p2 === p) nc++;
+			if (
+				// Glue tool (undoable handled elsewhere)
+				(distToMouse < glueMaxDistToMouse &&
+					((tool === "glue-tool" && mouse.left) || keys.Space)
+				) ||
+				// Auto-Connect behavior
+				(autoConnect && d < autoConnectMaxDist && numConn(p) < 6 && numConn(p2) < 3)
+			) {
+				var connected = false;
+				for (var ci = connections.length - 1; ci >= 0; ci--) {
+					if (
+						(connections[ci].p1 === p && connections[ci].p2 === p2) ||
+						(connections[ci].p1 === p2 && connections[ci].p2 === p)
+					) {
+						connected = true;
+						break;
 					}
-					return nc;
 				}
-				// Undoable handled elsewhere
-				if ((distToMouse < 30 && (tool === "glue-tool" && mouse.left || keys.Space)) || (autoConnect && d < 50 && numConn(p) < 6 && numConn(p2) < 3)) {
-					var connected = false;
-					for (var ci = connections.length - 1; ci >= 0; ci--) {
-						if (
-							(connections[ci].p1 === p && connections[ci].p2 === p2)
-							|| (connections[ci].p1 === p2 && connections[ci].p2 === p)
-						) {
-							connected = true;
-							break;
-						}
-					}
-					if (!connected) {
-						connections.push({ p1: p, p2: p2, dist: 60, force: 1 });
-						//connections.push({p1:p,p2:p2,dist:Math.ceil(d*.15)*10});
-					}
+				if (!connected) {
+					connections.push({ p1: p, p2: p2, dist: 60, force: 1 });
+					//connections.push({p1:p,p2:p2,dist:Math.ceil(d*.15)*10});
 				}
 			}
 		}
