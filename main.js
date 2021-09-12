@@ -1,4 +1,9 @@
 function serialize(points, connections, isSelection) {
+	// Note: if I ever change this to JSON,
+	// I should bump the version to >2, since ARSON stringifies as JSON but with values as indices,
+	// and formatVersion ends up looking like `formatVersion:2`
+	// Also don't reorder these keys, because that could make it `formatVersion:<some other number>`
+	// That said, this is just a toy, and there's no actual import/export feature.
 	return ARSON.stringify({
 		format: "pbp2d",
 		formatVersion: 0.1,
