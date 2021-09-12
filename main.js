@@ -676,6 +676,9 @@ function step() {
 	} else {
 		dragging = [];
 	}
+	if (tool === "drag-tool" && !dragging.length && nearToMouse) {
+		toolDraw(ctx, "drag", false, nearToMouse);
+	}
 
 	if (play) {
 
