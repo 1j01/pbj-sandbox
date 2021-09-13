@@ -1595,7 +1595,7 @@ function guiStuff() {
 		<label title='This may not be a physically accurate time scale. There are probably other things it should scale, but it only scales the application of velocity.'>
 			<input type='checkbox' id='slowmo-checkbox'/>Slow Motion
 		</label>
-		<label title='Pause and resume the simulation.'><input type='checkbox' id='play-checkbox'/>Play (P)</label>
+		<label title='Pause and resume the simulation.'><input type='checkbox' id='play-checkbox' aria-keyshortcuts="P"/>Play (P)</label>
 		<h3>Sim Visuals:</h3>
 		<label title='Leave a visual trail behind all objects.'><input type='checkbox' id='ghost-trails-checkbox'/>Ghost Trails</label>
 		<h3>Windows:</h3>
@@ -1800,42 +1800,50 @@ function guiStuff() {
 	const tools = [
 		{
 			id: TOOL_DRAG,
-			name: "Drag Points (D)",
-			tooltip: "Drag stuff around. Works when paused or playing. You can also use Right Click as a shortcut. Hold Shift before dragging to drag multiple points (or you can drag a selection)."
+			name: "Drag Points",
+			shortcut: "D",
+			tooltip: "Drag stuff around. Works when paused or playing. You can also use Right Click as a shortcut. Hold Shift before dragging to drag multiple points you can drag a selection)."
 		},
 		{
 			id: TOOL_ADD_POINTS,
-			name: "Add Points (A)",
+			name: "Add Points",
+			shortcut: "A",
 			tooltip: "Click anywhere to add a point. Hold Shift to make fixed points."
 		},
 		{
 			id: TOOL_ADD_POINTS_QUICKLY,
-			name: "Add Points Quickly (Q)",
+			name: "Add Points Quickly",
+			shortcut: "Q",
 			tooltip: "Create many unconnected points. Hold Shift to make fixed points."
 		},
 		{
 			id: TOOL_ADD_ROPE,
-			name: "Make Rope (R)",
+			name: "Make Rope",
+			shortcut: "R",
 			tooltip: "Create a connected series of points. Hold Shift to make fixed points."
 		},
 		{
 			id: TOOL_ADD_BALL,
-			name: "Make Ball (B)",
+			name: "Make Ball",
+			shortcut: "B",
 			tooltip: "Create a group of interconnected points forming a round or polygonal shape."
 		},
 		{
 			id: TOOL_GLUE,
-			name: "Glue (G)",
+			name: "Glue",
+			shortcut: "G",
 			tooltip: "Connect any points near the mouse to each other."
 		},
 		{
 			id: TOOL_PRECISE_CONNECTOR,
-			name: "Precise Connector (C)",
+			name: "Precise Connector",
+			shortcut: "C",
 			tooltip: "Drag from one point to another to connect them, or if they're already connected, to delete the connection. Hold Shift to create arbitrary-length connections."
 		},
 		{
 			id: TOOL_SELECT,
-			name: "Select (S)",
+			name: "Select",
+			shortcut: "S",
 			tooltip: "Drag to select points within a rectangle, then Copy (Ctrl+C) and Paste (Ctrl+V) or Delete (Delete). You can also drag the selected points together."
 		},
 	];
@@ -1843,7 +1851,8 @@ function guiStuff() {
 		const toolButton = document.createElement("button");
 		toolButton.classList.add("toggle");
 		toolButton.title = tool.tooltip;
-		toolButton.textContent = tool.name;
+		toolButton.textContent = `${tool.name} (${tool.shortcut})`;
+		toolButton.setAttribute("aria-keyshortcuts", tool.shortcut);
 		$toolsWindow.$content.append(toolButton);
 		$toolsWindow.$content.append(document.createElement("br"));
 		toolButton.onclick = () => {
