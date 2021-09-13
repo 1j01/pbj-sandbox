@@ -1863,6 +1863,10 @@ main();
 guiStuff();
 
 function connect_if_not_connected(p1, p2, connections, options = {}) {
+	if (p1 === p2) {
+		console.warn("Tried to connect a point to itself");
+		return;
+	}
 	if (areDirectlyConnected(p1, p2, connections)) {
 		return;
 	}
@@ -1922,6 +1926,9 @@ function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60, ...pointOpt
 		const p1 = ballPoints[i];
 		for (let j = 0; j < numPoints; j++) {
 			const p2 = ballPoints[j];
+			if (i === j) {
+				continue; // don't connect to self
+			}
 			// Note: it produces some dope shapes with force: 2 
 			// connect_if_not_connected(p1, p2, ballConnections, { dist: size, force: 2 });
 			connect_if_not_connected(p1, p2, ballConnections, { dist: size, force: 1 });
