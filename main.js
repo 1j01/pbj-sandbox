@@ -118,7 +118,7 @@ function main() {
 	debugPolygons = []; // reset per frame
 	debugLines = []; // reset per frame
 
-	tool = TOOL_ADD_POINTS;
+	selectedTool = TOOL_ADD_POINTS;
 	lastRopePoint = null;
 	connectorToolPoint = null;
 	selection = {
@@ -488,7 +488,7 @@ function step() {
 
 	let groupsComputedThisFrame = false;
 
-	if (tool === TOOL_SELECT && mouse.left && mousePrevious.left) {
+	if (selectedTool === TOOL_SELECT && mouse.left && mousePrevious.left) {
 		selection = {
 			x: selection.x, y: selection.y,
 			x1: Math.min(selection.x, mouse.x),
@@ -529,21 +529,21 @@ function step() {
 		ctx.stroke();
 	}
 
-	if (tool === TOOL_SELECT) {
+	if (selectedTool === TOOL_SELECT) {
 		if (mouse.left && !mousePrevious.left) {
 			selection = { x: mouse.x, y: mouse.y, points: [], connections: [] };
 		}
-	} else if (tool === TOOL_ADD_POINTS || tool === TOOL_ADD_POINTS_QUICKLY) {
-		if (mouse.left && (!mousePrevious.left || tool === TOOL_ADD_POINTS_QUICKLY)) {
+	} else if (selectedTool === TOOL_ADD_POINTS || selectedTool === TOOL_ADD_POINTS_QUICKLY) {
+		if (mouse.left && (!mousePrevious.left || selectedTool === TOOL_ADD_POINTS_QUICKLY)) {
 			if (!mousePrevious.left) undoable();
 			add_point_at_mouse();
 		}
-	} else if (tool === TOOL_ADD_BALL) {
+	} else if (selectedTool === TOOL_ADD_BALL) {
 		if (mouse.left && !mousePrevious.left) {
 			undoable();
 			add_ball({ x: mouse.x, y: mouse.y, numPoints: 5 + ~~(Math.random() * 4), size: 20 + Math.random() * 30 });
 		}
-	} else if (tool === TOOL_ADD_ROPE) {
+	} else if (selectedTool === TOOL_ADD_ROPE) {
 		if (mouse.left) {
 			if (!mousePrevious.left) {
 				undoable();
@@ -574,7 +574,7 @@ function step() {
 		} else {
 			lastRopePoint = null;
 		}
-	} else if (tool === TOOL_PRECISE_CONNECTOR) {
+	} else if (selectedTool === TOOL_PRECISE_CONNECTOR) {
 		// I feel like angular similarity should also factor into this,
 		// maybe use polar coordinates and weigh the angle vs distance?
 		let closestPoint = null;
@@ -635,13 +635,13 @@ function step() {
 				canSelect ? closestPoint : mouse
 			);
 		}
-	} else if (tool === TOOL_GLUE) {
+	} else if (selectedTool === TOOL_GLUE) {
 		// handled elsewhere, except for creating undoable state
 		if (mouse.left && !mousePrevious.left) {
 			undoable();
 		}
 	}
-	if ((mouse.right || (mouse.left && tool === TOOL_DRAG))) {
+	if ((mouse.right || (mouse.left && selectedTool === TOOL_DRAG))) {
 		if (!mousePrevious.right && !mousePrevious.left) {
 			if (nearToMouse) {
 				undoable();
@@ -693,7 +693,7 @@ function step() {
 	} else {
 		dragging = [];
 	}
-	if (tool === TOOL_DRAG && !dragging.length && nearToMouse) {
+	if (selectedTool === TOOL_DRAG && !dragging.length && nearToMouse) {
 		toolDraw(ctx, "drag", false, false, nearToMouse);
 	} else if (dragging.length) {
 		for (const p of dragging) {
@@ -910,7 +910,7 @@ function step() {
 		// }
 
 		var distToMouse = distance(p.x, p.y, mouse.x, mouse.y);
-		if (!mouse.right && !(mouse.left && tool === TOOL_DRAG)) {
+		if (!mouse.right && !(mouse.left && selectedTool === TOOL_DRAG)) {
 			if (distToMouse < closestToMouseDist && !p.fixed) {
 				nearToMouse = p;
 				closestToMouseDist = distToMouse;
@@ -926,7 +926,7 @@ function step() {
 			// also these are definite "can" and "will do" booleans
 			let canGlue = distToMouse < glueMaxDistToMouse && d < glueMaxDist;
 			let doGlue = canGlue &&
-				((tool === TOOL_GLUE && mouse.left) || keys.Space);
+				((selectedTool === TOOL_GLUE && mouse.left) || keys.Space);
 
 			if (
 				// Glue tool (undoable handled elsewhere)
@@ -965,7 +965,7 @@ function step() {
 				if (connected) {
 					canGlue = doGlue = false;
 				}
-				if (canGlue && tool === TOOL_GLUE) {
+				if (canGlue && selectedTool === TOOL_GLUE) {
 					toolDraw(ctx, "connect", false, false, p, p2);
 				}
 			}
@@ -1837,7 +1837,7 @@ function guiStuff() {
 	var $toolButtons = $toolsWindow.$content.find("button");
 
 	selectTool = function (id) {
-		tool = id;
+		selectedTool = id;
 		for (var i = 0; i < $toolButtons.length; i++) {
 			var tb = $toolButtons[i];
 			if (tb.dataset.toolId === id) {
@@ -1847,7 +1847,7 @@ function guiStuff() {
 			}
 		}
 	};
-	selectTool(tool);
+	selectTool(selectedTool);
 
 	// window theme selection
 	const themeSelect = find("#theme-select");
