@@ -274,7 +274,7 @@ function main() {
 		}
 	});
 	addEventListener('keyup', function (e) { delete keys[e.key]; delete keys[e.code]; });
-	var removeSelectionAndBlur = function () {
+	var deselectTextAndBlur = function () {
 		if (window.getSelection) {
 			if (window.getSelection().empty) {  // Chrome
 				window.getSelection().empty();
@@ -287,8 +287,9 @@ function main() {
 		document.activeElement.blur();
 	};
 	var moveMouse = function (pageX, pageY) {
-		mouse.x = pageX - canvas.getBoundingClientRect().left;
-		mouse.y = pageY - canvas.getBoundingClientRect().top;
+		const rect = canvas.getBoundingClientRect();
+		mouse.x = pageX - rect.left;
+		mouse.y = pageY - rect.top;
 	};
 	canvas.addEventListener('mousedown', function (e) {
 		moveMouse(e.pageX, e.pageY);
@@ -298,12 +299,12 @@ function main() {
 			mouse.right = true;
 		}
 		e.preventDefault();
-		removeSelectionAndBlur();
+		deselectTextAndBlur();
 	});
 	canvas.addEventListener('touchstart', function (e) {
 		moveMouse(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
 		mouse.left = true;
-		removeSelectionAndBlur();
+		deselectTextAndBlur();
 		e.preventDefault();
 	});
 	addEventListener('mouseup', function (e) {
