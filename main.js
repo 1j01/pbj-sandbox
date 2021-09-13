@@ -700,6 +700,11 @@ function step() {
 			toolDraw(ctx, "drag", true, false, p);
 		}
 	}
+	if (selectedTool !== TOOL_ADD_ROPE) {
+		// not important
+		// just prevents a weird scenario where you can continue a rope after switching tools while making a rope
+		lastRopePoint = null;
+	}
 
 	if (play) {
 
@@ -1729,7 +1734,7 @@ function guiStuff() {
 					Add shortcut '/' to either:
 					Quickly switch to the Precise Connector tool and back when you release.
 					Or: Add a point at the mouse position connected to the closest point.
-					Or: Connect the two closest points.
+					Or: Connect the two points closest to the mouse.
 					Probably the first option.
 				</li>
 				<li>
