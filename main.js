@@ -291,7 +291,8 @@ function main() {
 		mouse.x = pageX - rect.left;
 		mouse.y = pageY - rect.top;
 	};
-	canvas.addEventListener('mousedown', function (e) {
+	canvas.style.touchAction = "none";
+	canvas.addEventListener('pointerdown', function (e) {
 		moveMouse(e.pageX, e.pageY);
 		if (e.button == 0) {
 			mouse.left = true;
@@ -301,13 +302,7 @@ function main() {
 		e.preventDefault();
 		deselectTextAndBlur();
 	});
-	canvas.addEventListener('touchstart', function (e) {
-		moveMouse(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
-		mouse.left = true;
-		deselectTextAndBlur();
-		e.preventDefault();
-	});
-	addEventListener('mouseup', function (e) {
+	addEventListener('pointerup', function (e) {
 		if (e.button == 0) {
 			mouse.left = false;
 		} else {
@@ -315,19 +310,16 @@ function main() {
 		}
 		e.preventDefault();
 	});
-	addEventListener('touchend', function (e) {
-		mouse.left = false;
-		mouse.right = false;
+	addEventListener('pointercancel', function (e) {
+		if (e.button == 0) {
+			mouse.left = false;
+		} else {
+			mouse.right = false;
+		}
+		e.preventDefault();
 	});
-	addEventListener('touchcancel', function (e) {
-		mouse.left = false;
-		mouse.right = false;
-	});
-	addEventListener('mousemove', function (e) {
+	addEventListener('pointermove', function (e) {
 		moveMouse(e.pageX, e.pageY);
-	}, false);
-	addEventListener('touchmove', function (e) {
-		moveMouse(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
 	}, false);
 
 	/*(onresize = function () {
