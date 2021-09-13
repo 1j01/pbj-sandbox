@@ -1759,7 +1759,7 @@ function guiStuff() {
 			<p>Toggle the "Terrain" to regenerate it.</p>
 			<p>Press <kbd>P</kbd> to pause/unpause the simulation.</p>
 			<p>Press <kbd>Ctrl+Z</kbd> to undo to a previous state and <kbd>Ctrl+Y</kbd> or <kbd>Ctrl+Shift+Z</kbd> to redo.</p>
-			<p>Use the Selection tool to select points, or <kbd>Ctrl+A</kbd> to select all points. <kbd>Ctrl+D</kbd> to deselect.</p>
+			<p>Use the Select tool to select points, or <kbd>Ctrl+A</kbd> to select all points. <kbd>Ctrl+D</kbd> to deselect.</p>
 			<p>Press <kbd>Ctrl+C</kbd> to copy the selection (or <kbd>Ctrl+X</kbd> to cut), and <kbd>Ctrl+V</kbd> to paste near the mouse.</p>
 			<p>Press <kbd>Delete</kbd> to remove the selected points.</p>
 			<p>Note that this toy doesn't copy to the system clipboard, only an internal clipboard.</p>
