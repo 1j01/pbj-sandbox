@@ -749,7 +749,8 @@ function step() {
 			c.p1.fy += dy / d * dd * f;
 			c.p2.fx -= dx / d * dd * f;
 			c.p2.fy -= dy / d * dd * f;
-			if (dd > c.dist * 3) {
+			// breaking distance was previously c.dist * 3; c.dist + 120 keeps it the same for the standard distance of 60 (60*3 = 180 = 60 + 120), while making the rope stronger
+			if (dd > c.dist + 120) {
 				connections.splice(j, 1);
 				// console.log(dd);
 				amplitude += Math.min(Math.abs(dd), 100) / 100;
