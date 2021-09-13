@@ -16,6 +16,8 @@ You can [check it out here](https://1j01.github.io/pbp2d).
 - Glue tool
 - Precise connector tool
 - Ghost trails, slow motion, gravity, and other settings
+- Keyboard shortcuts to switch tools (and to use some tools without switching)
+- Touch support
 
 ## Ways to Lose Data
 
@@ -24,16 +26,18 @@ However, since this is a topic I care about, I like to think about ways users ca
 
 There's **no save/load**. And the clipboard is internal, so you can't use it as a workaround to save/load. Everything is lost if you close the tab.
 
-Some things are not in the undo state, even tho they affect the world:
+Some things are not in the undo state, even though they affect the world:
 - browser window size,
 - in-app window positions and sizes,
 - simulation options like gravity
 
-Furthermore, if the simulation is active, undoing and redoing is destructive,
+Furthermore, if the simulation is active, undo/redo is destructive,
 because the states will be replaced with ones further ahead in time,
-as you traverse the stacks / go back and forth.
+as you go back and forth.
+For example, if you throw a point, and undo, the redo state is the state at which you undid the throw, so if you redo, it will be in midair.
+Then it lands, and you undo and redo, and it's already landed in the redo state.
 
-And some things don't create undo history, like dragging points, currently,
+And some things don't create undo history, like dragging windows,
 so you can go for quite some time messing around without creating any undo states you can go back to.
 
 Eventually I plan to create a system where none of these things are the case.

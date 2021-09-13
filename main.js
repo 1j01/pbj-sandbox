@@ -1746,6 +1746,8 @@ function guiStuff() {
 					Generalize "Ghost Trails" to a slider.
 				</li>
 				<li>
+					Support multi-touch for the Drag tool. (And maybe other tools?)
+				<li>
 					Ideally (but this would be hard), fix collision.
 					<br>(Things no clip and get stuck in each other.
 					<br>It just doesn't really work.)
@@ -1777,16 +1779,17 @@ function guiStuff() {
 	find("#help-button").onclick = function () {
 		const $w = new $Window({ title: "Help", resizable: true, maximizeButton: false, minimizeButton: false });
 		$w.$content.html(`
-			<p>Left Click to use the selected tool, and Right Click to drag points.</p>
-			<p>Use the Glue tool or hold Space near some points to connect them.</p>
+			<p>Select a tool in the Tools box, then click to use it. You can also right-click to drag points.</p>
+			<p>To connect points, use the Glue tool or Precise Connector. Hold <kbd>/</kbd> to temporarily use to the Precise Connector, or Space to immediately Glue.</p>
+			<p>To make more solid shapes, use the Precise Connector and hold <kbd>Shift</kbd> to create arbitrary-length lines, and add extra lines.</p>
 			<p>Hold Shift when making points to fix them in place.</p>
-			<p>Toggle the "Terrain" to regenerate it.</p>
 			<p>Press <kbd>P</kbd> to pause/unpause the simulation.</p>
+			<p>Toggle "Terrain" off and on to regenerate it.</p>
 			<p>Press <kbd>Ctrl+Z</kbd> to undo to a previous state and <kbd>Ctrl+Y</kbd> or <kbd>Ctrl+Shift+Z</kbd> to redo.</p>
-			<p>Use the Select tool to select points, or <kbd>Ctrl+A</kbd> to select all points. <kbd>Ctrl+D</kbd> to deselect.</p>
+			<p>Use the Select tool to select points in a rectangle, or <kbd>Ctrl+A</kbd> to select all points, and <kbd>Ctrl+D</kbd> to deselect all.</p>
 			<p>Press <kbd>Ctrl+C</kbd> to copy the selection (or <kbd>Ctrl+X</kbd> to cut), and <kbd>Ctrl+V</kbd> to paste near the mouse.</p>
 			<p>Press <kbd>Delete</kbd> to remove the selected points.</p>
-			<p>Note that this toy doesn't copy to the system clipboard, only an internal clipboard.</p>
+			<p>There is no save/load, and it doesn't copy to the system clipboard, only an internal clipboard.</p>
 		`);
 		positionElement($w[0], "top");
 	};
