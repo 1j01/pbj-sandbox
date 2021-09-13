@@ -500,19 +500,23 @@ function step() {
 
 		for (var j = connections.length - 1; j >= 0; j--) {
 			var c = connections[j];
-			if (c.p1.x < selection.x2 && c.p1.x > selection.x1)
-				if (c.p1.y < selection.y2 && c.p1.y > selection.y1)
-					if (c.p2.x < selection.x2 && c.p2.x > selection.x1)
-						if (c.p2.y < selection.y2 && c.p2.y > selection.y1) {
-							selection.connections.push(c);
-						}
+			if (
+				c.p1.x < selection.x2 && c.p1.x > selection.x1 &&
+				c.p1.y < selection.y2 && c.p1.y > selection.y1 &&
+				c.p2.x < selection.x2 && c.p2.x > selection.x1 &&
+				c.p2.y < selection.y2 && c.p2.y > selection.y1
+			) {
+				selection.connections.push(c);
+			}
 		}
 		for (var i = points.length - 1; i >= 0; i--) {
 			var p = points[i];
-			if (p.x < selection.x2 && p.x > selection.x1)
-				if (p.y < selection.y2 && p.y > selection.y1) {
-					selection.points.push(p);
-				}
+			if (
+				p.x < selection.x2 && p.x > selection.x1 &&
+				p.y < selection.y2 && p.y > selection.y1
+			) {
+				selection.points.push(p);
+			}
 		}
 
 		// draw selection rectangle
@@ -857,35 +861,36 @@ function step() {
 				r = { left: r.left - o, top: r.top - o, right: r.right + o, bottom: r.bottom + o };
 				r.width = r.right - r.left;
 				r.height = r.bottom - r.top;
-				if (p.x >= r.left && p.x <= r.right) {
-					if (p.y >= r.top && p.y <= r.bottom) {
-						// convert to rect unit coords (0 = left, 1 = right, 0 = top, 1 = bottom)
-						// then find whether it's in each of two diagonal halves
-						// and use that to find whether it's in opposing diagonal quadrants
-						// i.e. whether it's more horizontal or more vertical
-						var in_upper_right_half = (p.x - r.left) / r.width > (p.y - r.top) / r.height;
-						var in_upper_left_half = (r.right - p.x) / r.width > (p.y - r.top) / r.height;
-						var in_left_or_right_quadrant = in_upper_right_half ^ in_upper_left_half;
-						if (in_left_or_right_quadrant) {
-							if (p.x < r.left + r.width / 2) {
-								p.x = r.left;
-								p.vx = -Math.abs(p.vx) / cor;
-								//p.vy/=friction;
-							} else {
-								p.x = r.right;
-								p.vx = Math.abs(p.vx) / cor;
-								//p.vy/=friction;
-							}
+				if (
+					p.x >= r.left && p.x <= r.right &&
+					p.y >= r.top && p.y <= r.bottom
+				) {
+					// convert to rect unit coords (0 = left, 1 = right, 0 = top, 1 = bottom)
+					// then find whether it's in each of two diagonal halves
+					// and use that to find whether it's in opposing diagonal quadrants
+					// i.e. whether it's more horizontal or more vertical
+					var in_upper_right_half = (p.x - r.left) / r.width > (p.y - r.top) / r.height;
+					var in_upper_left_half = (r.right - p.x) / r.width > (p.y - r.top) / r.height;
+					var in_left_or_right_quadrant = in_upper_right_half ^ in_upper_left_half;
+					if (in_left_or_right_quadrant) {
+						if (p.x < r.left + r.width / 2) {
+							p.x = r.left;
+							p.vx = -Math.abs(p.vx) / cor;
+							//p.vy/=friction;
 						} else {
-							if (p.y < r.top + r.height / 2) {
-								p.y = r.top;
-								p.vy = -Math.abs(p.vy) / cor;
-								p.vx /= friction;
-							} else {
-								p.y = r.bottom;
-								p.vy = Math.abs(p.vy) / cor;
-								p.vx /= friction;
-							}
+							p.x = r.right;
+							p.vx = Math.abs(p.vx) / cor;
+							//p.vy/=friction;
+						}
+					} else {
+						if (p.y < r.top + r.height / 2) {
+							p.y = r.top;
+							p.vy = -Math.abs(p.vy) / cor;
+							p.vx /= friction;
+						} else {
+							p.y = r.bottom;
+							p.vy = Math.abs(p.vy) / cor;
+							p.vx /= friction;
 						}
 					}
 				}
