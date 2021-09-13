@@ -1762,6 +1762,26 @@ function guiStuff() {
 					<br>(Things no clip and get stuck in each other.
 					<br>It just doesn't really work.)
 				</li>
+				<!--
+				<li>
+					Fix NaNs introduced when smashing tons of points with the windows and/or waiting?
+				</li>
+				<li>
+					Precise connector workflow for connecting points as you drag them? (quick pause while holding slash? could show pause icon but slanted then haha)
+				</li>
+				<li>
+					Draw tool graphics with updated point positions at end of frame?
+				</li>
+				<li>
+					Allow toggling group drag (Shift) after starting drag?
+				</li>
+				<li>
+					Preset scenes to load or add to your scene? (kind of problematic with the toy nature of windows being collidable and the viewport border being collidable)
+				</li>
+				<li>
+					A way to mirror a selection, or more general symmetry support?
+				</li>
+				-->
 			</ul>
 		`);
 		positionElement($w[0], "top right");
