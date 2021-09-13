@@ -88,13 +88,13 @@ function main() {
 	mousePrevious = { x: 0, y: 0, d: 0 };
 	keys = {};
 
-	nearToMouse = null;
 	dragging = [];
 	dragOffsets = [];
 	mouseDragForce = 0.1;
 	mouseDragDampingFactor = 0.5;
 	mouseDragLerpDistance = 30;
-	dragStartMaxDistToMouse = 100; // for picking points to drag, not while dragging
+	dragMaxDistToSelect = 100; // for picking points to drag
+	preciseConnectorMaxDistToSelect = 60; // for picking points to connect
 
 	connections = [];
 	points = [];
@@ -468,6 +468,19 @@ function numConn(p) {
 	return nc;
 }
 
+function findClosestPoint(x, y, maxDistance=Infinity) {
+	let closestPoint = null;
+	let closestDist = maxDistance;
+	for (const point of points) {
+		const distance = Math.hypot(x - point.x, y - point.y);
+		if (distance < closestDist) {
+			closestDist = distance;
+			closestPoint = point;
+		}
+	}
+	return closestPoint;
+}
+
 function step() {
 	//Drawing setup
 	var ctx = canvas.getContext("2d");
@@ -601,19 +614,8 @@ function step() {
 	} else if (selectedTool === TOOL_PRECISE_CONNECTOR) {
 		// I feel like angular similarity should also factor into this,
 		// maybe use polar coordinates and weigh the angle vs distance?
-		let closestPoint = null;
-		{
-			const maxDistanceToSelect = 60;
-			let closestDist = maxDistanceToSelect;
-			for (let i = points.length - 1; i >= 0; i--) {
-				const p = points[i];
-				const dist = Math.hypot(mouse.x - p.x, mouse.y - p.y);
-				if (dist < closestDist) {
-					closestDist = dist;
-					closestPoint = p;
-				}
-			}
-		}
+		const closestPoint = findClosestPoint(mouse.x, mouse.y, preciseConnectorMaxDistToSelect);
+
 		const distBetweenPoints =
 			(connectorToolPoint && closestPoint) ?
 				Math.hypot(connectorToolPoint.x - closestPoint.x, connectorToolPoint.y - closestPoint.y) :
@@ -665,6 +667,7 @@ function step() {
 			undoable();
 		}
 	}
+	const nearToMouse = findClosestPoint(mouse.x, mouse.y, dragMaxDistToSelect);
 	if ((mouse.right || (mouse.left && selectedTool === TOOL_DRAG))) {
 		if (!mousePrevious.right && !mousePrevious.left) {
 			if (nearToMouse) {
@@ -819,8 +822,6 @@ function step() {
 	}
 	//Draw and step the points.
 	let time = performance.now();
-	nearToMouse = null;
-	let closestToMouseDist = dragStartMaxDistToMouse;
 	for (var i = points.length - 1; i >= 0; i--) {
 		var p = points[i];
 		if (play && !p.fixed) {
@@ -943,12 +944,6 @@ function step() {
 		// }
 
 		var distToMouse = distance(p.x, p.y, mouse.x, mouse.y);
-		if (!mouse.right && !(mouse.left && selectedTool === TOOL_DRAG)) {
-			if (distToMouse < closestToMouseDist && !p.fixed) {
-				nearToMouse = p;
-				closestToMouseDist = distToMouse;
-			}
-		}
 
 		for (var j = points.length - 1; j >= 0; j--) {
 			if (i == j) continue;
