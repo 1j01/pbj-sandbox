@@ -1818,7 +1818,6 @@ function guiStuff() {
 	for (const tool of tools) {
 		const toolButton = document.createElement("button");
 		toolButton.classList.add("toggle");
-		toolButton.dataset.toolId = tool.id;
 		toolButton.title = tool.tooltip;
 		toolButton.textContent = tool.name;
 		$toolsWindow.$content.append(toolButton);
@@ -1826,7 +1825,7 @@ function guiStuff() {
 		toolButton.onclick = () => {
 			selectTool(tool.id);
 		};
-		// tool.button = toolButton;
+		tool.button = toolButton;
 	}
 
 	$toolsWindow.addClass("tools-window");
@@ -1834,16 +1833,13 @@ function guiStuff() {
 	$toolsWindow[0].style.left = "10px";
 	$toolsWindow.bringTitleBarInBounds();
 
-	var $toolButtons = $toolsWindow.$content.find("button");
-
 	selectTool = function (id) {
 		selectedTool = id;
-		for (var i = 0; i < $toolButtons.length; i++) {
-			var tb = $toolButtons[i];
-			if (tb.dataset.toolId === id) {
-				tb.classList.add("selected");
+		for (const tool of tools) {
+			if (tool.id === id) {
+				tool.button.classList.add("selected");
 			} else {
-				tb.classList.remove("selected");
+				tool.button.classList.remove("selected");
 			}
 		}
 	};
