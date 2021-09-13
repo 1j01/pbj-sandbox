@@ -944,38 +944,16 @@ function step() {
 				// Auto-Connect behavior
 				(autoConnect && d < autoConnectMaxDist && numConn(p) < 6 && numConn(p2) < 3)
 			) {
-				var connected = false;
-				for (var ci = connections.length - 1; ci >= 0; ci--) {
-					if (
-						(connections[ci].p1 === p && connections[ci].p2 === p2) ||
-						(connections[ci].p1 === p2 && connections[ci].p2 === p)
-					) {
-						connected = true;
-						break;
-					}
-				}
-				if (!connected) {
+				if (areDirectlyConnected(p, p2, connections)) {
+					canGlue = doGlue = false;
+				} else {
 					connections.push({ p1: p, p2: p2, dist: 60, force: 1 });
 					//connections.push({p1:p,p2:p2,dist:Math.ceil(d*.15)*10});
-				} else {
-					canGlue = doGlue = false;
 				}
 			} else {
-				// TODO: DRY
-				var connected = false;
-				for (var ci = connections.length - 1; ci >= 0; ci--) {
-					if (
-						(connections[ci].p1 === p && connections[ci].p2 === p2) ||
-						(connections[ci].p1 === p2 && connections[ci].p2 === p)
-					) {
-						connected = true;
-						break;
-					}
-				}
-				if (connected) {
+				if (areDirectlyConnected(p, p2, connections)) {
 					canGlue = doGlue = false;
-				}
-				if (canGlue && selectedTool === TOOL_GLUE) {
+				} else if (canGlue && selectedTool === TOOL_GLUE) {
 					toolDraw(ctx, "connect", false, false, p, p2);
 				}
 			}
@@ -1516,11 +1494,21 @@ function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
 	return { points: ropePoints, connections: ropeConnections };
 }
 
-// Note: `groups` is only computed when collision is enabled
+// Note: `groups` is computed manually when needed, at most once per frame (with a flag)
 var groups = new Map(); // point to group id, for connected groups
 function areConnected(p1, p2) {
 	if (p1.fixed && p2.fixed) return false;
 	return groups.get(p1) == groups.get(p2);
+}
+function areDirectlyConnected(p1, p2, connections) {
+	// if the groups are already connected, using that information could be an optimization
+	// but not in this function if `connections` is an argument!
+	// if (groupsComputedThisFrame && !areConnected(p1, p2)) return false;
+	for (const connection of connections) {
+		if (connection.p1 == p1 && connection.p2 == p2) return true;
+		if (connection.p1 == p2 && connection.p2 == p1) return true;
+	}
+	return false;
 }
 
 function distance(x1, y1, x2, y2) {
@@ -1875,14 +1863,11 @@ main();
 guiStuff();
 
 function connect_if_not_connected(p1, p2, connections, options = {}) {
-	var connected = connections.some((connection) =>
-		(connection.p1 === p1 && connection.p2 === p2) ||
-		(connection.p1 === p2 && connection.p2 === p1)
-	);
-	if (!connected) {
-		connections.push(Object.assign({ p1: p1, p2: p2, dist: 60, force: 1 }, options));
-		// connections.push({p1:p1,p2:p2,dist:Math.ceil(d*.15)*10});
+	if (areDirectlyConnected(p1, p2, connections)) {
+		return;
 	}
+	connections.push(Object.assign({ p1: p1, p2: p2, dist: 60, force: 1 }, options));
+	// connections.push({p1:p1,p2:p2,dist:Math.ceil(d*.15)*10});
 }
 
 function make_point(options) {

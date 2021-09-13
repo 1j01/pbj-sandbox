@@ -31,16 +31,6 @@ for (var i = 0; i < blueprint.length; i++) {
 	sym_point_arrays.push(sym_a);
 	y += 30;
 }
-function connect_if_not_connected(p1, p2, connections) {
-	var connected = connections.some((connection) =>
-		(connection.p1 === p1 && connection.p2 === p2) ||
-		(connection.p1 === p2 && connection.p2 === p1)
-	);
-	if (!connected) {
-		connections.push({ p1: p1, p2: p2, dist: 60, force: 1 });
-		// connections.push({p1:p1,p2:p2,dist:Math.ceil(d*.15)*10});
-	}
-}
 for (var i = 1; i < sym_point_arrays.length; i++) {
 	var a1 = sym_point_arrays[i];
 	var a2 = sym_point_arrays[i - 1];
