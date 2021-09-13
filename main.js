@@ -488,6 +488,25 @@ function step() {
 
 	let groupsComputedThisFrame = false;
 
+	// I don't want to trigger multiple tools at once,
+	// so I'm temporarily changing the selected tool for transient tool shortcuts.
+	// This way I don't have to worry about the if-else chain much.
+	// TODO: should I also show the temporary tool in the toolbox?
+	const prevTool = selectedTool;
+
+	// Quickly switch to the Precise Connector tool and back when you release '/'
+	// Other ways this could work (alternate UI ideas):
+	// - Add a point at the mouse connected to the closest point.
+	// - Connect the two points closest to the mouse.
+	if (keys.Slash) {
+		selectedTool = TOOL_PRECISE_CONNECTOR;
+	}
+	// handled differently (Space immediately triggers the Glue tool's behavior)
+	// not sure it SHOULD though? could try it the other way
+	// if (keys.Space) {
+	// 	selectedTool = TOOL_GLUE;
+	// }
+
 	if (selectedTool === TOOL_SELECT && mouse.left && mousePrevious.left) {
 		selection = {
 			x: selection.x, y: selection.y,
@@ -708,6 +727,8 @@ function step() {
 		// not important
 		// just prevents a weird scenario where you can continue a rope after switching tools while making a rope
 		lastRopePoint = null;
+		// you could do a similar thing with the select tool, but whatever
+		// it's not like something bad happens
 	}
 
 	if (play) {
@@ -1252,6 +1273,9 @@ function step() {
 	mousePrevious.x = mouse.x;
 	mousePrevious.y = mouse.y;
 
+	// Not possible to click buttons in the middle of step(), don't worry. :)
+	selectedTool = prevTool;
+
 	if (play && collision && !groupsComputedThisFrame) {
 		computeGroups();
 		groupsComputedThisFrame = true;
@@ -1723,13 +1747,6 @@ function guiStuff() {
 		const $w = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
 		$w.$content.html(`
 			<ul>
-				<li>
-					Add shortcut '/' to either:
-					Quickly switch to the Precise Connector tool and back when you release.
-					Or: Add a point at the mouse position connected to the closest point.
-					Or: Connect the two points closest to the mouse.
-					Probably the first option.
-				</li>
 				<li>
 					Add a Midpoint tool, and/or other ways to get different lengths of lines.
 				</li>
