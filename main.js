@@ -580,7 +580,7 @@ function step() {
 					x: newX,
 					y: newY,
 					fixed: keys.Shift,
-					color: keys.Shift ? "grey" : `hsl(${Math.random() * 50},${Math.random() * 50 + 15}%,${Math.random() * 50 + 50}%)`,
+					color: keys.Shift ? "grey" : "#ce9e6b" //`hsl(${Math.random() * 50},${Math.random() * 50 + 15}%,${Math.random() * 50 + 50}%)`,
 				});
 				points.push(newRopePoint);
 				if (lastRopePoint) {
