@@ -243,7 +243,6 @@ function deselect() {
 }
 function copySelected() {
 	serializedClipboard = serialize(selection.points, selection.connections, true);
-	// console.log(deserialize(serializedClipboard));
 }
 function deleteSelected() {
 	for (var i = selection.points.length - 1; i >= 0; i--) {
@@ -251,16 +250,10 @@ function deleteSelected() {
 		for (var j = connections.length - 1; j >= 0; j--) {
 			var c = connections[j];
 			if (c.p1 === p || c.p2 === p) {
-				// console.log(c, j);
 				connections.splice(j, 1);
 			}
 		}
 		points.splice(points.indexOf(p), 1);
-		// ctx.lineWidth = 10;
-		// ctx.strokeStyle = "rgba(255,0,0,0.5)";
-		// ctx.beginPath();
-		// ctx.arc(p.x, p.y, 3, 0, Math.PI * 2, false);
-		// ctx.stroke();
 	}
 	deselect();
 }
@@ -306,14 +299,14 @@ function main() {
 			) {
 				e.preventDefault();
 				shortcut.action();
-				console.log("Triggered shortcut:", shortcut);
+				// console.log("Triggered shortcut:", shortcut);
 				matched = true;
 				break;
 			}
 		}
-		if (!matched) {
-			console.log("No shortcut matched:", e);
-		}
+		// if (!matched) {
+		// 	console.log("No shortcut matched:", e);
+		// }
 	});
 	addEventListener('keyup', function (e) { delete keys[e.key]; delete keys[e.code]; });
 	var deselectTextAndBlur = function () {
@@ -514,7 +507,7 @@ function countConnections(point) {
 	}
 	return count;
 }
-function findClosestPoint(x, y, maxDistance=Infinity) {
+function findClosestPoint(x, y, maxDistance = Infinity) {
 	let closestPoint = null;
 	let closestDist = maxDistance;
 	for (const point of points) {
@@ -1010,7 +1003,6 @@ function step() {
 					canGlue = doGlue = false;
 				} else {
 					connections.push({ p1: p, p2: p2, dist: 60, force: 1 });
-					//connections.push({p1:p,p2:p2,dist:Math.ceil(d*.15)*10});
 				}
 			} else {
 				if (areDirectlyConnected(p, p2, connections)) {
@@ -1280,12 +1272,12 @@ function step() {
 
 	if (debugPolygons.length) {
 		for (var i = debugPolygons.length - 1; i >= 0; i--) {
-			const { points, color } = debugPolygons[i]; // note: shadowing `points`
-			ctx.fillStyle = color;
+			const polygon = debugPolygons[i];
+			ctx.fillStyle = polygon.color;
 			ctx.beginPath();
-			ctx.moveTo(points[0].x, points[0].y);
-			for (var j = 1; j < points.length; j++) {
-				ctx.lineTo(points[j].x, points[j].y);
+			ctx.moveTo(polygon.points[0].x, polygon.points[0].y);
+			for (var j = 1; j < polygon.points.length; j++) {
+				ctx.lineTo(polygon.points[j].x, polygon.points[j].y);
 			}
 			ctx.closePath();
 			ctx.fill();
@@ -1345,41 +1337,13 @@ function step() {
 		}
 	}
 }
-// function intersectLineLine(x1, y1, x2, y2, x3, y3, x4, y4) {
-// 	x1 += 0.00001; // fix for straight up/down lines (i.e. points falling straight down)
-// 	x3 -= 0.00001; // fix in case straight up/down line is the second line passed
-// 	y4 += 0.00001; // might help too, idk (TODO: think about what the degenerate cases are, maybe write tests, maybe find a better algorithm)
-// 	var x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
-// 	var y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
-// 	if (isNaN(x) || isNaN(y)) {
-// 		return false;
-// 		// console.log(x, y);
-// 	} else {
-// 		if (x1 > x2) {
-// 			if (!(x2 < x && x < x1)) { return false; }
-// 		} else {
-// 			if (!(x1 < x && x < x2)) { return false; }
-// 		}
-// 		if (y1 >= y2) {
-// 			if (!(y2 < y && y < y1)) { return false; }
-// 		} else {
-// 			if (!(y1 < y && y < y2)) { return false; }
-// 		}
-// 		if (x3 >= x4) {
-// 			if (!(x4 < x && x < x3)) { return false; }
-// 		} else {
-// 			if (!(x3 < x && x < x4)) { return false; }
-// 		}
-// 		if (y3 >= y4) {
-// 			if (!(y4 < y && y < y3)) { return false; }
-// 		} else {
-// 			if (!(y3 < y && y < y4)) { return false; }
-// 		}
-// 	}
-// 	return { x: x, y: y };
-// }
+// Might also want to try other line segment intersection algorithms, such as:
+// https://gist.github.com/gordonwoodhull/50eb65d2f048789f9558
+// https://stackoverflow.com/a/58657254/2624876
+//
+// This one is based on: http://jsfiddle.net/justin_c_rounds/Gd2S2/
+// modified to return a result object only if the segments intersect
 function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
-	// if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
 	var denominator, a, b, numerator1, numerator2, result = {
 		x: null,
 		y: null,
@@ -1488,7 +1452,10 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 	// if (pointInQuad(line_x1, line_y1, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4)) {
 }
 
-var flowerPoints = [];
+// For removal of generated terrain,
+// I could store the points and connections that relate to the terrain,
+// but I'd have to include that information in the serialized world state,
+// so I'm just using named colors to identify the terrain.
 function removeTerrain() {
 	for (var i = points.length - 1; i >= 0; i--) {
 		if (points[i].color == "green" || points[i].color == "DarkOrchid") {
@@ -1535,10 +1502,10 @@ function createTerrain() {
 			});
 			points.push(flower_p);
 			connections.push({ p1: p, p2: flower_p, dist: Math.random() * 20 + 30, force: 1 });
-			flowerPoints.push(flower_p);
 		}
 	}
 }
+/*
 function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
 	var ropePoints = [];
 	var ropeConnections = [];
@@ -1556,9 +1523,8 @@ function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
 	}
 	return { points: ropePoints, connections: ropeConnections };
 }
-
+*/
 function positionElement(element, positionString) {
-	// setTimeout(() => {
 	const w = element.offsetWidth;
 	const h = element.offsetHeight;
 	const rect = element.getBoundingClientRect();
@@ -1572,13 +1538,11 @@ function positionElement(element, positionString) {
 	if (positionString.match(/right/)) x = innerWidth - w - 10;
 	x = Math.max(Math.min(x, innerWidth - w - 10), 10);
 	y = Math.max(Math.min(y, innerHeight - h - 10), 10);
-	//y=Math.min(Math.max(y,10),innerHeight-mh-10);
 	element.style.left = x + "px";
 	element.style.top = y + "px";
-	// }, 1);
 }
 
-function guiStuff() {
+function initGUI() {
 	var $optionsWindow = new $Window({
 		title: "Options",
 		resizable: true,
@@ -1779,7 +1743,10 @@ function guiStuff() {
 				</li>
 				<!--
 				<li>
-					Fix NaNs introduced when smashing tons of points with the windows and/or waiting?
+					Fix NaNs introduced when smashing points with the collidable windows into the edge of the screen.
+				</li>
+				<li>
+					Fix behavior when Shift+dragging a group of many points like the terrain (it seems to just stop dragging after a little distance).
 				</li>
 				<li>
 					Precise connector workflow for connecting points as you drag them? (quick pause while holding slash? could show pause icon but slanted then haha)
@@ -1791,7 +1758,14 @@ function guiStuff() {
 					Allow toggling group drag (Shift) after starting drag?
 				</li>
 				<li>
-					Preset scenes to load or add to your scene? (kind of problematic with the toy nature of windows being collidable and the viewport border being collidable)
+					Import/export selections.
+					I don't want to implement importing/exporting an entire scene,
+					because it wouldn't work well with the toy nature of windows being collidable and the viewport border being collidable,
+					but I could do selection import/export.
+					(and you'll just have to deal with whether the imported object fits,
+					and whether it's supposed to work in zero gravity or whatever.)
+					But if I do this, I have to change the serialization format just because it's stupid,
+					with the formatVersion being unclear due to how ARSON works (see comment in serialize)
 				</li>
 				<li>
 					A way to mirror a selection, or more general symmetry support?
@@ -1873,7 +1847,7 @@ function guiStuff() {
 }
 
 main();
-guiStuff();
+initGUI();
 
 function connect_if_not_connected(p1, p2, connections, options = {}) {
 	if (p1 === p2) {
@@ -1884,7 +1858,6 @@ function connect_if_not_connected(p1, p2, connections, options = {}) {
 		return;
 	}
 	connections.push(Object.assign({ p1: p1, p2: p2, dist: 60, force: 1 }, options));
-	// connections.push({p1:p1,p2:p2,dist:Math.ceil(d*.15)*10});
 }
 
 function make_point(options) {
