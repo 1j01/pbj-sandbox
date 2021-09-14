@@ -134,6 +134,56 @@ for (const tool of tools) {
 	});
 }
 
+
+var canvas = document.createElement("canvas");
+document.body.appendChild(canvas);
+canvas.border = 0; // ???
+
+var mouse = { x: 0, y: 0, d: 0 };
+var mousePrevious = { x: 0, y: 0, d: 0 };
+var keys = {};
+
+var dragging = [];
+var dragOffsets = [];
+var mouseDragForce = 0.1;
+var mouseDragDampingFactor = 0.5;
+var mouseDragLerpDistance = 30;
+var dragMaxDistToSelect = 100; // for picking points to drag
+var preciseConnectorMaxDistToSelect = 60; // for picking points to connect
+
+var connections = [];
+var points = [];
+
+var play = true;
+var collision = false;
+var slowmo = false; // TODO: generalize to a time scale
+var autoConnect = false;
+
+var glueMaxDistToMouse = 30;
+var glueMaxDist = 50;
+var autoConnectMaxDist = 50;
+var gravity = 0.1;
+var terrainEnabled = false;
+var audioEnabled = false;
+var audioStyle = 1;
+var audioViz = false;
+var ghostTrails = false;
+var windowTheme = "dark-theme"; // global used by index.html
+
+var debugPolygons = []; // reset per frame
+var debugLines = []; // reset per frame
+
+var selectedTool = TOOL_ADD_POINTS;
+var lastRopePoint = null;
+var connectorToolPoint = null;
+var selection = {
+	points: [],
+	connections: []
+};
+var undos = [];
+var redos = [];
+var serializedClipboard = null;
+
 function serialize(points, connections, isSelection) {
 	// Note: if I ever change this to JSON,
 	// I should bump the version to >2, since ARSON stringifies as JSON but with values as indices,
@@ -206,55 +256,6 @@ function deleteSelected() {
 	deselect();
 }
 function main() {
-	canvas = document.createElement("canvas");
-	document.body.appendChild(canvas);
-	canvas.border = 0;
-
-	mouse = { x: 0, y: 0, d: 0 };
-	mousePrevious = { x: 0, y: 0, d: 0 };
-	keys = {};
-
-	dragging = [];
-	dragOffsets = [];
-	mouseDragForce = 0.1;
-	mouseDragDampingFactor = 0.5;
-	mouseDragLerpDistance = 30;
-	dragMaxDistToSelect = 100; // for picking points to drag
-	preciseConnectorMaxDistToSelect = 60; // for picking points to connect
-
-	connections = [];
-	points = [];
-
-	play = true;
-	collision = false;
-	slowmo = false; // TODO: generalize to a time scale
-	autoConnect = false;
-
-	glueMaxDistToMouse = 30;
-	glueMaxDist = 50;
-	autoConnectMaxDist = 50;
-	gravity = 0.1;
-	terrainEnabled = false;
-	audioEnabled = false;
-	audioStyle = 1;
-	audioViz = false;
-	ghostTrails = false;
-	windowTheme = "dark-theme"; // global used by index.html
-
-	debugPolygons = []; // reset per frame
-	debugLines = []; // reset per frame
-
-	selectedTool = TOOL_ADD_POINTS;
-	lastRopePoint = null;
-	connectorToolPoint = null;
-	selection = {
-		points: [],
-		connections: []
-	};
-	undos = [];
-	redos = [];
-	serializedClipboard = null;
-
 	canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
 	addEventListener('keydown', function (e) {
