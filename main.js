@@ -137,7 +137,6 @@ for (const tool of tools) {
 
 var canvas = document.createElement("canvas");
 document.body.appendChild(canvas);
-canvas.border = 0; // ???
 
 var mouse = { x: 0, y: 0, d: 0 };
 var mousePrevious = { x: 0, y: 0, d: 0 };
