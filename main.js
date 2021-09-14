@@ -136,31 +136,46 @@ for (const tool of tools) {
 
 
 var canvas = document.createElement("canvas");
+var ctx = canvas.getContext("2d");
 document.body.appendChild(canvas);
 
+// world state
+var connections = [];
+var points = [];
+
+// interaction state
 var mouse = { x: 0, y: 0, d: 0 };
 var mousePrevious = { x: 0, y: 0, d: 0 };
 var keys = {};
 
+var selectedTool = TOOL_ADD_POINTS;
+var lastRopePoint = null;
+var connectorToolPoint = null;
 var dragging = [];
 var dragOffsets = [];
-var mouseDragForce = 0.1;
-var mouseDragDampingFactor = 0.5;
-var mouseDragLerpDistance = 30;
-var dragMaxDistToSelect = 100; // for picking points to drag
-var preciseConnectorMaxDistToSelect = 60; // for picking points to connect
+var selection = {
+	points: [],
+	connections: []
+};
+var undos = [];
+var redos = [];
+var serializedClipboard = null;
 
-var connections = [];
-var points = [];
+// tool parameters
+const mouseDragForce = 0.1;
+const mouseDragDampingFactor = 0.5;
+const mouseDragLerpDistance = 30;
+const dragMaxDistToSelect = 100; // for picking points to drag
+const preciseConnectorMaxDistToSelect = 60; // for picking points to connect
+const glueMaxDistToMouse = 30;
+const glueMaxDistBetweenPoints = 50;
+const autoConnectMaxDist = 50;
 
+// options
 var play = true;
 var collision = false;
 var slowmo = false; // TODO: generalize to a time scale
 var autoConnect = false;
-
-var glueMaxDistToMouse = 30;
-var glueMaxDist = 50;
-var autoConnectMaxDist = 50;
 var gravity = 0.1;
 var terrainEnabled = false;
 var audioEnabled = false;
@@ -169,19 +184,14 @@ var audioViz = false;
 var ghostTrails = false;
 var windowTheme = "dark-theme"; // global used by index.html
 
+// debug
 var debugPolygons = []; // reset per frame
 var debugLines = []; // reset per frame
 
-var selectedTool = TOOL_ADD_POINTS;
-var lastRopePoint = null;
-var connectorToolPoint = null;
-var selection = {
-	points: [],
-	connections: []
-};
-var undos = [];
-var redos = [];
-var serializedClipboard = null;
+// derived state for performance optimization
+// Note: `groups` is computed manually when needed, at most once per frame (with a flag)
+var groups = new Map(); // point to group id, for connected groups (used for avoiding self-collision)
+
 
 function serialize(points, connections, isSelection) {
 	// Note: if I ever change this to JSON,
@@ -483,13 +493,13 @@ function computeGroups() {
 	}
 }
 
-function numConn(p) {
-	var nc = 0;
-	for (var i = 0; i < connections.length; i++) {
-		if (connections[i].p1 === p) nc++;
-		if (connections[i].p2 === p) nc++;
+function countConnections(point) {
+	let count = 0;
+	for (const connection of connections) {
+		if (connection.p1 === point) count++;
+		if (connection.p2 === point) count++;
 	}
-	return nc;
+	return count;
 }
 
 function findClosestPoint(x, y, maxDistance=Infinity) {
@@ -506,9 +516,7 @@ function findClosestPoint(x, y, maxDistance=Infinity) {
 }
 
 function step() {
-	//Drawing setup
-	var ctx = canvas.getContext("2d");
-
+	// Drawing setup
 	if (canvas.width != innerWidth || canvas.height != innerHeight) {
 		canvas.width = innerWidth;
 		canvas.height = innerHeight;
@@ -976,7 +984,7 @@ function step() {
 
 			// Note: Auto-Connect is not Glue (but Spacebar is Glue)
 			// also these are definite "can" and "will do" booleans
-			let canGlue = distToMouse < glueMaxDistToMouse && d < glueMaxDist;
+			let canGlue = distToMouse < glueMaxDistToMouse && d < glueMaxDistBetweenPoints;
 			let doGlue = canGlue &&
 				((selectedTool === TOOL_GLUE && mouse.left) || keys.Space);
 
@@ -984,7 +992,7 @@ function step() {
 				// Glue tool (undoable handled elsewhere)
 				doGlue ||
 				// Auto-Connect behavior
-				(autoConnect && d < autoConnectMaxDist && numConn(p) < 6 && numConn(p2) < 3)
+				(autoConnect && d < autoConnectMaxDist && countConnections(p) < 6 && countConnections(p2) < 3)
 			) {
 				if (areDirectlyConnected(p, p2, connections)) {
 					canGlue = doGlue = false;
@@ -1539,8 +1547,6 @@ function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
 	return { points: ropePoints, connections: ropeConnections };
 }
 
-// Note: `groups` is computed manually when needed, at most once per frame (with a flag)
-var groups = new Map(); // point to group id, for connected groups
 function areConnected(p1, p2) {
 	if (p1.fixed && p2.fixed) return false;
 	return groups.get(p1) == groups.get(p2);
