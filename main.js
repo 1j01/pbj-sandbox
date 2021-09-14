@@ -58,72 +58,32 @@ const tools = [
 		tooltip: "Drag to select points within a rectangle, then Copy (Ctrl+C) and Paste (Ctrl+V) or Delete (Delete). You can also drag the selected points together."
 	},
 ];
+// Note: some keyboard shortcuts are handled with `keys` state (for continuous effects).
 const keyboardShortcuts = [
 	{ modifiers: ["CtrlCmd"], code: "KeyZ", action: undo, enable: () => undos.length > 0 },
 	{ modifiers: ["CtrlCmd"], code: "KeyY", action: redo, enable: () => redos.length > 0 },
 	{ modifiers: ["CtrlCmd", "Shift"], code: "KeyZ", action: redo, enable: () => redos.length > 0 },
 	{ modifiers: ["CtrlCmd"], code: "KeyC", action: copySelected, enable: () => selection.points.length > 0 },
-	{
-		modifiers: ["CtrlCmd"], code: "KeyX", action: () => {
-			copySelected();
-			undoable();
-			deleteSelected();
-		}, enable: () => selection.points.length > 0
-	},
-	{
-		modifiers: ["CtrlCmd"], code: "KeyV", action: () => {
-			undoable();
-			var clipboard = deserialize(serializedClipboard);
-			var minX = Infinity, minY = Infinity;
-			for (var i = 0; i < clipboard.points.length; i++) {
-				var p = clipboard.points[i];
-				minX = Math.min(minX, p.x);
-				minY = Math.min(minY, p.y);
-			}
-			for (var i = 0; i < clipboard.points.length; i++) {
-				var p = clipboard.points[i];
-				p.x -= minX - mouse.x;
-				p.y -= minY - mouse.y;
-			}
-			points = points.concat(clipboard.points);
-			connections = connections.concat(clipboard.connections);
-		}, enable: () => !!serializedClipboard,
-	},
-	{
-		modifiers: ["CtrlCmd"], code: "KeyA", action() {
-			selection.points = Array.from(points);
-			selection.connections = Array.from(connections);
-		}, enable: () => points.length > 0
-	},
+	{ modifiers: ["CtrlCmd"], code: "KeyX", action: cutSelected, enable: () => selection.points.length > 0 },
+	{ modifiers: ["CtrlCmd"], code: "KeyV", action: paste, enable: () => !!serializedClipboard },
+	{ modifiers: ["CtrlCmd"], code: "KeyA", action: selectAll, enable: () => points.length > 0 },
 	{
 		modifiers: ["CtrlCmd"], code: "KeyD", action: deselect,
 		enable: () => selection.points.length > 0 || selection.connections.length > 0,
 	},
-	{
-		modifiers: [], code: "Delete", action: () => {
-			undoable();
-			deleteSelected();
-		}
-	},
-	{
-		modifiers: [], code: "KeyP", action() {
-			play = !play;
-			document.getElementById("play-checkbox").checked = play;
-		}
-	},
+	{ modifiers: [], code: "Delete", action: deleteSelected },
+	{ modifiers: [], code: "KeyP", action: togglePlay },
 
-	{
-		// Glue selected points together without selecting the Glue tool.
-		// This handled elsewhere except for creating an undo state.
-		modifiers: [], code: "Space", action: undoable,
-	},
+	// Glue selected points together without selecting the Glue tool.
+	// This handled elsewhere except for creating an undo state.
+	{ modifiers: [], code: "Space", action: undoable },
 
 	// Add points without selecting the Add Points tool.
-	{ modifiers: [], code: "Period", action: add_point_at_mouse, },
-	{ modifiers: ["Shift"], code: "Period", action: add_point_at_mouse, },
-	{ modifiers: [], code: "NumpadDecimal", action: add_point_at_mouse, },
-	// this one may not work because it sends "Delete" instead, but it's awkward to use anyways
-	{ modifiers: ["Shift"], code: "NumpadDecimal", action: add_point_at_mouse, },
+	{ modifiers: [], code: "Period", action: add_point_at_mouse },
+	{ modifiers: ["Shift"], code: "Period", action: add_point_at_mouse },
+	{ modifiers: [], code: "NumpadDecimal", action: add_point_at_mouse },
+	// Shift+NumpadDecimal may not work because it sends "Delete" instead, but it's awkward to use anyways.
+	{ modifiers: ["Shift"], code: "NumpadDecimal", action: add_point_at_mouse },
 ];
 // Add keyboard shortcuts for selecting tools.
 for (const tool of tools) {
@@ -237,6 +197,11 @@ function redo() {
 	setState(redos.pop());
 	return true;
 }
+
+function selectAll() {
+	selection.points = Array.from(points);
+	selection.connections = Array.from(connections);
+}
 function deselect() {
 	selection.points = [];
 	selection.connections = [];
@@ -244,7 +209,13 @@ function deselect() {
 function copySelected() {
 	serializedClipboard = serialize(selection.points, selection.connections, true);
 }
+function cutSelected() {
+	// undoable is in deleteSelected()
+	copySelected();
+	deleteSelected();
+}
 function deleteSelected() {
+	undoable();
 	for (var i = selection.points.length - 1; i >= 0; i--) {
 		var p = selection.points[i];
 		for (var j = connections.length - 1; j >= 0; j--) {
@@ -257,6 +228,29 @@ function deleteSelected() {
 	}
 	deselect();
 }
+function paste() {
+	undoable();
+	var clipboard = deserialize(serializedClipboard);
+	var minX = Infinity, minY = Infinity;
+	for (var i = 0; i < clipboard.points.length; i++) {
+		var p = clipboard.points[i];
+		minX = Math.min(minX, p.x);
+		minY = Math.min(minY, p.y);
+	}
+	for (var i = 0; i < clipboard.points.length; i++) {
+		var p = clipboard.points[i];
+		p.x -= minX - mouse.x;
+		p.y -= minY - mouse.y;
+	}
+	points = points.concat(clipboard.points);
+	connections = connections.concat(clipboard.connections);
+}
+
+function togglePlay() {
+	play = !play;
+	document.getElementById("play-checkbox").checked = play;
+}
+
 function main() {
 	canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
