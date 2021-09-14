@@ -492,7 +492,20 @@ function computeGroups() {
 		}
 	}
 }
-
+function areConnected(p1, p2) {
+	if (p1.fixed && p2.fixed) return false;
+	return groups.get(p1) == groups.get(p2);
+}
+function areDirectlyConnected(p1, p2, connections) {
+	// if the groups are already connected, using that information could be an optimization
+	// but not in this function if `connections` is an argument!
+	// if (groupsComputedThisFrame && !areConnected(p1, p2)) return false;
+	for (const connection of connections) {
+		if (connection.p1 == p1 && connection.p2 == p2) return true;
+		if (connection.p1 == p2 && connection.p2 == p1) return true;
+	}
+	return false;
+}
 function countConnections(point) {
 	let count = 0;
 	for (const connection of connections) {
@@ -501,7 +514,6 @@ function countConnections(point) {
 	}
 	return count;
 }
-
 function findClosestPoint(x, y, maxDistance=Infinity) {
 	let closestPoint = null;
 	let closestDist = maxDistance;
@@ -1418,8 +1430,6 @@ function intersectLineLine(line1StartX, line1StartY, line1EndX, line1EndY, line2
 	}
 	// return result;
 };
-
-
 function pointInPolygon(x, y, polygon_points) {
 	var inside = false;
 	for (var i = 0, j = polygon_points.length - 1; i < polygon_points.length; j = i++) {
@@ -1545,21 +1555,6 @@ function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
 		if (pp) ropeConnections.push({ p1: p, p2: pp, dist: Math.hypot(p.x - pp.x, p.y - pp.y), force: force });
 	}
 	return { points: ropePoints, connections: ropeConnections };
-}
-
-function areConnected(p1, p2) {
-	if (p1.fixed && p2.fixed) return false;
-	return groups.get(p1) == groups.get(p2);
-}
-function areDirectlyConnected(p1, p2, connections) {
-	// if the groups are already connected, using that information could be an optimization
-	// but not in this function if `connections` is an argument!
-	// if (groupsComputedThisFrame && !areConnected(p1, p2)) return false;
-	for (const connection of connections) {
-		if (connection.p1 == p1 && connection.p2 == p2) return true;
-		if (connection.p1 == p2 && connection.p2 == p1) return true;
-	}
-	return false;
 }
 
 function positionElement(element, positionString) {
