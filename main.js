@@ -774,7 +774,7 @@ function step() {
 		//for(var g=0;g<4;g++){
 		for (var j = connections.length - 1; j >= 0; j--) {
 			var c = connections[j];
-			var d = distance(c.p1.x + c.p1.vx, c.p1.y + c.p1.vy, c.p2.x + c.p2.vx, c.p2.y + c.p2.vy);
+			var d = Math.hypot((c.p1.x + c.p1.vx) - (c.p2.x + c.p2.vx), (c.p1.y + c.p1.vy) - (c.p2.y + c.p2.vy));
 			var dd = (d - c.dist);
 			var dx = (c.p2.x + c.p2.vx - c.p1.x - c.p1.vx);
 			var dy = (c.p2.y + c.p2.vy - c.p1.y - c.p1.vy);
@@ -793,9 +793,9 @@ function step() {
 				freq = 0;
 			}
 			if (!c.p1.fixed && !c.p2.fixed) {
-				var vd = distance(c.p1.vx, c.p1.vy, c.p2.vx, c.p2.vy);
-				var fd = distance(c.p1.fx, c.p1.fy, c.p2.fx, c.p2.fy);
-				var v = distance(0, 0, c.p1.vx, c.p1.vy) + distance(0, 0, c.p2.vx, c.p2.vy);
+				var vd = Math.hypot(c.p1.vx - c.p2.vx, c.p1.vy - c.p2.vy);
+				var fd = Math.hypot(c.p1.fx - c.p2.fx, c.p1.fy - c.p2.fy);
+				var v = Math.hypot(c.p1.vx, c.p1.vy) + Math.hypot(c.p2.vx, c.p2.vy);
 				vdd = vd - (c.vdp || 0);
 				// var angle = Math.atan2(c.p1.x, c.p1.y, c.p2.x, c.p2.y);
 				if (audioStyle == 0) {
@@ -975,12 +975,12 @@ function step() {
 		// 	ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
 		// }
 
-		var distToMouse = distance(p.x, p.y, mouse.x, mouse.y);
+		var distToMouse = Math.hypot(p.x - mouse.x, p.y - mouse.y);
 
 		for (var j = points.length - 1; j >= 0; j--) {
 			if (i == j) continue;
 			var p2 = points[j];
-			var d = distance(p.x, p.y, p2.x, p2.y);
+			var d = Math.hypot(p.x - p2.x, p.y - p2.y);
 
 			// Note: Auto-Connect is not Glue (but Spacebar is Glue)
 			// also these are definite "can" and "will do" booleans
@@ -1213,7 +1213,7 @@ function step() {
 		/**/
 		// draw connections
 		if (c.dist > 60) {
-			const realDist = distance(c.p1.x, c.p1.y, c.p2.x, c.p2.y);
+			const realDist = Math.hypot(c.p1.x - c.p2.x, c.p1.y - c.p2.y);
 			const stretch = realDist / c.dist;
 			ctx.strokeStyle = "yellow";
 			ctx.setLineDash([5 * stretch, 5 * stretch]);
@@ -1542,7 +1542,7 @@ function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
 			color: "#FC5"
 		});
 		ropePoints.push(p);
-		if (pp) ropeConnections.push({ p1: p, p2: pp, dist: distance(p.x, p.y, pp.x, pp.y), force: force });
+		if (pp) ropeConnections.push({ p1: p, p2: pp, dist: Math.hypot(p.x - pp.x, p.y - pp.y), force: force });
 	}
 	return { points: ropePoints, connections: ropeConnections };
 }
@@ -1560,10 +1560,6 @@ function areDirectlyConnected(p1, p2, connections) {
 		if (connection.p1 == p2 && connection.p2 == p1) return true;
 	}
 	return false;
-}
-
-function distance(x1, y1, x2, y2) {
-	return Math.hypot(x2 - x1, y2 - y1);
 }
 
 function positionElement(element, positionString) {
