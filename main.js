@@ -8,6 +8,132 @@ const TOOL_PRECISE_CONNECTOR = "TOOL_PRECISE_CONNECTOR";
 const TOOL_GLUE = "TOOL_GLUE";
 const TOOL_DRAG = "TOOL_DRAG";
 
+const tools = [
+	{
+		id: TOOL_DRAG,
+		name: "Drag Points",
+		shortcut: "D",
+		tooltip: "Drag stuff around. Works when paused or playing. You can also use Right Click as a shortcut. Hold Shift before dragging to drag multiple points you can drag a selection)."
+	},
+	{
+		id: TOOL_ADD_POINTS,
+		name: "Add Points",
+		shortcut: "A",
+		tooltip: "Click anywhere to add a point. Hold Shift to make fixed points."
+	},
+	{
+		id: TOOL_ADD_POINTS_QUICKLY,
+		name: "Add Points Quickly",
+		shortcut: "Q",
+		tooltip: "Create many unconnected points. Hold Shift to make fixed points."
+	},
+	{
+		id: TOOL_ADD_ROPE,
+		name: "Make Rope",
+		shortcut: "R",
+		tooltip: "Create a connected series of points. Hold Shift to make fixed points."
+	},
+	{
+		id: TOOL_ADD_BALL,
+		name: "Make Ball",
+		shortcut: "B",
+		tooltip: "Create a group of interconnected points forming a round or polygonal shape."
+	},
+	{
+		id: TOOL_GLUE,
+		name: "Glue",
+		shortcut: "G",
+		tooltip: "Connect any points near the mouse to each other."
+	},
+	{
+		id: TOOL_PRECISE_CONNECTOR,
+		name: "Precise Connector",
+		shortcut: "C",
+		tooltip: "Drag from one point to another to connect them, or if they're already connected, to delete the connection. Hold Shift to create arbitrary-length connections."
+	},
+	{
+		id: TOOL_SELECT,
+		name: "Select",
+		shortcut: "S",
+		tooltip: "Drag to select points within a rectangle, then Copy (Ctrl+C) and Paste (Ctrl+V) or Delete (Delete). You can also drag the selected points together."
+	},
+];
+const keyboardShortcuts = [
+	{ modifiers: ["CtrlCmd"], code: "KeyZ", action: undo, enable: () => undos.length > 0 },
+	{ modifiers: ["CtrlCmd"], code: "KeyY", action: redo, enable: () => redos.length > 0 },
+	{ modifiers: ["CtrlCmd", "Shift"], code: "KeyZ", action: redo, enable: () => redos.length > 0 },
+	{ modifiers: ["CtrlCmd"], code: "KeyC", action: copySelected, enable: () => selection.points.length > 0 },
+	{
+		modifiers: ["CtrlCmd"], code: "KeyX", action: () => {
+			copySelected();
+			undoable();
+			deleteSelected();
+		}, enable: () => selection.points.length > 0
+	},
+	{
+		modifiers: ["CtrlCmd"], code: "KeyV", action: () => {
+			undoable();
+			var clipboard = deserialize(serializedClipboard);
+			var minX = Infinity, minY = Infinity;
+			for (var i = 0; i < clipboard.points.length; i++) {
+				var p = clipboard.points[i];
+				minX = Math.min(minX, p.x);
+				minY = Math.min(minY, p.y);
+			}
+			for (var i = 0; i < clipboard.points.length; i++) {
+				var p = clipboard.points[i];
+				p.x -= minX - mouse.x;
+				p.y -= minY - mouse.y;
+			}
+			points = points.concat(clipboard.points);
+			connections = connections.concat(clipboard.connections);
+		}, enable: () => !!serializedClipboard,
+	},
+	{
+		modifiers: ["CtrlCmd"], code: "KeyA", action() {
+			selection.points = Array.from(points);
+			selection.connections = Array.from(connections);
+		}, enable: () => points.length > 0
+	},
+	{
+		modifiers: ["CtrlCmd"], code: "KeyD", action: deselect,
+		enable: () => selection.points.length > 0 || selection.connections.length > 0,
+	},
+	{
+		modifiers: [], code: "Delete", action: () => {
+			undoable();
+			deleteSelected();
+		}
+	},
+	{
+		modifiers: [], code: "KeyP", action() {
+			play = !play;
+			document.getElementById("play-checkbox").checked = play;
+		}
+	},
+
+	{
+		// Glue selected points together without selecting the Glue tool.
+		// This handled elsewhere except for creating an undo state.
+		modifiers: [], code: "Space", action: undoable,
+	},
+
+	// Add points without selecting the Add Points tool.
+	{ modifiers: [], code: "Period", action: add_point_at_mouse, },
+	{ modifiers: ["Shift"], code: "Period", action: add_point_at_mouse, },
+	{ modifiers: [], code: "NumpadDecimal", action: add_point_at_mouse, },
+	// this one may not work because it sends "Delete" instead, but it's awkward to use anyways
+	{ modifiers: ["Shift"], code: "NumpadDecimal", action: add_point_at_mouse, },
+];
+// Add keyboard shortcuts for selecting tools.
+for (const tool of tools) {
+	keyboardShortcuts.push({
+		modifiers: [], code: `Key${tool.shortcut}`, action: () => {
+			selectTool(tool.id);
+		}
+	});
+}
+
 function serialize(points, connections, isSelection) {
 	// Note: if I ever change this to JSON,
 	// I should bump the version to >2, since ARSON stringifies as JSON but with values as indices,
@@ -130,100 +256,6 @@ function main() {
 	serializedClipboard = null;
 
 	canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-
-	const keyboardShortcuts = [
-		{ modifiers: ["CtrlCmd"], code: "KeyZ", action: undo, enable: () => undos.length > 0 },
-		{ modifiers: ["CtrlCmd"], code: "KeyY", action: redo, enable: () => redos.length > 0 },
-		{ modifiers: ["CtrlCmd", "Shift"], code: "KeyZ", action: redo, enable: () => redos.length > 0 },
-		{ modifiers: ["CtrlCmd"], code: "KeyC", action: copySelected, enable: () => selection.points.length > 0 },
-		{
-			modifiers: ["CtrlCmd"], code: "KeyX", action: () => {
-				copySelected();
-				undoable();
-				deleteSelected();
-			}, enable: () => selection.points.length > 0
-		},
-		{
-			modifiers: ["CtrlCmd"], code: "KeyV", action: () => {
-				undoable();
-				var clipboard = deserialize(serializedClipboard);
-				var minX = Infinity, minY = Infinity;
-				for (var i = 0; i < clipboard.points.length; i++) {
-					var p = clipboard.points[i];
-					minX = Math.min(minX, p.x);
-					minY = Math.min(minY, p.y);
-				}
-				for (var i = 0; i < clipboard.points.length; i++) {
-					var p = clipboard.points[i];
-					p.x -= minX - mouse.x;
-					p.y -= minY - mouse.y;
-				}
-				points = points.concat(clipboard.points);
-				connections = connections.concat(clipboard.connections);
-			}, enable: () => !!serializedClipboard,
-		},
-		{
-			modifiers: ["CtrlCmd"], code: "KeyA", action() {
-				selection.points = Array.from(points);
-				selection.connections = Array.from(connections);
-			}, enable: () => points.length > 0
-		},
-		{
-			modifiers: ["CtrlCmd"], code: "KeyD", action: deselect,
-			enable: () => selection.points.length > 0 || selection.connections.length > 0,
-		},
-		{
-			modifiers: [], code: "Delete", action: () => {
-				undoable();
-				deleteSelected();
-			}
-		},
-		{
-			modifiers: [], code: "KeyP", action() {
-				play = !play;
-				document.getElementById("play-checkbox").checked = play;
-			}
-		},
-
-		{
-			// Glue selected points together without selecting the Glue tool.
-			// This handled elsewhere except for creating an undo state.
-			modifiers: [], code: "Space", action: undoable,
-		},
-
-		// Add points without selecting the Add Points tool.
-		{ modifiers: [], code: "Period", action: add_point_at_mouse, },
-		{ modifiers: ["Shift"], code: "Period", action: add_point_at_mouse, },
-		{ modifiers: [], code: "NumpadDecimal", action: add_point_at_mouse, },
-		// this one may not work because it sends "Delete" instead, but it's awkward to use anyways
-		{ modifiers: ["Shift"], code: "NumpadDecimal", action: add_point_at_mouse, },
-
-		// Select tools
-		{
-			modifiers: [], code: "KeyD", action: () => { selectTool(TOOL_DRAG); }
-		},
-		{
-			modifiers: [], code: "KeyA", action: () => { selectTool(TOOL_ADD_POINTS); }
-		},
-		{
-			modifiers: [], code: "KeyQ", action: () => { selectTool(TOOL_ADD_POINTS_QUICKLY); }
-		},
-		{
-			modifiers: [], code: "KeyR", action: () => { selectTool(TOOL_ADD_ROPE); }
-		},
-		{
-			modifiers: [], code: "KeyB", action: () => { selectTool(TOOL_ADD_BALL); }
-		},
-		{
-			modifiers: [], code: "KeyG", action: () => { selectTool(TOOL_GLUE); }
-		},
-		{
-			modifiers: [], code: "KeyC", action: () => { selectTool(TOOL_PRECISE_CONNECTOR); }
-		},
-		{
-			modifiers: [], code: "KeyS", action: () => { selectTool(TOOL_SELECT); }
-		},
-	];
 
 	addEventListener('keydown', function (e) {
 		if (e.defaultPrevented) {
@@ -1800,56 +1832,6 @@ function guiStuff() {
 		minimizeButton: false,
 		toolWindow: true,
 	});
-	const tools = [
-		{
-			id: TOOL_DRAG,
-			name: "Drag Points",
-			shortcut: "D",
-			tooltip: "Drag stuff around. Works when paused or playing. You can also use Right Click as a shortcut. Hold Shift before dragging to drag multiple points you can drag a selection)."
-		},
-		{
-			id: TOOL_ADD_POINTS,
-			name: "Add Points",
-			shortcut: "A",
-			tooltip: "Click anywhere to add a point. Hold Shift to make fixed points."
-		},
-		{
-			id: TOOL_ADD_POINTS_QUICKLY,
-			name: "Add Points Quickly",
-			shortcut: "Q",
-			tooltip: "Create many unconnected points. Hold Shift to make fixed points."
-		},
-		{
-			id: TOOL_ADD_ROPE,
-			name: "Make Rope",
-			shortcut: "R",
-			tooltip: "Create a connected series of points. Hold Shift to make fixed points."
-		},
-		{
-			id: TOOL_ADD_BALL,
-			name: "Make Ball",
-			shortcut: "B",
-			tooltip: "Create a group of interconnected points forming a round or polygonal shape."
-		},
-		{
-			id: TOOL_GLUE,
-			name: "Glue",
-			shortcut: "G",
-			tooltip: "Connect any points near the mouse to each other."
-		},
-		{
-			id: TOOL_PRECISE_CONNECTOR,
-			name: "Precise Connector",
-			shortcut: "C",
-			tooltip: "Drag from one point to another to connect them, or if they're already connected, to delete the connection. Hold Shift to create arbitrary-length connections."
-		},
-		{
-			id: TOOL_SELECT,
-			name: "Select",
-			shortcut: "S",
-			tooltip: "Drag to select points within a rectangle, then Copy (Ctrl+C) and Paste (Ctrl+V) or Delete (Delete). You can also drag the selected points together."
-		},
-	];
 	for (const tool of tools) {
 		const toolButton = document.createElement("button");
 		toolButton.classList.add("toggle");
