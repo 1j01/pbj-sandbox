@@ -1203,7 +1203,7 @@ function step() {
 				}
 			}
 		}
-		/**
+		/**/
 		var r = Math.random();
 		ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p1.color;
 		ctx.strokeStyle = c.p1.color;
@@ -1233,7 +1233,7 @@ function step() {
 			(c.p2.y - c.p1.y) * 0.6 + c.p1.y
 		);
 		ctx.stroke();
-		/**/
+		/**
 		// draw connections
 		if (c.dist > 60) {
 			const realDist = Math.hypot(c.p1.x - c.p2.x, c.p1.y - c.p2.y);
