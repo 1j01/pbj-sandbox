@@ -791,7 +791,7 @@ function step() {
 			const average_v = Math.hypot(average_vx, average_vy);
 			const v_angle = Math.atan2(average_vy, average_vx);
 			const line_angle = Math.atan2(c.p1.y - c.p2.y, c.p1.x - c.p2.x);
-			const angle_diff = Math.abs(v_angle - line_angle);
+			const angle_diff = v_angle - line_angle;
 			const force_x = Math.cos(angle_diff) * average_v * 0.1;
 			const force_y = Math.sin(angle_diff) * average_v * 0.1;
 			// const force_y = Math.sin(average_vx / average_v * Math.PI / 2);
