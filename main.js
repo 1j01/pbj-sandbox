@@ -134,14 +134,14 @@ const autoConnectMaxDist = 50;
 // options
 var play = true;
 var collision = false;
-var slowmo = false; // TODO: generalize to a time scale
+var slowmo = true; // TODO: generalize to a time scale
 var autoConnect = false;
 var gravity = 0.1;
 var terrainEnabled = false;
 var audioEnabled = false;
 var audioStyle = 1;
 var audioViz = false;
-var ghostTrails = false;
+var ghostTrails = true;
 var windowTheme = "dark-theme"; // global used by index.html
 
 // debug
@@ -633,7 +633,7 @@ function step() {
 						p1: lastRopePoint,
 						p2: newRopePoint,
 						dist: distBetweenPoints,
-						force: 1,
+						force: 5,
 					});
 				}
 				lastRopePoint = newRopePoint;
@@ -1524,7 +1524,6 @@ function createTerrain() {
 		}
 	}
 }
-/*
 function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
 	var ropePoints = [];
 	var ropeConnections = [];
@@ -1542,7 +1541,6 @@ function make_rope_line(x1, y1, x2, y2, seg, force = 1) {
 	}
 	return { points: ropePoints, connections: ropeConnections };
 }
-*/
 function positionElement(element, positionString) {
 	const w = element.offsetWidth;
 	const h = element.offsetHeight;
@@ -1866,7 +1864,13 @@ function initGUI() {
 }
 
 main();
-initGUI();
+// initGUI();
+add_to_scene(make_rope_line(0, 0, 600, 600, 50, 5));
+
+function add_to_scene(obj) {
+	points.push(...obj.points);
+	connections.push(...obj.connections);
+}
 
 function connect_if_not_connected(p1, p2, connections, options = {}) {
 	if (p1 === p2) {
