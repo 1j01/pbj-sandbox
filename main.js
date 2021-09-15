@@ -977,19 +977,19 @@ function step() {
 			}
 		}
 		// draw point
-		ctx.fillStyle = p.color;
-		if (p.color === "DarkOrchid") {
-			ctx.fillRect(p.x - 4, p.y - 4, 8, 8);
-			ctx.save();
-			ctx.translate(p.x, p.y);
-			ctx.rotate(Math.PI / 4);
-			ctx.fillRect(- 4, - 4, 8, 8);
-			ctx.restore();
-			ctx.fillStyle = "yellow";
-			ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
-		} else {
-			ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
-		}
+		// ctx.fillStyle = p.color;
+		// if (p.color === "DarkOrchid") {
+		// 	ctx.fillRect(p.x - 4, p.y - 4, 8, 8);
+		// 	ctx.save();
+		// 	ctx.translate(p.x, p.y);
+		// 	ctx.rotate(Math.PI / 4);
+		// 	ctx.fillRect(- 4, - 4, 8, 8);
+		// 	ctx.restore();
+		// 	ctx.fillStyle = "yellow";
+		// 	ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+		// } else {
+		// 	ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+		// }
 		// debug (looks cool btw)
 		// if (groups.has(p)) {
 		// 	ctx.textAlign = "center";
@@ -1204,33 +1204,16 @@ function step() {
 			}
 		}
 		/**/
-		var r = Math.random();
+		const angle = Math.atan2(c.p1.y - c.p2.y, c.p1.x - c.p2.x);
 		ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p1.color;
 		ctx.strokeStyle = c.p1.color;
 		ctx.beginPath();
-		ctx.moveTo(
-			(c.p2.x - c.p1.x) * 0.2 + c.p1.x,
-			(c.p2.y - c.p1.y) * 0.2 + c.p1.y
-		);
+		ctx.moveTo(c.p1.x, c.p1.y);
 		ctx.quadraticCurveTo(
-			(c.p2.x - c.p1.x) * 0.4 + c.p1.x + Math.sin(r) * 20,
-			(c.p2.y - c.p1.y) * 0.4 + c.p1.y + Math.cos(r) * 20,
-			(c.p2.x - c.p1.x) * 0.4 + c.p1.x,
-			(c.p2.y - c.p1.y) * 0.4 + c.p1.y
-		);
-		ctx.stroke();
-		ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p2.color;
-		ctx.strokeStyle = c.p2.color;
-		ctx.beginPath();
-		ctx.moveTo(
-			(c.p2.x - c.p1.x) * 0.8 + c.p1.x,
-			(c.p2.y - c.p1.y) * 0.8 + c.p1.y
-		);
-		ctx.quadraticCurveTo(
-			(c.p2.x - c.p1.x) * 0.6 + c.p1.x + Math.sin(r) * 20,
-			(c.p2.y - c.p1.y) * 0.6 + c.p1.y + Math.cos(r) * 20,
-			(c.p2.x - c.p1.x) * 0.6 + c.p1.x,
-			(c.p2.y - c.p1.y) * 0.6 + c.p1.y
+			(c.p2.x - c.p1.x) * 0.5 + c.p1.x + Math.sin(-angle) * 20,
+			(c.p2.y - c.p1.y) * 0.5 + c.p1.y + Math.cos(-angle) * 20,
+			(c.p2.x - c.p1.x) * 1 + c.p1.x,
+			(c.p2.y - c.p1.y) * 1 + c.p1.y
 		);
 		ctx.stroke();
 		/**
@@ -1865,7 +1848,7 @@ function initGUI() {
 
 main();
 // initGUI();
-add_to_scene(make_rope_line(0, 0, 600, 600, 50, 5));
+add_to_scene(make_rope_line(0, 0, innerWidth, innerHeight, 50, 5));
 
 function add_to_scene(obj) {
 	points.push(...obj.points);
