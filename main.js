@@ -884,7 +884,7 @@ function step() {
 			p.x += p.vx * (slowmo ? 0.06 : 1);
 			p.y += p.vy * (slowmo ? 0.06 : 1);
 
-			const frictionalSpeedFactor = 1 / 2; // less is greater friction
+			const frictionalSpeedFactor = 1 / 2; // slidiness, 0 to 1 (less is greater friction)
 			const coefficientOfRestitution = 1 / 4; // bounciness, 0 to 1
 			if (p.x > canvas.width - 2) {
 				p.x = canvas.width - 2;
