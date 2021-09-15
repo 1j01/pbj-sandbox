@@ -784,6 +784,19 @@ function step() {
 			c.p1.fy += dy / d * dd * f;
 			c.p2.fx -= dx / d * dd * f;
 			c.p2.fy -= dy / d * dd * f;
+
+			// air resistance
+			const average_vx = (c.p1.vx + c.p2.vx) / 2;
+			const average_vy = (c.p1.vy + c.p2.vy) / 2;
+			const average_v = Math.hypot(average_vx, average_vy);
+			const force_y = Math.sin(average_vx / average_v * Math.PI / 2);
+			const force_x = Math.sin(average_vy / average_v * Math.PI / 2);
+			c.p1.fx += force_x * f;
+			c.p1.fy += force_y * f;
+			c.p2.fx += force_x * f;
+			c.p2.fy += force_y * f;
+
+
 			// breaking distance was previously c.dist * 3; c.dist + 120 keeps it the same for the standard distance of 60 (60*3 = 180 = 60 + 120), while making the rope stronger
 			if (dd > c.dist + 120) {
 				connections.splice(j, 1);
