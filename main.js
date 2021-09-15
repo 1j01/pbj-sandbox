@@ -786,20 +786,25 @@ function step() {
 			c.p2.fy -= dy / d * dd * f;
 
 			// air resistance and lift
-			const average_vx = (c.p1.vx + c.p2.vx) / 2;
-			const average_vy = (c.p1.vy + c.p2.vy) / 2;
-			const average_v = Math.hypot(average_vx, average_vy);
-			const v_angle = Math.atan2(average_vy, average_vx);
-			const line_angle = Math.atan2(c.p1.y - c.p2.y, c.p1.x - c.p2.x);
-			const angle_diff = v_angle - line_angle;
-			const force_x = Math.cos(angle_diff) * average_v * 0.1;
-			const force_y = Math.sin(angle_diff) * average_v * 0.1;
-			// const force_y = Math.sin(average_vx / average_v * Math.PI / 2);
-			// const force_x = Math.sin(average_vy / average_v * Math.PI / 2);
-			c.p1.fx += force_x * f;
-			c.p1.fy += force_y * f;
-			c.p2.fx += force_x * f;
-			c.p2.fy += force_y * f;
+			// const dx = c.p2.x - c.p1.x;
+			// const dy = c.p2.y - c.p1.y;
+			const la_resistance = 0.5;
+			c.p1.vx -= dy / d * la_resistance;//c.p1.mass * c.drag * freq;
+			c.p1.vy -= dx / d * la_resistance;//c.p1.mass * c.drag * freq;
+			// const average_vx = (c.p1.vx + c.p2.vx) / 2;
+			// const average_vy = (c.p1.vy + c.p2.vy) / 2;
+			// // const average_v = Math.hypot(average_vx, average_vy);
+			// const v_angle = Math.atan2(average_vy, average_vx);
+			// const line_angle = Math.atan2(c.p1.y - c.p2.y, c.p1.x - c.p2.x);
+			// const angle_diff = v_angle - line_angle;
+			// const force_x = Math.cos(line_angle) * average_vx * 0.1;
+			// const force_y = Math.sin(line_angle) * average_vy * 0.1;
+			// // const force_y = Math.sin(average_vx / average_v * Math.PI / 2);
+			// // const force_x = Math.sin(average_vy / average_v * Math.PI / 2);
+			// c.p1.fx += force_x * f;
+			// c.p1.fy += force_y * f;
+			// c.p2.fx += force_x * f;
+			// c.p2.fy += force_y * f;
 
 
 			// breaking distance was previously c.dist * 3; c.dist + 120 keeps it the same for the standard distance of 60 (60*3 = 180 = 60 + 120), while making the rope stronger
