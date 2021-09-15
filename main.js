@@ -785,12 +785,17 @@ function step() {
 			c.p2.fx -= dx / d * dd * f;
 			c.p2.fy -= dy / d * dd * f;
 
-			// air resistance
+			// air resistance and lift
 			const average_vx = (c.p1.vx + c.p2.vx) / 2;
 			const average_vy = (c.p1.vy + c.p2.vy) / 2;
 			const average_v = Math.hypot(average_vx, average_vy);
-			const force_y = Math.sin(average_vx / average_v * Math.PI / 2);
-			const force_x = Math.sin(average_vy / average_v * Math.PI / 2);
+			const v_angle = Math.atan2(average_vy, average_vx);
+			const line_angle = Math.atan2(c.p1.y - c.p2.y, c.p1.x - c.p2.x);
+			const angle_diff = Math.abs(v_angle - line_angle);
+			const force_x = Math.cos(angle_diff) * average_v * 0.1;
+			const force_y = Math.sin(angle_diff) * average_v * 0.1;
+			// const force_y = Math.sin(average_vx / average_v * Math.PI / 2);
+			// const force_x = Math.sin(average_vy / average_v * Math.PI / 2);
 			c.p1.fx += force_x * f;
 			c.p1.fy += force_y * f;
 			c.p2.fx += force_x * f;
