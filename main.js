@@ -884,26 +884,28 @@ function step() {
 			p.x += p.vx * (slowmo ? 0.06 : 1);
 			p.y += p.vy * (slowmo ? 0.06 : 1);
 
-			var friction = 2, cor = 4;
+			const frictionalSpeedFactor = 1 / 2; // less is greater friction
+			const coefficientOfRestitution = 1 / 4; // bounciness, 0 to 1
 			if (p.x > canvas.width - 2) {
 				p.x = canvas.width - 2;
-				p.vx = -p.vx / cor;
-				p.vy /= friction;
+				p.vx *= -coefficientOfRestitution;
+				p.vy *= frictionalSpeedFactor;
 			}
 			if (p.y > canvas.height - 2) {
 				p.y = canvas.height - 2;
-				p.vy = -p.vy / cor - Math.random() / 6;
-				p.vx /= friction;
+				p.vy *= -coefficientOfRestitution;
+				p.vy -= Math.random() / 6; // to help things pop off the ground if you add enough connections (so they don't just stay flat)
+				p.vx *= frictionalSpeedFactor;
 			}
 			if (p.y < 2) {
 				p.y = 2;
-				p.vy = -p.vy / cor;
-				p.vx /= friction;
+				p.vy *= -coefficientOfRestitution;
+				p.vx *= frictionalSpeedFactor;
 			}
 			if (p.x < 2) {
 				p.x = 2;
-				p.vx = -p.vx / cor;
-				p.vy /= friction;
+				p.vx *= -coefficientOfRestitution;
+				p.vy *= frictionalSpeedFactor;
 			}
 			// if (Math.sign(p.x - p.px - p.vx) > 0) {
 
@@ -930,22 +932,22 @@ function step() {
 					if (in_left_or_right_quadrant) {
 						if (p.x < r.left + r.width / 2) {
 							p.x = r.left;
-							p.vx = -Math.abs(p.vx) / cor;
-							//p.vy/=friction;
+							p.vx = -Math.abs(p.vx) * coefficientOfRestitution;
+							//p.vy *= frictionalSpeedFactor;
 						} else {
 							p.x = r.right;
-							p.vx = Math.abs(p.vx) / cor;
-							//p.vy/=friction;
+							p.vx = Math.abs(p.vx) * coefficientOfRestitution;
+							//p.vy *= frictionalSpeedFactor;
 						}
 					} else {
 						if (p.y < r.top + r.height / 2) {
 							p.y = r.top;
-							p.vy = -Math.abs(p.vy) / cor;
-							p.vx /= friction;
+							p.vy = -Math.abs(p.vy) * coefficientOfRestitution;
+							p.vx *= frictionalSpeedFactor;
 						} else {
 							p.y = r.bottom;
-							p.vy = Math.abs(p.vy) / cor;
-							p.vx /= friction;
+							p.vy = Math.abs(p.vy) * coefficientOfRestitution;
+							p.vx *= frictionalSpeedFactor;
 						}
 					}
 				}
