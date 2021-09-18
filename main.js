@@ -303,6 +303,7 @@ function main() {
 		// }
 	});
 	addEventListener('keyup', function (e) { delete keys[e.key]; delete keys[e.code]; });
+	addEventListener('blur', function (e) { keys = {}; }); // prevents stuck keys, especially Shift when switching tabs with Ctrl+Shift+Tab (also Ctrl+Shift+T, Ctrl+Shift+N, etc.)
 	var deselectTextAndBlur = function () {
 		if (window.getSelection) {
 			if (window.getSelection().empty) {  // Chrome
