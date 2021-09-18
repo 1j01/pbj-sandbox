@@ -1589,6 +1589,9 @@ function initGUI() {
 		<h3>Windows:</h3>
 		<div style="padding-bottom: 3px;">
 			<button id='help-button' title='Get help on using this application.'>Help</button>
+			<button id='about-button' title='Show information about this application.'>About</button>
+		</div>
+		<div style="padding-bottom: 3px;">
 			<button id='todo-button' title='See noted future improvements.'>Todo</button>
 		</div>
 		<div style="padding-top: 3px; padding-bottom: 3px;">
@@ -1785,6 +1788,17 @@ function initGUI() {
 			<p>Press <kbd>Ctrl+C</kbd> to copy the selection (or <kbd>Ctrl+X</kbd> to cut), and <kbd>Ctrl+V</kbd> to paste near the mouse.</p>
 			<p>Press <kbd>Delete</kbd> to remove the selected points.</p>
 			<p>There is no save/load, and it doesn't copy to the system clipboard, only an internal clipboard.</p>
+		`);
+		positionElement($w[0], "top");
+	};
+	find("#about-button").onclick = function () {
+		const $w = new $Window({ title: "About", resizable: true, maximizeButton: false, minimizeButton: false });
+		$w.$content.html(`
+			<div style="padding:0 2em;">
+				<h1>Point-Based Physics 2D</h1>
+				<p>Made by <a href="https://isaiahodhner.io">Isaiah Odhner</a>.</p>
+				<p>Open source on <a href="https://github.com/1j01/pbp2d">GitHub</a>, licensed WTFPL or CC0.</p>
+			</div>
 		`);
 		positionElement($w[0], "top");
 	};
