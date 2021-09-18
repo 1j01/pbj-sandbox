@@ -141,7 +141,7 @@ var terrainEnabled = false;
 var audioEnabled = false;
 var audioStyle = 1;
 var audioViz = false;
-var ghostTrails = false;
+var ghostTrails = 0;
 var windowTheme = "dark-theme"; // global used by index.html
 
 // debug
@@ -526,7 +526,9 @@ function step() {
 	}
 
 	// Clear, or partially clear, leaving a trail.
-	ctx.fillStyle = `rgba(0,0,20,${ghostTrails ? (play ? 0.02 : 0) : 1})`;
+	// If paused with ghost trails enabled, don't clear at all.
+	const alpha = play ? Math.pow(1 - ghostTrails, 4) : (ghostTrails > 0 ? 0 : 1);
+	ctx.fillStyle = `rgba(0,0,20,${alpha})`;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	ctx.lineWidth = 1;
 
@@ -1581,7 +1583,9 @@ function initGUI() {
 		</label>
 		<label title='Pause and resume the simulation.'><input type='checkbox' id='play-checkbox' aria-keyshortcuts="P"/>Play (P)</label>
 		<h3>Sim Visuals:</h3>
-		<label title='Leave a visual trail behind all objects.'><input type='checkbox' id='ghost-trails-checkbox'/>Ghost Trails</label>
+		<label title='Leave a visual trail behind all objects.'>
+			Ghost Trails: <input type='range' id='ghost-trails-slider' min='0' max='1' step='0.01'/>
+		</label>
 		<h3>Windows:</h3>
 		<div style="padding-bottom: 3px;">
 			<button id='help-button' title='Get help on using this application.'>Help</button>
@@ -1696,9 +1700,9 @@ function initGUI() {
 	find("#slowmo-checkbox").onchange = function () {
 		slowmo = this.checked;
 	};
-	find("#ghost-trails-checkbox").checked = ghostTrails;
-	find("#ghost-trails-checkbox").onchange = function () {
-		ghostTrails = this.checked;
+	find("#ghost-trails-slider").value = ghostTrails;
+	find("#ghost-trails-slider").onchange = function () {
+		ghostTrails = this.valueAsNumber;
 	};
 	find("#terrain-checkbox").checked = terrainEnabled;
 	find("#terrain-checkbox").onchange = function () {
@@ -1725,9 +1729,6 @@ function initGUI() {
 				</li>
 				<li>
 					Generalize "Slow Motion" to a time scale slider.
-				</li>
-				<li>
-					Generalize "Ghost Trails" to a slider.
 				</li>
 				<li>
 					Support multi-touch for the Drag tool. (And maybe other tools?)
