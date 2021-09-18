@@ -27,13 +27,6 @@
 	background: rgba(0, 0, 0, 0.9);
 	color: #AAA;
 }
-.window .content.resizable {
-	resize: both;
-	overflow:scroll;
-}
-.window .content.resizable * {
-	resize: default;
-}
 .window .window-titlebar {
 	background: rgba(0, 0, 0, 0.5);
 	cursor: move;
