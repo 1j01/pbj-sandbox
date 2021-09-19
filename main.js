@@ -1735,6 +1735,7 @@ function initGUI() {
 				</li>
 				<li>
 					Support multi-touch for the Drag tool. (And maybe other tools?)
+				</li>
 				<li>
 					Ideally (but this would be hard), fix collision.
 					<br>(Things no clip and get stuck in each other.
