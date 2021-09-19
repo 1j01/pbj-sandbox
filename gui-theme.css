@@ -49,7 +49,9 @@
 	background: rgba(55, 55, 55, 0.8);
 	color: #FFF;
 }
-
+.window .handle {
+	border-radius: 5%; /* this affects the click region, don't go overboard! */
+}
 .window .handle:hover,
 .window .handle.resizing { /* not a thing as of writing, but should be */
 	background: rgba(155, 230, 230, 1);
