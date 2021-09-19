@@ -14,9 +14,15 @@
 	font-family: sans-serif;
 }
 .window .window-content {
-	/* background: #fafae7; */
 	background: rgba(255, 255, 255, 0.3);
-	/* color: #AAA; */
+	color: black;
+}
+.window .window-content::after {
+	/* extra padding on the bottom of the window (in addition to what is otherwise specified) due to sandbox seats */
+	/* not needed on the top because of the titlebar (so far anyway) */
+	content: "";
+	display: block;
+	height: 10px;
 }
 .window .window-titlebar {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.4);
