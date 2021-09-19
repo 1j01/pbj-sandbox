@@ -3,97 +3,105 @@
 .window.closing * {
 	pointer-events: none !important;
 }
-.window * {
-	transition: opacity .2s, color .2s, background-color .2s;
-}
 .window {
 	transition: opacity .5s ease-in-out;
 	position: absolute;
-	background: rgba(0, 0, 0, 0.7);
-	color: white;
-	opacity: 0.8;
-	outline: 1px solid rgba(255, 255, 255, 0.4);
+	background-image: url("sand-texture.jpg");
+	background-color: white;
+	color: black;
+	outline: 1px solid rgba(128, 129, 289, 0.4);
 	padding: 4px;
-	/* backdrop-filter: blur(2px); makes my fans spin up noticably - not worth it! */
+	font-family: sans-serif;
 }
-.window:hover,
-.window.dragging {
-	opacity: 1;
-}
-.window.dragging {
-	transition: opacity .8s ease;
-}
-.window .content {
-	background: rgba(0, 0, 0, 0.9);
-	color: #AAA;
+.window .window-content {
+	/* background: #fafae7; */
+	background: rgba(255, 255, 255, 0.3);
+	/* color: #AAA; */
 }
 .window .window-titlebar {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 	padding-bottom: 4px;
 }
 .window .window-title-area {
-	background: rgba(0, 0, 0, 0.5);
 	cursor: move;
 	line-height: 1.5;
+	background-image: url("wood-texture.jpg");
+	background-size: 210px;
+	background-color: #ffaa88;
+	background-blend-mode: multiply;
+	color: white;
+	font-weight: bold;
+	letter-spacing: 1px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+	text-align: center;
 }
 .window .window-title {
 	pointer-events: none;
-	color: #CCC;
-	font-weight: lighter;
-}
-.window:hover .window-title-area {
-	background: rgba(0, 0, 0, 0.7);
 }
 .window .window-title-area:hover,
 .window.dragging .window-title-area {
-	background: rgba(55, 55, 55, 0.8);
-	color: #FFF;
+	background-color: aqua;
 }
 .window .handle {
 	border-radius: 5%; /* this affects the click region, don't go overboard! */
+	background: url("wood-texture.jpg") repeat;
+	box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.8);
+	background-size: 210px;
 }
 .window .handle:hover,
 .window .handle.resizing { /* not a thing as of writing, but should be */
-	background: rgba(155, 230, 230, 1);
-	box-shadow: 0 0 2px 2px rgba(55, 155, 155, 1);
+	/* background: rgba(155, 230, 230, 1); */
+	box-shadow: 0 0 0 1px rgba(55, 155, 255, 1);
 }
-.window .handle::after,
-.window .handle::before {
-	position: absolute;
-	content: "";
-	pointer-events: none;
-	background: inherit;
-	box-shadow: inherit;
-	opacity: 0.3;
-	border-radius: 50%;
+/* corner handles */
+.window .handle:nth-child(2n+1) {
+	z-index: 1;
+	color: white;
+	box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.8); /* this gets scaled */
 }
-.window .handle:nth-child(2n+1)::before,
-.window .handle:nth-child(6)::before,
-.window .handle:nth-child(10)::before {
-	left: 0;
-	right: 0;
-	top: -500px;
-	height: calc(100% + 500px * 2);
+.window .handle:nth-child(2n+1):hover,
+.window .handle:nth-child(2n+1).resizing { /* not a thing as of writing, but should be */
+	box-shadow: 0 0 0 0.5px rgba(55, 155, 255, 1); /* this gets scaled */
 }
-.window .handle:nth-child(2n+1)::after,
-.window .handle:nth-child(4)::after,
-.window .handle:nth-child(8)::after {
-	top: 0;
-	bottom: 0;
-	left: -500px;
-	width: calc(100% + 500px * 2);
+.window .handle:nth-child(3),
+.window .handle:nth-child(7) {
+	transform: rotate(45deg) scale(600%) scaleX(300%);
+	background-size: 21px; /* this gets scaled */
+}
+.window .handle:nth-child(5),
+.window .handle:nth-child(9) {
+	transform: rotate(-45deg) scale(600%) scaleX(300%);
+	background-size: 21px; /* this gets scaled */
+}
+/* horizontally-resizing handles */
+.window .handle:nth-child(10) {
+	transform: scaleX(500%) translate(50%, 0);
+}
+.window .handle:nth-child(6) {
+	transform: scaleX(500%) translate(-50%, 0);
+}
+/* vertically-resizing handles */
+.window .handle:nth-child(8) {
+	transform: scaleY(500%) translate(0, 50%);
+}
+.window .handle:nth-child(4) {
+	transform: scaleY(500%) translate(0, -50%);
 }
 
-.window-close-button {
+.window .window-close-button {
 	vertical-align: middle;
 	border: none;
-	color: inherit;
 	/* border-radius: 50%; */
-	background: transparent;
+	background: #fd2724;
+	color: white;
 	position: relative;
 	width: 20px;
 	height: 20px;
-	opacity: 0.6;
+	opacity: 1;
+	z-index: 2;
+	/* transform: scale(2); */
+	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 .window-close-button:focus,
 .window-close-button:hover {
@@ -120,85 +128,6 @@
 	transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-.window a {
-	color: aqua;
-}
-
-.window button,
-.window .button,
-.window input[type="submit"] {
-	background: rgba(0, 0, 0, 0.1);
-	color: #CCC;
-	border: 0;
-	cursor: pointer;
-	outline: 1px solid rgba(255, 255, 255, 0.4);
-}
-.window button:hover,
-.window button:focus,
-.window .button:hover,
-.window .button:focus,
-.window input[type="submit"]:hover,
-.window input[type="submit"]:focus {
-	background: #555;
-	background: rgba(255, 255, 255, 0.2);
-	color: white;
-}
-.window button:active,
-.window .button:active,
-.window input[type="submit"]:active {
-	background: #333;
-	background: rgba(255, 255, 255, 0.1);
-	color: #FFF;
-}
-.window button.selected {
-	background: rgba(50, 100, 100, 0.5) !important;
-	color: #DFF !important;
-}
-[disabled] {
-	opacity: 0.5;
-}
-.window input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]),
-.window textarea {
-	color: #FFF;
-	background: #000;
-	box-shadow: 0 0 10px 1px rgba(0, 155, 255, 0);
-	outline: solid 1px rgba(255, 255, 255, 0.3);
-	border: 0;
-}
-
-.window input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):focus,
-.window textarea:focus {
-	box-shadow: 0 0 10px 1px rgba(0, 155, 255, 0.9);
-	outline: solid 1px rgba(255, 255, 255, 0.3);
-	outline-offset: 0;
-}
-
-.window input[type="checkbox"] {
-	background:#000;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	width:16px;height:16px;
-	font-size: 24px;
-	line-height: 10px;
-	vertical-align: top;
-	border: solid 1px rgba(255, 255, 255, 0.3);
-}
-.window input[type="checkbox"]:checked {
-	box-shadow: 0 0 5px #0CF;
-}
-.window input[type="checkbox"]::after {
-	content: "x";
-	color: rgb(0, 155, 255);
-	opacity: 0;
-}
-.window input[type="checkbox"]:checked::after {
-	content: "✓";
-	color: rgb(0, 155, 255);
-	opacity: 1;
-}
-.window textarea {
-	transition: outline, box-shadow .2s ease;
-}
 .window ::selection {
 	background: rgba(0, 200, 255, 0.5);
 }
@@ -206,48 +135,26 @@
 	background: rgba(0, 200, 255, 0.5);
 }
 
-.select-wrapper {
-	position: relative;
-	display: inline-block;
-}
-.select-wrapper select {
-	display: inline-block;
-	min-width: 20ch;
-	padding: 4px 3px 3px 5px;
-	margin: 0;
-	font: inherit;
-	font-size: smaller;
-	line-height: 1.2;
-	background: #000;
-	color: white;
-	border: 1px solid rgba(255, 255, 255, 0.4);
-}
-.select-wrapper::after {
-	content: "▼";
-	position: absolute;
-	top: 1px;
-	right: 1px;
-	bottom: 1px;
-	font-size: 60%;
-	line-height: 2.8em;
-	padding: 0 7px;
-	background: #000;
-	color: white;
-	pointer-events: none;
-}
-
 
 ::-webkit-scrollbar {
 	width: 10px;
 	height: 10px;
-	background: black;
 	display: block;
+	background: rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 ::-webkit-scrollbar-thumb {
-	background: rgba(255, 255, 255, 0.1);
-	border: 1px solid rgba(255, 255, 255, 0.2);
+	/* border: 1px solid rgba(255, 255, 255, 0.2); */
+	background: url("wood-texture.jpg"), #4a4;
+	background-size: 210px;
+	background-blend-mode: multiply;
+	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+::-webkit-scrollbar-thumb:horizontal {
+	/* don't want the shadow to look like it's going over the walls of the sandbox (outside the scroll container) */
+	box-shadow: 0 0 2px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 ::-webkit-scrollbar-thumb:hover {
-	background: rgba(255, 255, 255, 0.2);
-	border: 1px solid rgba(255, 255, 255, 0.3);
+	background-color: aqua;
+	/* border: 1px solid rgba(255, 255, 255, 0.3); */
 }

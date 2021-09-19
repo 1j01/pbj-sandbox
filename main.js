@@ -142,7 +142,7 @@ var audioEnabled = false;
 var audioStyle = 1;
 var audioViz = false;
 var ghostTrails = 0;
-var windowTheme = "retrofuturist-theme"; // global used by index.html
+var windowTheme = "sandbox-theme"; // global used by index.html, and used as ID for <link>
 
 // debug
 var debugPolygons = []; // reset per frame
@@ -1598,6 +1598,7 @@ function initGUI() {
 			<label title="Change the look of the windows.">
 				Theme:
 				<div class='select-wrapper'><select id='theme-select'>
+					<option value='sandbox-theme'>Sandbox</option>
 					<option value='retrofuturist-theme'>Retrofuturist</option>
 					<option value='windows-98-theme'>Windows 98</option>
 				</select></div>
