@@ -45,24 +45,21 @@
 }
 .window .handle {
 	border-radius: 5%; /* this affects the click region, don't go overboard! */
-	background: url("wood-texture.jpg") repeat;
+	background: url("wood-texture.jpg") repeat, white;
 	box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.8);
 	background-size: 210px;
+	background-blend-mode: multiply;
 }
 .window .handle:hover,
 .window .handle.resizing { /* not a thing as of writing, but should be */
-	/* background: rgba(155, 230, 230, 1); */
-	box-shadow: 0 0 0 1px rgba(55, 155, 255, 1);
+	/* background-color: rgba(155, 230, 230, 1); */
+	background-color: aqua;
 }
 /* corner handles */
 .window .handle:nth-child(2n+1) {
 	z-index: 1;
 	color: white;
 	box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.8); /* this gets scaled */
-}
-.window .handle:nth-child(2n+1):hover,
-.window .handle:nth-child(2n+1).resizing { /* not a thing as of writing, but should be */
-	box-shadow: 0 0 0 0.5px rgba(55, 155, 255, 1); /* this gets scaled */
 }
 .window .handle:nth-child(3),
 .window .handle:nth-child(7) {
@@ -106,10 +103,12 @@
 .window-close-button:focus,
 .window-close-button:hover {
 	opacity: 1;
-	background: rgba(128, 128, 128, 0.5);
+	/* background: #ff777a; */
+	transform: scale(1.1);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 .window-close-button:active {
-	background: rgba(128, 128, 128, 0.9);
+	background: #aa0000;
 }
 .window-close-button::before,
 .window-close-button::after {
