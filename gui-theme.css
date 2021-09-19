@@ -28,21 +28,24 @@
 	color: #AAA;
 }
 .window .window-titlebar {
-	background: rgba(0, 0, 0, 0.5);
-	cursor: move;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 	padding-bottom: 4px;
 }
-.window .title {
+.window .window-title-area {
+	background: rgba(0, 0, 0, 0.5);
 	cursor: move;
+	line-height: 1.5;
+}
+.window .window-title {
+	pointer-events: none;
 	color: #CCC;
 	font-weight: lighter;
 }
-.window:hover .window-titlebar {
+.window:hover .window-title-area {
 	background: rgba(0, 0, 0, 0.7);
 }
-.window .window-titlebar.window-titlebar.window-titlebar:hover,
-.window.dragging .window-titlebar.window-titlebar.window-titlebar {
+.window .window-title-area.window-title-area.window-title-area:hover,
+.window.dragging .window-title-area.window-title-area.window-title-area {
 	background: rgba(55, 55, 55, 0.8);
 	color: #FFF;
 }
@@ -104,7 +107,7 @@
 	top: 50%;
 	left: 50%;
 	height: 15px;
-	width: 4px;
+	width: 2px;
 	background-color: currentColor;
 }
 .window-close-button::before {
