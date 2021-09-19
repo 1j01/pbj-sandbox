@@ -59,6 +59,7 @@
 .window .handle::before {
 	position: absolute;
 	content: "";
+	pointer-events: none;
 	background: inherit;
 	box-shadow: inherit;
 	opacity: 0.3;
