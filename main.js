@@ -142,7 +142,7 @@ var audioEnabled = false;
 var audioStyle = 1;
 var audioViz = false;
 var ghostTrails = 0;
-var windowTheme = "dark-theme"; // global used by index.html
+var windowTheme = "retrofuturist-theme"; // global used by index.html
 
 // debug
 var debugPolygons = []; // reset per frame
@@ -1598,7 +1598,7 @@ function initGUI() {
 			<label title="Change the look of the windows.">
 				Theme:
 				<div class='select-wrapper'><select id='theme-select'>
-					<option value='dark-theme'>Dark</option>
+					<option value='retrofuturist-theme'>Retrofuturist</option>
 					<option value='windows-98-theme'>Windows 98</option>
 				</select></div>
 			</label>
