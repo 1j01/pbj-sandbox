@@ -1,9 +1,11 @@
 
-# <img src="icon-47x47.png" height="32"> Point Based Physics 2D <img src="icon-48x48.png" height="32">
+# <img src="pbj-sandbox-logo.svg" height="32"> Point Based Jelly Sandbox
 
 A point-based physics sandbox, with several tools to construct shapes and scenes.
 
 You can [check it out here](https://1j01.github.io/pbp2d).
+
+<a href="https://1j01.github.io/pbp2d"><img src="icon-48x48.png"></a>
 
 ## Features
 
@@ -18,6 +20,8 @@ You can [check it out here](https://1j01.github.io/pbp2d).
 - Ghost trails, slow motion, gravity, and other settings
 - Keyboard shortcuts to switch tools (and to use some tools without switching)
 - Touch support
+
+<a href="https://1j01.github.io/pbp2d"><img src="icon-47x47.png"></a>
 
 ## Ways to Lose Data
 

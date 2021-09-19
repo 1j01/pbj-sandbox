@@ -1796,7 +1796,7 @@ function initGUI() {
 		const $w = new $Window({ title: "About", resizable: true, maximizeButton: false, minimizeButton: false });
 		$w.$content.html(`
 			<div style="padding:0 2em;">
-				<h1>Point-Based Physics 2D</h1>
+				<h1>Point Based Jelly Sandbox</h1>
 				<p>Made by <a href="https://isaiahodhner.io">Isaiah Odhner</a>.</p>
 				<p>Open source on <a href="https://github.com/1j01/pbp2d">GitHub</a>, licensed WTFPL or CC0.</p>
 			</div>
