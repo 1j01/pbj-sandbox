@@ -44,8 +44,8 @@
 .window:hover .window-title-area {
 	background: rgba(0, 0, 0, 0.7);
 }
-.window .window-title-area.window-title-area.window-title-area:hover,
-.window.dragging .window-title-area.window-title-area.window-title-area {
+.window .window-title-area:hover,
+.window.dragging .window-title-area {
 	background: rgba(55, 55, 55, 0.8);
 	color: #FFF;
 }
