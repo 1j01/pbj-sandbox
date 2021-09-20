@@ -57,7 +57,7 @@
 	line-height: 1.5;
 	background-image: url("wood-texture.jpg");
 	background-size: 210px;
-	background-color: #ffaa88;
+	background-color: #a4e;
 	background-blend-mode: multiply;
 	color: white;
 	font-weight: bold;
@@ -243,7 +243,7 @@
 }
 ::-webkit-scrollbar-thumb {
 	/* border: 1px solid rgba(255, 255, 255, 0.2); */
-	background: url("wood-texture.jpg"), #4a4;
+	background: url("wood-texture.jpg"), radial-gradient(circle, transparent 1%, rgba(0, 0, 0, 0.2) 100%), #fa8;
 	background-size: 210px;
 	background-blend-mode: multiply;
 	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
