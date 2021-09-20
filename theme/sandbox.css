@@ -231,8 +231,8 @@
 
 
 ::-webkit-scrollbar {
-	width: 10px;
-	height: 10px;
+	width: 24px;
+	height: 24px;
 	display: block;
 	background: rgba(0, 0, 0, 0.5);
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
