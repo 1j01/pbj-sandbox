@@ -17,13 +17,19 @@
 	background: rgba(255, 255, 255, 0.3);
 	color: black;
 }
-.window .window-content::after {
-	/* extra padding on the bottom of the window (in addition to what is otherwise specified) due to sandbox seats */
-	/* not needed on the top because of the titlebar (so far anyway) */
+.window .window-content::before {
+	/* extra padding on the top of the window (in addition to what is otherwise specified) due to sandbox seats */
 	content: "";
 	display: block;
-	height: 10px;
+	height: 20px; /* less due to the titlebar */
 }
+.window .window-content::after {
+	/* extra padding on the bottom of the window (in addition to what is otherwise specified) due to sandbox seats */
+	content: "";
+	display: block;
+	height: 30px;
+}
+
 .window .window-titlebar {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 	padding-bottom: 4px;
@@ -79,19 +85,26 @@
 	z-index: 1;
 	color: white;
 	box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.8); /* this gets scaled */
+	--scale: 8;
 }
 .window .handle:nth-child(2n+1)::before {
-	background-size: calc(210px / 3 / 3) calc(210px / 3); /* counteracting the scale */
+	background-size: calc(210px / var(--scale) / 3) calc(210px / var(--scale)); /* counteracting the scale */
 }
-/* top right and bottom left corners */
-.window .handle:nth-child(3),
+/* top right corner */
+.window .handle:nth-child(3) {
+	transform: rotate(45deg) scale(var(--scale)) scaleX(300%) translate(0, 100%);
+}
+/* bottom left corner */
 .window .handle:nth-child(7) {
-	transform: rotate(45deg) scale(600%) scaleX(300%);
+	transform: rotate(45deg) scale(var(--scale)) scaleX(300%) translate(0, -100%);
 }
-/* top left and bottom right corners */
-.window .handle:nth-child(5),
+/* top left corner */
+.window .handle:nth-child(5) {
+	transform: rotate(-45deg) scale(var(--scale)) scaleX(300%) translate(0, 100%);
+}
+/* bottom right corner */
 .window .handle:nth-child(9) {
-	transform: rotate(-45deg) scale(600%) scaleX(300%);
+	transform: rotate(-45deg) scale(var(--scale)) scaleX(300%) translate(0, -100%);
 }
 /* horizontally-resizing handles (vertical walls) */
 .window .handle:nth-child(10)::before,
@@ -115,6 +128,35 @@
 .window .handle:nth-child(2n)::before {
 	background-size: 210px calc(210px / 3) !important; /* counteracting the scale */
 }
+/* give each corner random texture offsets */
+.window .handle:nth-child(1)::before {
+	background-position: 52px -10px;
+}
+.window .handle:nth-child(2)::before {
+	background-position: -30px -10px;
+}
+.window .handle:nth-child(3)::before {
+	background-position: -10px -10px;
+}
+.window .handle:nth-child(4)::before {
+	background-position: -10px 82px;
+}
+.window .handle:nth-child(5)::before {
+	background-position: -10px -10px;
+}
+.window .handle:nth-child(6)::before {
+	background-position: 22px 40px;
+}
+.window .handle:nth-child(7)::before {
+	background-position: 46px 39px;
+}
+.window .handle:nth-child(8)::before {
+	background-position: 32px 23px;
+}
+.window .handle:nth-child(9)::before {
+	background-position: -10px 82px;
+}
+
 
 .window .window-close-button {
 	vertical-align: middle;
