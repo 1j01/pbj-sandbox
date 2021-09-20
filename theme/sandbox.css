@@ -16,6 +16,8 @@
 .window .window-content {
 	background: rgba(255, 255, 255, 0.3);
 	color: black;
+	margin: 16px;
+	margin-top: 0;
 }
 .window .window-content::before {
 	/* extra padding on the top of the window (in addition to what is otherwise specified) due to sandbox seats */
@@ -33,6 +35,8 @@
 .window .window-titlebar {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 	padding-bottom: 4px;
+	margin: 16px;
+	margin-bottom: 0;
 }
 .window .window-title-area {
 	cursor: move;
@@ -92,19 +96,19 @@
 }
 /* top right corner */
 .window .handle:nth-child(3) {
-	transform: rotate(45deg) scale(var(--scale)) scaleX(300%) translate(0, 100%);
+	transform: rotate(45deg) scale(var(--scale)) scaleX(300%) translate(0, 170%);
 }
 /* bottom left corner */
 .window .handle:nth-child(7) {
-	transform: rotate(45deg) scale(var(--scale)) scaleX(300%) translate(0, -100%);
+	transform: rotate(45deg) scale(var(--scale)) scaleX(300%) translate(0, -170%);
 }
 /* top left corner */
 .window .handle:nth-child(5) {
-	transform: rotate(-45deg) scale(var(--scale)) scaleX(300%) translate(0, 100%);
+	transform: rotate(-45deg) scale(var(--scale)) scaleX(300%) translate(0, 170%);
 }
 /* bottom right corner */
 .window .handle:nth-child(9) {
-	transform: rotate(-45deg) scale(var(--scale)) scaleX(300%) translate(0, -100%);
+	transform: rotate(-45deg) scale(var(--scale)) scaleX(300%) translate(0, -170%);
 }
 /* horizontally-resizing handles (vertical walls) */
 .window .handle:nth-child(10)::before,
@@ -112,17 +116,17 @@
 	transform: rotate(-90deg); /* negative anchors it correctly, visible while resizing */
 }
 .window .handle:nth-child(10) {
-	transform: scaleX(500%) translate(50%, 0);
+	transform: scaleX(500%) translate(-50%, 0);
 }
 .window .handle:nth-child(6) {
-	transform: scaleX(500%) translate(-50%, 0);
+	transform: scaleX(500%) translate(50%, 0);
 }
 /* vertically-resizing handles (horizontal walls) */
 .window .handle:nth-child(8) {
-	transform: scaleY(500%) translate(0, 50%);;
+	transform: scaleY(500%) translate(0, -50%);;
 }
 .window .handle:nth-child(4) {
-	transform: scaleY(500%) translate(0, -50%);
+	transform: scaleY(500%) translate(0, 50%);
 }
 /* all non-corner handles */
 .window .handle:nth-child(2n)::before {
