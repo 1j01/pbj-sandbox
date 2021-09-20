@@ -8,6 +8,7 @@
 	position: absolute;
 	background-image: url("sand-texture.jpg");
 	background-color: white;
+	/* background-clip: content-box; */
 	color: black;
 	outline: 1px solid rgba(128, 129, 289, 0.4);
 	padding: 4px;
@@ -115,18 +116,26 @@
 .window .handle:nth-child(6)::before {
 	transform: rotate(-90deg); /* negative anchors it correctly, visible while resizing */
 }
+/* right */
 .window .handle:nth-child(10) {
 	transform: scaleX(500%) translate(-50%, 0);
+	clip-path: polygon(0 20px, 100% 0, 100% 100%, 0 calc(100% - 20px));
 }
+/* left */
 .window .handle:nth-child(6) {
 	transform: scaleX(500%) translate(50%, 0);
+	clip-path: polygon(100% 20px, 0 0, 0 100%, 100% calc(100% - 20px));
 }
 /* vertically-resizing handles (horizontal walls) */
+/* top */
 .window .handle:nth-child(8) {
-	transform: scaleY(500%) translate(0, -50%);;
+	transform: scaleY(500%) translate(0, -50%);
+	clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 100%, 0 100%);
 }
+/* bottom */
 .window .handle:nth-child(4) {
 	transform: scaleY(500%) translate(0, 50%);
+	clip-path: polygon(20px 100%, calc(100% - 20px) 100%, 100% 0, 0 0);
 }
 /* all non-corner handles */
 .window .handle:nth-child(2n)::before {
