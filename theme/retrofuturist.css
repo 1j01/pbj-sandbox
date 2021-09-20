@@ -251,3 +251,6 @@
 	background: rgba(255, 255, 255, 0.2);
 	border: 1px solid rgba(255, 255, 255, 0.3);
 }
+::-webkit-scrollbar-corner {
+	background: rgba(0, 0, 0, 0.5);
+}
