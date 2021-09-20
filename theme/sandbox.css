@@ -50,14 +50,27 @@
 	background-color: aqua;
 }
 .window .handle {
-	border-radius: 5%; /* this affects the click region, don't go overboard! */
+	border-radius: 15%; /* this affects the click region, don't go overboard! */
+	overflow: hidden;
+}
+/* using a pseudo element for the texture in order to rotate it independently from the element */
+/* (there is no background-transform or background-rotate property in CSS) */
+.window .handle::before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	min-width: 100%;
+	min-height: 100%;
+	aspect-ratio: 1;
 	background: url("wood-texture.jpg") repeat, white;
 	box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.8);
 	background-size: 210px;
 	background-blend-mode: multiply;
 }
-.window .handle:hover,
-.window .handle.resizing { /* not a thing as of writing, but should be */
+.window .handle:hover::before,
+.window .handle.resizing::before { /* not a thing as of writing, but should be */
 	/* background-color: rgba(155, 230, 230, 1); */
 	background-color: aqua;
 }
@@ -67,29 +80,40 @@
 	color: white;
 	box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.8); /* this gets scaled */
 }
+.window .handle:nth-child(2n+1)::before {
+	background-size: calc(210px / 3 / 3) calc(210px / 3); /* counteracting the scale */
+}
+/* top right and bottom left corners */
 .window .handle:nth-child(3),
 .window .handle:nth-child(7) {
 	transform: rotate(45deg) scale(600%) scaleX(300%);
-	background-size: 21px; /* this gets scaled */
 }
+/* top left and bottom right corners */
 .window .handle:nth-child(5),
 .window .handle:nth-child(9) {
 	transform: rotate(-45deg) scale(600%) scaleX(300%);
-	background-size: 21px; /* this gets scaled */
 }
-/* horizontally-resizing handles */
+/* horizontally-resizing handles (vertical walls) */
+.window .handle:nth-child(10)::before,
+.window .handle:nth-child(6)::before {
+	transform: rotate(-90deg); /* negative anchors it correctly, visible while resizing */
+}
 .window .handle:nth-child(10) {
 	transform: scaleX(500%) translate(50%, 0);
 }
 .window .handle:nth-child(6) {
 	transform: scaleX(500%) translate(-50%, 0);
 }
-/* vertically-resizing handles */
+/* vertically-resizing handles (horizontal walls) */
 .window .handle:nth-child(8) {
-	transform: scaleY(500%) translate(0, 50%);
+	transform: scaleY(500%) translate(0, 50%);;
 }
 .window .handle:nth-child(4) {
 	transform: scaleY(500%) translate(0, -50%);
+}
+/* all non-corner handles */
+.window .handle:nth-child(2n)::before {
+	background-size: 210px calc(210px / 3) !important; /* counteracting the scale */
 }
 
 .window .window-close-button {
