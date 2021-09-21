@@ -1706,6 +1706,14 @@ function initGUI() {
 			document.documentElement.requestFullscreen();
 		}
 	};
+	document.addEventListener('fullscreenchange', (event) => {
+		if (document.fullscreenElement) {
+			find("#fullscreen-button").classList.add("selected");
+		} else {
+			find("#fullscreen-button").classList.remove("selected");
+		}
+	});
+	  
 	var audioCheckbox = find("#sfx-checkbox");
 	var audioVizCheckbox = find("#sfx-viz-checkbox");
 	var audioStyleSelect = find("#sfx-style-select");
