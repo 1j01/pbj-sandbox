@@ -854,6 +854,29 @@ function step() {
 			}
 		}
 	}
+
+	const windowElements = document.querySelectorAll(".os-window");
+	const squeak_dist = 30;
+	for (const windowElement of windowElements) {
+		windowElement.rect = windowElement.getBoundingClientRect();
+		if (windowElement.rect_at_last_squeak) {
+			const delta_width = windowElement.rect.width - windowElement.rect_at_last_squeak.width;
+			const delta_height = windowElement.rect.height - windowElement.rect_at_last_squeak.height;
+			if (
+				Math.abs(delta_width) > squeak_dist ||
+				Math.abs(delta_height) > squeak_dist
+			) {
+				windowElement.rect_at_last_squeak = windowElement.rect;
+				// make a squeaking noise, hopefully...
+				amplitude += (Math.random() + 1) / 20;
+				freq += 100;
+			}
+		} else {
+			windowElement.rect_at_last_squeak = windowElement.rect;
+		}
+		windowElement.prev_rect = windowElement.rect;
+	}
+
 	//Draw and step the points.
 	let time = performance.now();
 	for (var i = points.length - 1; i >= 0; i--) {
@@ -911,11 +934,9 @@ function step() {
 			// if (Math.sign(p.x - p.px - p.vx) > 0) {
 
 			// }
-			const windowElements = document.querySelectorAll(".os-window");
-			for (var j = 0; j < windowElements.length; j++) {
-				var windowElement = windowElements[j];
-				var r = windowElement.getBoundingClientRect();
-				var o = 3;
+			for (const windowElement of windowElements) {
+				let r = windowElement.rect;
+				const o = 3;
 				r = { left: r.left - o, top: r.top - o, right: r.right + o, bottom: r.bottom + o };
 				r.width = r.right - r.left;
 				r.height = r.bottom - r.top;
