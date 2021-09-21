@@ -403,6 +403,10 @@ button,
 		0 -0.1em 0 0.1em #0004,
 		0 0.75em 0.5em 0.25em #0003 inset,
 		0 0.1em 0 0.1em #fff4;
+	margin-bottom: 0;
+	margin-left: 0;
+	margin-top: 0;
+	/* margin-right: 0.75em; */
 }
 .window-content input[type=checkbox]:checked {
 	animation: checkboxFlipTrue var(--animDur) var(--checkboxTiming);
