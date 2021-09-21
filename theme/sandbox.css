@@ -267,80 +267,92 @@
 	--radioTiming: linear;
 	/* font-size: calc(16px + (24 - 16) * (100vw - 320px) / (1280 - 320)); */
 }
-/* body, button, input {
-	font: 1em/1.5 "Manjari", sans-serif;
+/* body,
+button,
+.window-content input {
+	font: 1em/1.5 "Manjari",
+	sans-serif;
 } */
-label {
+.window-content label {
 	display: flex;
 }
 
-button, h2, label {
+.window-content button,
+.window-content h2,
+.window-content label {
 	/* margin-bottom: 0.75em; */
 }
-button, label {
+.window-content button,
+.window-content label {
 	-webkit-tap-highlight-color: transparent;
 }
-button, .screen {
+.window-content button {
 	margin-left: auto;
 	margin-right: auto;
 }
-h1, h2, input + span {
-	text-shadow: 0 0 0.25em #0004;
-}
-h1, .screen {
-	font-size: 1.5em;
-	line-height: 1;
-}
-h1 {
-	margin-bottom: 0.75rem;
-	padding-top: 0.75rem;
-	text-align: center;
-}
-h2 {
-	font-size: 1em;
-}
-label {
+.window-content label {
 	align-items: center;
 	flex-wrap: wrap;
 	position: relative;
 }
 
-button:focus, button span:focus, input:focus {
+.window-content button:focus,
+.window-content button span:focus,
+.window-content input:focus {
 	outline: transparent;
 }
-input:focus + span {
+.window-content input:focus + span {
 	color: #db0b0b;
 	text-shadow: 0 0 0.25em #db0b0b44;
 }
-button, input[type=checkbox], input[type=radio], label {
+.window-content button,
+.window-content input[type=checkbox],
+.window-content input[type=radio],
+.window-content label {
 	cursor: pointer;
 }
-input[type=checkbox], input[type=checkbox]:before, input[type=checkbox]:after, 
-input[type=radio], input[type=radio]:before, input[type=radio]:after {
+.window-content input[type=checkbox],
+.window-content input[type=checkbox]:before,
+.window-content input[type=checkbox]:after,
+
+.window-content input[type=radio],
+.window-content input[type=radio]:before,
+.window-content input[type=radio]:after {
 	width: 2.25rem;
 }
-button, input[type=checkbox], input[type=checkbox]:before, 
-input[type=radio], input[type=radio]:before, input[type=radio]:after {
+.window-content button,
+.window-content input[type=checkbox],
+.window-content input[type=checkbox]:before,
+
+.window-content input[type=radio],
+.window-content input[type=radio]:before,
+.window-content input[type=radio]:after {
 	height: 2.25rem;
 }
-input[type=checkbox], input[type=radio] {
+.window-content input[type=checkbox],
+.window-content input[type=radio] {
 	margin-right: 0.75em;
 	-webkit-appearance: none;
 	appearance: none;
 }
-input[type=checkbox]:before, input[type=checkbox]:after, 
-input[type=radio]:before, input[type=radio]:after {
+.window-content input[type=checkbox]:before,
+.window-content input[type=checkbox]:after,
+
+.window-content input[type=radio]:before,
+.window-content input[type=radio]:after {
 	display: block;
 	position: absolute;
 	top: 0;
 	left: 0;
 }
-input[type=checkbox]:before, 
-input[type=radio]:before, input[type=radio]:after {
+.window-content input[type=checkbox]:before,
+
+.window-content input[type=radio]:before,
+.window-content input[type=radio]:after {
 	content: "";
 }
 /* Buttons */
-button {
+.window-content button {
 	background-color: #db0b0b;
 	background-image:
 		linear-gradient(180deg,#0000,#0002),
@@ -361,12 +373,12 @@ button {
 	max-width: 14rem;
 	width: 100%;
 }
-button span {
+.window-content button span {
 	display: block;
 	padding: 0.5em;
 	transition: transform var(--transDur) var(--buttonTiming);
 }
-button:active {
+.window-content button:active {
 	box-shadow:
 		0 0 0 #0007,
 		0 -0.1em 0 0.1em #0004,
@@ -376,15 +388,15 @@ button:active {
 		0.25rem 0 0.25rem #0004 inset,
 		0 -0.25rem 0.25rem #7a0606 inset;
 }
-button:active span {
+.window-content button:active span {
 	transform: scale(0.95);
 }
-button:focus {
+.window-content button:focus {
 	color: #fbb7b7;
 	text-shadow: 0 0 0.25em #fbb7b777;
 }
 /* Checkboxes */
-input[type=checkbox] {
+.window-content input[type=checkbox] {
 	animation: checkboxFlipFalse var(--animDur) var(--checkboxTiming);
 	box-shadow:
 		0.25em 0.25em 0.5em #0007,
@@ -392,13 +404,14 @@ input[type=checkbox] {
 		0 0.75em 0.5em 0.25em #0003 inset,
 		0 0.1em 0 0.1em #fff4;
 }
-input[type=checkbox]:checked {
+.window-content input[type=checkbox]:checked {
 	animation: checkboxFlipTrue var(--animDur) var(--checkboxTiming);
 }
-input[type=checkbox]:before, input[type=checkbox]:after {
+.window-content input[type=checkbox]:before,
+.window-content input[type=checkbox]:after {
 	background-color: #db0b0b;
 }
-input[type=checkbox]:before {
+.window-content input[type=checkbox]:before {
 	animation: checkboxFlipFalseBefore var(--animDur) var(--checkboxTiming);
 	background-image:
 		linear-gradient(180deg,#0000,#0002),
@@ -416,12 +429,12 @@ input[type=checkbox]:before {
 	text-shadow: 0 0 0.25rem #0000;
 	transform: translateZ(0.5rem);
 }
-input[type=checkbox]:checked:before {
+.window-content input[type=checkbox]:checked:before {
 	animation: checkboxFlipTrueBefore var(--animDur) var(--checkboxTiming);
 	color: #fff;
 	text-shadow: 0 0 0.25rem #fffa;
 }
-input[type=checkbox]:after {
+.window-content input[type=checkbox]:after {
 	animation: checkboxFlipFalseAfter var(--animDur) var(--checkboxTiming);
 	box-shadow:
 		0.25rem 0 0.25rem #fff3 inset,
@@ -431,14 +444,16 @@ input[type=checkbox]:after {
 	height: 1rem;
 	transform: translateY(1rem) rotateX(-90deg) translateZ(1.5rem);
 }
-input[type=checkbox]:checked:after {
+.window-content input[type=checkbox]:checked:after {
 	animation: checkboxFlipTrueAfter var(--animDur) var(--checkboxTiming);
 }
 /* Radios */
-input[type=radio], input[type=radio]:before, input[type=radio]:after {
+.window-content input[type=radio],
+.window-content input[type=radio]:before,
+.window-content input[type=radio]:after {
 	border-radius: 50%;
 }
-input[type=radio] {
+.window-content input[type=radio] {
 	box-shadow:
 		0.25em 0.25em 0.5em #0007,
 		0 -0.1em 0 0.1em #0004,
@@ -446,18 +461,19 @@ input[type=radio] {
 		0 0 1.5em #0004 inset;
 	transition: box-shadow var(--animDur) var(--radioTiming);
 }
-input[type=radio]:checked {
+.window-content input[type=radio]:checked {
 	box-shadow:
 		0.25em 0.25em 1em #0000,
 		0 -0.1em 0 0.1em #0004,
 		0 0.1em 0 0.1em #fff7,
 		0 0 1.5em #0004 inset;
 }
-input[type=radio]:before, input[type=radio]:after {
+.window-content input[type=radio]:before,
+.window-content input[type=radio]:after {
 	backface-visibility: hidden;
 	-webkit-backface-visibility: hidden;
 }
-input[type=radio]:before {
+.window-content input[type=radio]:before {
 	animation: radioFlipFalseBefore var(--animDur) var(--radioTiming);
 	background:
 		linear-gradient(#0000 25%,#0004 75%),
@@ -476,12 +492,12 @@ input[type=radio]:before {
 	background-repeat: no-repeat;
 	background-size: 2.25em 2.25em;
 }
-input[type=radio]:checked:before {
+.window-content input[type=radio]:checked:before {
 	animation: radioFlipTrueBefore var(--animDur) var(--radioTiming);
 	border-radius: 50% 50% 50% 50% / 100% 100% 0% 0%;
 	height: 1.125em;
 }
-input[type=radio]:after {
+.window-content input[type=radio]:after {
 	animation: radioFlipFalseAfter var(--animDur) var(--radioTiming);
 	background-color: #fff;
 	background-image:
@@ -496,15 +512,17 @@ input[type=radio]:after {
 	-webkit-filter: brightness(0.1);
 	transform: rotateX(-180deg);
 }
-input[type=radio]:checked:after {
+.window-content input[type=radio]:checked:after {
 	animation: radioFlipTrueAfter var(--animDur) var(--radioTiming);
 	filter: brightness(1);
 	-webkit-filter: brightness(1);
 	transform: rotateX(0);
 }
-input[type=checkbox].pristine,
-input[type=checkbox].pristine:before, input[type=checkbox].pristine:after,
-input[type=radio].pristine:before, input[type=radio].pristine:after {
+.window-content input[type=checkbox].pristine,
+.window-content input[type=checkbox].pristine:before,
+.window-content input[type=checkbox].pristine:after,
+.window-content input[type=radio].pristine:before,
+.window-content input[type=radio].pristine:after {
 	animation-name: none;
 }
 /* Animations */
