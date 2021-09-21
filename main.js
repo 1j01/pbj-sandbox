@@ -157,7 +157,7 @@ var actx; // AudioContext
 var oscillator; // OscillatorNode
 var gain; // GainNode
 var creakBuffer; // AudioBuffer used for creaking wood noise
-
+var creakDist = 30; // distance from last creak
 
 function serialize(points, connections, isSelection) {
 	// Note: if I ever change this to JSON,
@@ -430,22 +430,28 @@ function main() {
 			s.b5 = -0.7616 * s.b5 - white * 0.0168980;
 			data[i] = s.b0 + s.b1 + s.b2 + s.b3 + s.b4 + s.b5 + s.b6 + white * 0.5362;
 			data[i] *= 0.11;
+			// just messing around with the sound
+			// for (var j = 0; j < 6; j++) {
+			// 	s["b" + j] *= Math.sin(i * 0.001 + j * 5.1);
+			// }
 			s.b6 = white * 0.115926;
 		}
-		// made it decay and add a sine wave
+		// made it decay and add some sine waves
 		for (var i = 0; i < data.length; i++) {
-			data[i] += Math.sin(i / actx.sampleRate * Math.PI * 2 * 90) * 0.5;
-			data[i] *= Math.pow((i - data.length) / actx.sampleRate, 20) / 10;
+			for (var j = 0; j < 10; j++) {
+				data[i] += Math.sin(i/actx.sampleRate * 51 * (j * 2.1 + 50)) * 0.1;
+			}
+			data[i] *= Math.pow(1 - (i / data.length), 20) / 10;
 		}
 		// tiny metal tink / zipper noise
 		// creakBuffer = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
 		// const data = creakBuffer.getChannelData(0);
 		// for (var i = 0; i < data.length; i++) {
-		// 	data[i] =
-		// 		((Math.sin(i/actx.sampleRate*460000) * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 30) / 10) +
+		// 	data[i] +=
+		// 		// ((Math.sin(i/actx.sampleRate*460000) * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 30) / 10) +
 		// 		// sand noise
-		// 		// ((Math.random() * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 2) / 10);
-		// 		0;
+		// 		((Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 2) / 20);
+		// 		// 0;
 		// }
 
 	} catch (e) {
@@ -901,27 +907,33 @@ function step() {
 	}
 
 	const windowElements = document.querySelectorAll(".os-window");
-	const creak_dist = 30;
 	for (const windowElement of windowElements) {
 		windowElement.rect = windowElement.getBoundingClientRect();
 		if (windowElement.rect_at_last_creak) {
 			const delta_width = windowElement.rect.width - windowElement.rect_at_last_creak.width;
 			const delta_height = windowElement.rect.height - windowElement.rect_at_last_creak.height;
-			if (
-				Math.abs(delta_width) > creak_dist ||
-				Math.abs(delta_height) > creak_dist
-			) {
+			if (Math.abs(delta_width) + Math.abs(delta_height) > creakDist) {
 				windowElement.rect_at_last_creak = windowElement.rect;
-				const noise = actx.createBufferSource();
-				noise.buffer = creakBuffer;
-				noise.connect(actx.destination);
-				noise.start();
+				const creakVolume = Math.min(1, creakDist / 100);
+				const creakGain = actx.createGain();
+				const bufferSource = actx.createBufferSource();
+				bufferSource.buffer = creakBuffer;
+				bufferSource.connect(creakGain);
+				// bufferSource.playbackRate.value = (Math.abs(delta_height) + Math.abs(delta_width)) / 100;
+				bufferSource.playbackRate.value = 1000 / Math.pow(windowElement.rect.width + 200, 0.45) / Math.pow(windowElement.rect.height + 200, 0.45);
+				// console.log(bufferSource.playbackRate.value);
+				creakGain.connect(actx.destination);
+				bufferSource.start();
+				creakGain.gain.setValueAtTime(creakVolume, actx.currentTime);
+				// creakDist += 1;
+				creakDist += Math.random() * 10;
 			}
 		} else {
 			windowElement.rect_at_last_creak = windowElement.rect;
 		}
 		windowElement.prev_rect = windowElement.rect;
 	}
+	creakDist *= 0.99;
 
 	//Draw and step the points.
 	let time = performance.now();
