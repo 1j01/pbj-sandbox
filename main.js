@@ -152,6 +152,12 @@ var debugLines = []; // reset per frame
 // Note: `groups` is computed manually when needed, at most once per frame (with a flag)
 var groups = new Map(); // point to group id, for connected groups (used for avoiding self-collision)
 
+// audio (initialized later)
+var actx; // AudioContext
+var oscillator; // OscillatorNode
+var gain; // GainNode
+var creakBuffer; // AudioBuffer used for creaking wood noise
+
 
 function serialize(points, connections, isSelection) {
 	// Note: if I ever change this to JSON,
@@ -402,6 +408,45 @@ function main() {
 		oscillator.frequency.setValueAtTime(440, actx.currentTime); // value in hertz
 		oscillator.connect(gain);
 		oscillator.start();
+
+		creakBuffer = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
+		const data = creakBuffer.getChannelData(0);
+		// for (var i = 0; i < data.length; i++) {
+			// data[i] =
+			// 	((Math.random() * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 2) / 10) +
+			// 	// sand noise
+			// 	// ((Math.random() * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 2) / 10);
+			// 	0;
+		// }
+		// generate pink noise
+		const s = { b0: 0, b1: 0, b2: 0, b3: 0, b4: 0, b5: 0, b6: 0 };
+		for (var i = 0; i < data.length; i++) {
+			let white = Math.random() * 2 - 1;
+			s.b0 = 0.99886 * s.b0 + white * 0.0555179;
+			s.b1 = 0.99332 * s.b1 + white * 0.0750759;
+			s.b2 = 0.96900 * s.b2 + white * 0.1538520;
+			s.b3 = 0.86650 * s.b3 + white * 0.3104856;
+			s.b4 = 0.55000 * s.b4 + white * 0.5329522;
+			s.b5 = -0.7616 * s.b5 - white * 0.0168980;
+			data[i] = s.b0 + s.b1 + s.b2 + s.b3 + s.b4 + s.b5 + s.b6 + white * 0.5362;
+			data[i] *= 0.11;
+			s.b6 = white * 0.115926;
+		}
+		// made it decay and add a sine wave
+		for (var i = 0; i < data.length; i++) {
+			data[i] += Math.sin(i / actx.sampleRate * Math.PI * 2 * 90) * 0.5;
+			data[i] *= Math.pow((i - data.length) / actx.sampleRate, 20) / 10;
+		}
+		// tiny metal tink / zipper noise
+		// creakBuffer = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
+		// const data = creakBuffer.getChannelData(0);
+		// for (var i = 0; i < data.length; i++) {
+		// 	data[i] =
+		// 		((Math.sin(i/actx.sampleRate*460000) * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 30) / 10) +
+		// 		// sand noise
+		// 		// ((Math.random() * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 2) / 10);
+		// 		0;
+		// }
 
 	} catch (e) {
 		audioSetupError = e;
@@ -856,23 +901,24 @@ function step() {
 	}
 
 	const windowElements = document.querySelectorAll(".os-window");
-	const squeak_dist = 30;
+	const creak_dist = 30;
 	for (const windowElement of windowElements) {
 		windowElement.rect = windowElement.getBoundingClientRect();
-		if (windowElement.rect_at_last_squeak) {
-			const delta_width = windowElement.rect.width - windowElement.rect_at_last_squeak.width;
-			const delta_height = windowElement.rect.height - windowElement.rect_at_last_squeak.height;
+		if (windowElement.rect_at_last_creak) {
+			const delta_width = windowElement.rect.width - windowElement.rect_at_last_creak.width;
+			const delta_height = windowElement.rect.height - windowElement.rect_at_last_creak.height;
 			if (
-				Math.abs(delta_width) > squeak_dist ||
-				Math.abs(delta_height) > squeak_dist
+				Math.abs(delta_width) > creak_dist ||
+				Math.abs(delta_height) > creak_dist
 			) {
-				windowElement.rect_at_last_squeak = windowElement.rect;
-				// make a squeaking noise, hopefully...
-				amplitude += (Math.random() + 1) / 20;
-				freq += 100;
+				windowElement.rect_at_last_creak = windowElement.rect;
+				const noise = actx.createBufferSource();
+				noise.buffer = creakBuffer;
+				noise.connect(actx.destination);
+				noise.start();
 			}
 		} else {
-			windowElement.rect_at_last_squeak = windowElement.rect;
+			windowElement.rect_at_last_creak = windowElement.rect;
 		}
 		windowElement.prev_rect = windowElement.rect;
 	}
