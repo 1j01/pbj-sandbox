@@ -280,7 +280,7 @@ button,
 .window-content button,
 .window-content h2,
 .window-content label {
-	/* margin-bottom: 0.75em; */
+	margin-bottom: 0.6em;
 }
 .window-content button,
 .window-content label {
@@ -367,18 +367,23 @@ button,
 		0 -0.25rem 0.25rem #aa0909 inset;
 	border-radius: 1.125em;
 	color: #fff;
-	display: block;
+	/* display: block; */
 	text-shadow: 0 0 0.25em #fff7;
 	transition: box-shadow var(--transDur) var(--buttonTiming);
-	max-width: 14rem;
-	width: 100%;
+	/* max-width: 14rem; */
+	/* width: 100%; */
+	border: 0;
 }
 .window-content button span {
 	display: block;
 	padding: 0.5em;
 	transition: transform var(--transDur) var(--buttonTiming);
 }
-.window-content button:active {
+.window-content button:not(.selected):not(:active):not(:focus) {
+	transition-duration: 0.05s;
+}
+.window-content button:active,
+.window-content button.selected {
 	box-shadow:
 		0 0 0 #0007,
 		0 -0.1em 0 0.1em #0004,
@@ -388,8 +393,19 @@ button,
 		0.25rem 0 0.25rem #0004 inset,
 		0 -0.25rem 0.25rem #7a0606 inset;
 }
+.window-content button.selected {
+	/* background: #a00; */
+	filter: brightness(0.9);
+}
 .window-content button:active span {
 	transform: scale(0.95);
+}
+.window-content button.selected span {
+	transform: scale(0.95);
+	/* transform: scale(0.9); */
+	/* transform: scale(0.95) translateY(1px); */
+	/* transition-duration: 0; */
+	--transDur: 0;
 }
 .window-content button:focus {
 	color: #fbb7b7;
