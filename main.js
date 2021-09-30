@@ -4,6 +4,7 @@ const TOOL_ADD_POINTS = "TOOL_ADD_POINTS";
 const TOOL_ADD_POINTS_QUICKLY = "TOOL_ADD_POINTS_QUICKLY";
 const TOOL_ADD_BALL = "TOOL_ADD_BALL";
 const TOOL_ADD_ROPE = "TOOL_ADD_ROPE";
+const TOOL_ADD_DOLL = "TOOL_ADD_DOLL";
 const TOOL_PRECISE_CONNECTOR = "TOOL_PRECISE_CONNECTOR";
 const TOOL_GLUE = "TOOL_GLUE";
 const TOOL_DRAG = "TOOL_DRAG";
@@ -38,6 +39,12 @@ const tools = [
 		name: "Make Ball",
 		shortcut: "B",
 		tooltip: "Create a group of interconnected points forming a round or polygonal shape."
+	},
+	{
+		id: TOOL_ADD_DOLL,
+		name: "Make Ragdoll",
+		shortcut: "L",
+		tooltip: "Create humanoids.",
 	},
 	{
 		id: TOOL_GLUE,
@@ -664,6 +671,11 @@ function step() {
 		if (mouse.left && !mousePrevious.left) {
 			undoable();
 			add_ball({ x: mouse.x, y: mouse.y, numPoints: 5 + ~~(Math.random() * 4), size: 20 + Math.random() * 30 });
+		}
+	} else if (selectedTool === TOOL_ADD_DOLL) {
+		if (mouse.left && !mousePrevious.left) {
+			undoable();
+			add_doll({ x: mouse.x, y: mouse.y });
 		}
 	} else if (selectedTool === TOOL_ADD_ROPE) {
 		if (mouse.left) {
@@ -2036,6 +2048,77 @@ function add_ball(options) {
 	const ball = make_ball(options);
 	points.push(...ball.points);
 	connections.push(...ball.connections);
+}
+
+function make_doll({ x, y, color, width, height } = {}) {
+	color = color ?? `hsl(${Math.random() * 360},${Math.random() * 50 + 50}%,${Math.random() * 50 + 50}%)`;
+	width = width ?? (Math.random() * 50 + 10);
+	height = height ?? (Math.random() * 50 + 10);
+	const limbLength = height / 2;
+
+	const dollPoints = [];
+	const dollConnections = [];
+	// Head
+	const head = make_ball({
+		x: x,
+		y: y,
+		color: color,
+		numPoints: 4,
+		size: 10,
+	});
+	dollPoints.push(...head.points);
+	dollConnections.push(...head.connections);
+	// Torso
+	const chest = make_point({ x: x, y: y + 20, color });
+	const bottom = make_point({ x: x, y: y + 60, color });
+	connect_if_not_connected(chest, bottom, dollConnections, { dist: height, force: 2 });
+	dollPoints.push(chest, bottom);
+	connect_if_not_connected(chest, head.points[0], dollConnections, { dist: 0, force: 2 }); // neck
+	// Limbs
+	const shoulders = [];
+	const hips = [];
+	for (let side = -1; side <= 1; side += 2) {
+		// Arm(s)
+		const shoulder = make_point({ x: x + side * 20, y: y + 10, color: "red" });
+		const elbow = make_point({ x: x + side * 20, y: y + 30, color: "orange" });
+		const hand = make_point({ x: x + side * 20, y: y + 50, color: "yellow" });
+		connect_if_not_connected(shoulder, elbow, dollConnections, { dist: limbLength, force: 2 }); // upper arm
+		connect_if_not_connected(elbow, hand, dollConnections, { dist: limbLength, force: 2 }); // lower arm
+		connect_if_not_connected(shoulder, chest, dollConnections, { dist: width / 2, force: 2 }); // shoulder
+		// Leg(s)
+		const hip = make_point({ x: x + side * 20, y: y + 70, color });
+		const knee = make_point({ x: x + side * 20, y: y + 90, color });
+		const foot = make_point({ x: x + side * 20, y: y + 110, color });
+		connect_if_not_connected(hip, knee, dollConnections, { dist: limbLength, force: 2 }); // upper leg
+		connect_if_not_connected(knee, foot, dollConnections, { dist: limbLength, force: 2 }); // lower leg
+		connect_if_not_connected(hip, bottom, dollConnections, { dist: width / 2, force: 2 }); // hip
+
+		dollPoints.push(shoulder, elbow, hand, hip, knee, foot);
+		shoulders.push(shoulder);
+		hips.push(hip);
+	}
+	// Left shoulder to right hip
+	connect_if_not_connected(shoulders[0], hips[1], dollConnections, { dist: height + width, force: 2 });
+	// Right shoulder to left hip
+	connect_if_not_connected(shoulders[1], hips[0], dollConnections, { dist: height + width, force: 2 });
+	// Left shoulder to left hip
+	connect_if_not_connected(shoulders[0], hips[0], dollConnections, { dist: height + width, force: 2 });
+	// Right shoulder to right hip
+	connect_if_not_connected(shoulders[1], hips[1], dollConnections, { dist: height + width, force: 2 });
+	// Shoulder to shoulder
+	connect_if_not_connected(shoulders[0], shoulders[1], dollConnections, { dist: width, force: 2 });
+	// Hip to hip
+	connect_if_not_connected(hips[0], hips[1], dollConnections, { dist: width, force: 2 });
+
+	return {
+		points: dollPoints,
+		connections: dollConnections,
+	};
+}
+function add_doll(options) {
+	const doll = make_doll(options);
+	points.push(...doll.points);
+	connections.push(...doll.connections);
 }
 
 // Test scene: a bunch of balls of different types.
