@@ -859,6 +859,7 @@ function step() {
 				// foot.fx *= 0.1;
 				knee.fx -= (knee.x - foot.x) * 0.5;
 				// knee.fx *= 0.1;
+				foot.fx += Math.sin(Date.now() / 400 + foot.side * Math.PI/4) * 0.6;
 			}
 			if ((c.p1.part === "knee" && c.p2.part === "hip") || (c.p2.part === "knee" && c.p1.part === "hip")) {
 				const knee = c.p1.part === "knee" ? c.p1 : c.p2;
