@@ -17,6 +17,12 @@
 			font-family: sans-serif;
 		}
 
+		#always-available-controls {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+
 		kbd {
 			border: 1px solid rgba(128, 128, 128, .8);
 			border-radius: 3px;
@@ -92,6 +98,23 @@
 </head>
 
 <body>
+	<div id="always-available-controls">
+		<button id='tools-button' title='Switch between interaction modes, such as dragging or shape-adding.'>
+			<span>Tools</span>
+		</button>
+		<button id='options-button' title='Change simulation settings, audio, and UI theme.'>
+			<span>Options</span>
+		</button>
+		<button id='help-button' title='Get help on using this application.'>
+			<span>Help</span>
+		</button>
+		<button id='about-button' title='Show information about this application.'>
+			<span>About</span>
+		</button>
+		<button id='todo-button' title='See noted future improvements.'>
+			<span>Todo</span>
+		</button>
+	</div>
 	<script>
 		// Hack: There's no global window creation / close event in the os-gui library, yet.
 		// This is just for animation on window creation / close.

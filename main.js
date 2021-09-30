@@ -166,6 +166,13 @@ var gain; // GainNode
 var creakBuffer; // AudioBuffer used for creaking wood noise
 var creakDist = 30; // distance from last creak
 
+// windows
+var $optionsWindow;
+var $toolsWindow;
+var $helpWindow;
+var $aboutWindow;
+var $todoWindow;
+
 function serialize(points, connections, isSelection) {
 	// Note: if I ever change this to JSON,
 	// I should bump the version to >2, since ARSON stringifies as JSON but with values as indices,
@@ -952,7 +959,7 @@ function step() {
 		}
 	}
 
-	const windowElements = document.querySelectorAll(".os-window");
+	const windowElements = document.querySelectorAll(".os-window, #always-available-controls button");
 	for (const windowElement of windowElements) {
 		windowElement.rect = windowElement.getBoundingClientRect();
 		if (windowElement.rect_at_last_creak) {
@@ -1677,8 +1684,13 @@ function positionElement(element, positionString) {
 	element.style.top = y + "px";
 }
 
-function initGUI() {
-	var $optionsWindow = new $Window({
+function toggleOptionsWindow() {
+	if ($optionsWindow) {
+		$optionsWindow.close();
+		$optionsWindow = null;
+		return;
+	}
+	$optionsWindow = new $Window({
 		title: "Options",
 		resizable: true,
 		maximizeButton: false,
@@ -1688,6 +1700,20 @@ function initGUI() {
 	// Note: Options are initialized from variables, not the HTML. To change the defaults, edit the variable declarations.
 	// Note: Some controls are mentioned by name in dialog text.
 	$optionsWindow.$content.html(`
+		<h3>User Interface:</h3>
+		<div style="padding-top: 3px; padding-bottom: 3px;">
+			<label title="Change the look of the windows.">
+				Theme:
+				<div class='select-wrapper'><select id='theme-select'>
+					<option value='sandbox-theme'>Sandbox</option>
+					<option value='retrofuturist-theme'>Retrofuturist</option>
+					<option value='windows-98-theme'>Windows 98</option>
+				</select></div>
+			</label>
+		</div>
+		<button id='fullscreen-button' title='Make the application fill the entire screen. Useful especially for mobile, where screens are smaller and browser address bars can cause problems due to their scroll-to-hide feature.'>
+			<span>Fullscreen</span>
+		</button>
 		<h3>Audio:</h3>
 		<label title='Enables or disables sound generation. Note that you need connections between points for sound to work.'>
 			<input type='checkbox' id='sfx-checkbox'/>Audio
@@ -1724,37 +1750,9 @@ function initGUI() {
 		<label title='Leave a visual trail behind all objects.'>
 			Ghost Trails: <input type='range' id='ghost-trails-slider' min='0' max='1' step='0.01'/>
 		</label>
-		<h3>Windows:</h3>
-		<div style="padding-bottom: 3px;">
-			<button id='help-button' title='Get help on using this application.'>
-				<span>Help</span>
-			</button>
-			<button id='about-button' title='Show information about this application.'>
-				<span>About</span>
-			</button>
-		</div>
-		<div style="padding-bottom: 3px;">
-			<button id='todo-button' title='See noted future improvements.'>
-				<span>Todo</span>
-			</button>
-		</div>
-		<div style="padding-top: 3px; padding-bottom: 3px;">
-			<label title="Change the look of the windows.">
-				Theme:
-				<div class='select-wrapper'><select id='theme-select'>
-					<option value='sandbox-theme'>Sandbox</option>
-					<option value='retrofuturist-theme'>Retrofuturist</option>
-					<option value='windows-98-theme'>Windows 98</option>
-				</select></div>
-			</label>
-		</div>
-		<div style="padding-top: 3px;">
-			<button id='fullscreen-button' title='Make the application fill the entire screen. Useful especially for mobile, where screens are smaller and browser address bars can cause problems due to their scroll-to-hide feature.'>
-				<span>Fullscreen<span/>
-			</button>
-		</div>
 	`);
 	positionElement($optionsWindow[0], "top left");
+	$optionsWindow[0].style.top = `${document.querySelector("#always-available-controls").getBoundingClientRect().bottom + 10}px`;
 
 	const find = (selector) => $optionsWindow.$content.find(selector)[0];
 
@@ -1876,87 +1874,29 @@ function initGUI() {
 	find("#gravity-input").onchange = function () {
 		gravity = Number(this.value);
 	};
-	find("#todo-button").onclick = function () {
-		const $w = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
-		$w.$content.html(`
-			<ul>
-				<li>
-					Add a Midpoint tool, and/or other ways to get different lengths of lines.
-				</li>
-				<li>
-					Generalize "Slow Motion" to a time scale slider.
-				</li>
-				<li>
-					Support multi-touch for the Drag tool. (And maybe other tools?)
-				</li>
-				<li>
-					Ideally (but this would be hard), fix collision.
-					<br>(Things no clip and get stuck in each other.
-					<br>It just doesn't really work.)
-				</li>
-				<!--
-				<li>
-					Fix NaNs introduced when smashing points with the collidable windows into the edge of the screen.
-				</li>
-				<li>
-					Fix behavior when Shift+dragging a group of many points like the terrain (it seems to just stop dragging after a little distance).
-				</li>
-				<li>
-					Precise connector workflow for connecting points as you drag them? (quick pause while holding slash? could show pause icon but slanted then haha)
-				</li>
-				<li>
-					Draw tool graphics with updated point positions at end of frame?
-				</li>
-				<li>
-					Allow toggling group drag (Shift) after starting drag?
-				</li>
-				<li>
-					Import/export selections.
-					I don't want to implement importing/exporting an entire scene,
-					because it wouldn't work well with the toy nature of windows being collidable and the viewport border being collidable,
-					but I could do selection import/export.
-					(and you'll just have to deal with whether the imported object fits,
-					and whether it's supposed to work in zero gravity or whatever.)
-					But if I do this, I have to change the serialization format just because it's stupid,
-					with the formatVersion being unclear due to how ARSON works (see comment in serialize)
-				</li>
-				<li>
-					A way to mirror a selection, or more general symmetry support?
-				</li>
-				-->
-			</ul>
-		`);
-		positionElement($w[0], "top right");
+
+	// window theme selection
+	const themeSelect = find("#theme-select");
+	let activeTheme;
+	themeSelect.onchange = () => {
+		windowTheme = themeSelect.value;
+		newThemeStylesheet = document.getElementById(windowTheme);
+		newThemeStylesheet.disabled = false;
+		if (activeTheme) {
+			activeTheme.disabled = true;
+		}
+		activeTheme = newThemeStylesheet;
 	};
-	find("#help-button").onclick = function () {
-		const $w = new $Window({ title: "Help", resizable: true, maximizeButton: false, minimizeButton: false });
-		$w.$content.html(`
-			<p>Select a tool in the Tools box, then click to use it. You can also right-click to drag points.</p>
-			<p>To connect points, use the Glue tool or Precise Connector. Hold <kbd>/</kbd> to temporarily use to the Precise Connector, or Space to immediately Glue.</p>
-			<p>To make more solid shapes, use the Precise Connector and hold <kbd>Shift</kbd> to create arbitrary-length lines, and add extra lines.</p>
-			<p>Hold Shift when making points to fix them in place.</p>
-			<p>Press <kbd>P</kbd> to pause/unpause the simulation.</p>
-			<p>Toggle "Terrain" off and on to regenerate it.</p>
-			<p>Press <kbd>Ctrl+Z</kbd> to undo to a previous state and <kbd>Ctrl+Y</kbd> or <kbd>Ctrl+Shift+Z</kbd> to redo.</p>
-			<p>Use the Select tool to select points in a rectangle, or <kbd>Ctrl+A</kbd> to select all points, and <kbd>Ctrl+D</kbd> to deselect all.</p>
-			<p>Press <kbd>Ctrl+C</kbd> to copy the selection (or <kbd>Ctrl+X</kbd> to cut), and <kbd>Ctrl+V</kbd> to paste near the mouse.</p>
-			<p>Press <kbd>Delete</kbd> to remove the selected points.</p>
-			<p>There is no save/load, and it doesn't copy to the system clipboard, only an internal clipboard.</p>
-		`);
-		positionElement($w[0], "top");
-	};
-	find("#about-button").onclick = function () {
-		const $w = new $Window({ title: "About", resizable: true, maximizeButton: false, minimizeButton: false });
-		$w.$content.html(`
-			<div style="padding:0 2em;">
-				<h1>PBJ Sandbox</h1>
-				<p>Made by <a href="https://isaiahodhner.io">Isaiah Odhner</a>.</p>
-				<p>Open source on <a href="https://github.com/1j01/pbp2d">GitHub</a>, licensed WTFPL or CC0.</p>
-			</div>
-		`);
-		positionElement($w[0], "top");
-	};
-	var $toolsWindow = new $Window({
+	themeSelect.value = windowTheme;
+	themeSelect.onchange();
+}
+function toggleToolsWindow() {
+	if ($toolsWindow) {
+		$toolsWindow.close();
+		$toolsWindow = null;
+		return;
+	}
+	$toolsWindow = new $Window({
 		title: "Tools",
 		resizable: true,
 		maximizeButton: false,
@@ -1995,25 +1935,114 @@ function initGUI() {
 		}
 	};
 	selectTool(selectedTool);
+}
 
-	// window theme selection
-	const themeSelect = find("#theme-select");
-	let activeTheme;
-	themeSelect.onchange = () => {
-		windowTheme = themeSelect.value;
-		newThemeStylesheet = document.getElementById(windowTheme);
-		newThemeStylesheet.disabled = false;
-		if (activeTheme) {
-			activeTheme.disabled = true;
-		}
-		activeTheme = newThemeStylesheet;
-	};
-	themeSelect.value = windowTheme;
-	themeSelect.onchange();
+function toggleTodo() {
+	if ($todoWindow) {
+		$todoWindow.close();
+		$todoWindow = null;
+		return;
+	}
+	$todoWindow = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
+	$todoWindow.$content.html(`
+		<ul>
+			<li>
+				Add a Midpoint tool, and/or other ways to get different lengths of lines.
+			</li>
+			<li>
+				Generalize "Slow Motion" to a time scale slider.
+			</li>
+			<li>
+				Support multi-touch for the Drag tool. (And maybe other tools?)
+			</li>
+			<li>
+				Ideally (but this would be hard), fix collision.
+				<br>(Things no clip and get stuck in each other.
+				<br>It just doesn't really work.)
+			</li>
+			<!--
+			<li>
+				Fix NaNs introduced when smashing points with the collidable windows into the edge of the screen.
+			</li>
+			<li>
+				Fix behavior when Shift+dragging a group of many points like the terrain (it seems to just stop dragging after a little distance).
+			</li>
+			<li>
+				Precise connector workflow for connecting points as you drag them? (quick pause while holding slash? could show pause icon but slanted then haha)
+			</li>
+			<li>
+				Draw tool graphics with updated point positions at end of frame?
+			</li>
+			<li>
+				Allow toggling group drag (Shift) after starting drag?
+			</li>
+			<li>
+				Import/export selections.
+				I don't want to implement importing/exporting an entire scene,
+				because it wouldn't work well with the toy nature of windows being collidable and the viewport border being collidable,
+				but I could do selection import/export.
+				(and you'll just have to deal with whether the imported object fits,
+				and whether it's supposed to work in zero gravity or whatever.)
+				But if I do this, I have to change the serialization format just because it's stupid,
+				with the formatVersion being unclear due to how ARSON works (see comment in serialize)
+			</li>
+			<li>
+				A way to mirror a selection, or more general symmetry support?
+			</li>
+			-->
+		</ul>
+	`);
+	positionElement($todoWindow[0], "top right");
+}
+function toggleHelp() {
+	if ($helpWindow) {
+		$helpWindow.close();
+		$helpWindow = null;
+		return;
+	}
+	$helpWindow = new $Window({ title: "Help", resizable: true, maximizeButton: false, minimizeButton: false });
+	$helpWindow.$content.html(`
+		<p>Select a tool in the Tools box, then click to use it. You can also right-click to drag points.</p>
+		<p>To connect points, use the Glue tool or Precise Connector. Hold <kbd>/</kbd> to temporarily use to the Precise Connector, or Space to immediately Glue.</p>
+		<p>To make more solid shapes, use the Precise Connector and hold <kbd>Shift</kbd> to create arbitrary-length lines, and add extra lines.</p>
+		<p>Hold Shift when making points to fix them in place.</p>
+		<p>Press <kbd>P</kbd> to pause/unpause the simulation.</p>
+		<p>Toggle "Terrain" off and on to regenerate it.</p>
+		<p>Press <kbd>Ctrl+Z</kbd> to undo to a previous state and <kbd>Ctrl+Y</kbd> or <kbd>Ctrl+Shift+Z</kbd> to redo.</p>
+		<p>Use the Select tool to select points in a rectangle, or <kbd>Ctrl+A</kbd> to select all points, and <kbd>Ctrl+D</kbd> to deselect all.</p>
+		<p>Press <kbd>Ctrl+C</kbd> to copy the selection (or <kbd>Ctrl+X</kbd> to cut), and <kbd>Ctrl+V</kbd> to paste near the mouse.</p>
+		<p>Press <kbd>Delete</kbd> to remove the selected points.</p>
+		<p>There is no save/load, and it doesn't copy to the system clipboard, only an internal clipboard.</p>
+	`);
+	positionElement($helpWindow[0], "top");
+}
+function toggleAbout() {
+	if ($aboutWindow) {
+		$aboutWindow.close();
+		$aboutWindow = null;
+		return;
+	}
+	$aboutWindow = new $Window({ title: "About", resizable: true, maximizeButton: false, minimizeButton: false });
+	$aboutWindow.$content.html(`
+		<div style="padding:0 2em;">
+			<h1>PBJ Sandbox</h1>
+			<p>Made by <a href="https://isaiahodhner.io">Isaiah Odhner</a>.</p>
+			<p>Open source on <a href="https://github.com/1j01/pbp2d">GitHub</a>, licensed WTFPL or CC0.</p>
+		</div>
+	`);
+	positionElement($aboutWindow[0], "top");
 }
 
 main();
-initGUI();
+toggleOptionsWindow();
+toggleToolsWindow();
+
+document.querySelector("#options-button").onclick = toggleOptionsWindow;
+document.querySelector("#tools-button").onclick = toggleToolsWindow;
+document.querySelector("#todo-button").onclick = toggleTodo;
+document.querySelector("#about-button").onclick = toggleAbout;
+document.querySelector("#help-button").onclick = toggleHelp;
+
 
 function connect_if_not_connected(p1, p2, connections, options = {}) {
 	if (p1 === p2) {
