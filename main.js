@@ -1754,9 +1754,9 @@ function toggleOptionsWindow() {
 	positionElement($optionsWindow[0], "top left");
 	$optionsWindow[0].style.top = `${document.querySelector("#always-available-controls").getBoundingClientRect().bottom + 10}px`;
 
-	const find = (selector) => $optionsWindow.$content.find(selector)[0];
+	const findEl = (selector) => $optionsWindow.$content.find(selector)[0];
 
-	find("#fullscreen-button").onclick = () => {
+	findEl("#fullscreen-button").onclick = () => {
 		if (document.fullscreenElement) {
 			document.exitFullscreen();
 		} else {
@@ -1765,15 +1765,15 @@ function toggleOptionsWindow() {
 	};
 	document.addEventListener('fullscreenchange', (event) => {
 		if (document.fullscreenElement) {
-			find("#fullscreen-button").classList.add("selected");
+			findEl("#fullscreen-button").classList.add("selected");
 		} else {
-			find("#fullscreen-button").classList.remove("selected");
+			findEl("#fullscreen-button").classList.remove("selected");
 		}
 	});
 
-	var audioCheckbox = find("#sfx-checkbox");
-	var audioVizCheckbox = find("#sfx-viz-checkbox");
-	var audioStyleSelect = find("#sfx-style-select");
+	var audioCheckbox = findEl("#sfx-checkbox");
+	var audioVizCheckbox = findEl("#sfx-viz-checkbox");
+	var audioStyleSelect = findEl("#sfx-style-select");
 
 	var showAudioSetupError = function () {
 		const $errorWindow = new $Window({
@@ -1838,28 +1838,28 @@ function toggleOptionsWindow() {
 			return;
 		}
 	};
-	find("#play-checkbox").checked = play;
-	find("#play-checkbox").onchange = function () {
+	findEl("#play-checkbox").checked = play;
+	findEl("#play-checkbox").onchange = function () {
 		play = this.checked;
 	};
-	find("#collision-checkbox").checked = collision;
-	find("#collision-checkbox").onchange = function () {
+	findEl("#collision-checkbox").checked = collision;
+	findEl("#collision-checkbox").onchange = function () {
 		collision = this.checked;
 	};
-	find("#auto-connect-checkbox").checked = autoConnect;
-	find("#auto-connect-checkbox").onchange = function () {
+	findEl("#auto-connect-checkbox").checked = autoConnect;
+	findEl("#auto-connect-checkbox").onchange = function () {
 		autoConnect = this.checked;
 	};
-	find("#slowmo-checkbox").checked = slowmo;
-	find("#slowmo-checkbox").onchange = function () {
+	findEl("#slowmo-checkbox").checked = slowmo;
+	findEl("#slowmo-checkbox").onchange = function () {
 		slowmo = this.checked;
 	};
-	find("#ghost-trails-slider").value = ghostTrails;
-	find("#ghost-trails-slider").onchange = function () {
+	findEl("#ghost-trails-slider").value = ghostTrails;
+	findEl("#ghost-trails-slider").onchange = function () {
 		ghostTrails = this.valueAsNumber;
 	};
-	find("#terrain-checkbox").checked = terrainEnabled;
-	find("#terrain-checkbox").onchange = function () {
+	findEl("#terrain-checkbox").checked = terrainEnabled;
+	findEl("#terrain-checkbox").onchange = function () {
 		terrainEnabled = this.checked;
 		if (terrainEnabled) {
 			createTerrain();
@@ -1870,13 +1870,13 @@ function toggleOptionsWindow() {
 	if (terrainEnabled) {
 		createTerrain();
 	}
-	find("#gravity-input").value = gravity;
-	find("#gravity-input").onchange = function () {
+	findEl("#gravity-input").value = gravity;
+	findEl("#gravity-input").onchange = function () {
 		gravity = Number(this.value);
 	};
 
 	// window theme selection
-	const themeSelect = find("#theme-select");
+	const themeSelect = findEl("#theme-select");
 	let activeTheme;
 	themeSelect.onchange = () => {
 		windowTheme = themeSelect.value;
