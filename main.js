@@ -111,8 +111,8 @@ var connections = [];
 var points = [];
 
 // interaction state
-var mouse = { x: 0, y: 0, d: 0 };
-var mousePrevious = { x: 0, y: 0, d: 0 };
+var mouse = { x: 0, y: 0, d: 0, pointerId: -1 };
+var mousePrevious = { x: 0, y: 0, d: 0, pointerId: -1 };
 var keys = {};
 
 var selectedTool = TOOL_ADD_POINTS;
@@ -120,8 +120,8 @@ var lastRopePoint = null;
 var connectorToolPoint = null;
 var ballToolBall = null;
 var ballToolStartPos = null;
-var dragging = [];
-var dragOffsets = [];
+var dragStates = []; // {dragging, dragOffsets, pointerId}
+var rmbDragState = null;
 var selection = {
 	points: [],
 	connections: []
@@ -338,18 +338,29 @@ function main() {
 		}
 		document.activeElement.blur();
 	};
-	var moveMouse = function (pageX, pageY) {
-		const rect = canvas.getBoundingClientRect();
-		mouse.x = pageX - rect.left;
-		mouse.y = pageY - rect.top;
+	var toWorldCoords = function (pageX, pageY) {
+		var rect = canvas.getBoundingClientRect();
+		return {
+			x: pageX - rect.left,
+			y: pageY - rect.top,
+		};
+	};
+	var updateMouse = function ({ pageX, pageY, pointerId }) {
+		const mousePos = toWorldCoords(pageX, pageY);
+		mouse.x = mousePos.x;
+		mouse.y = mousePos.y;
+		mouse.pointerId = pointerId;
 	};
 	canvas.style.touchAction = "none";
 	canvas.addEventListener('pointerdown', function (e) {
-		moveMouse(e.pageX, e.pageY);
+		updateMouse(e);
 		if (e.button == 0) {
 			mouse.left = true;
 		} else {
 			mouse.right = true;
+		}
+		if (selectedTool === TOOL_DRAG) {
+			startDrag(toWorldCoords(e.pageX, e.pageY), e.pointerId);
 		}
 		e.preventDefault();
 		deselectTextAndBlur();
@@ -359,6 +370,11 @@ function main() {
 			mouse.left = false;
 		} else {
 			mouse.right = false;
+		}
+		for (const dragState of dragStates) {
+			if (dragState.pointerId === e.pointerId) {
+				dragStates.splice(dragStates.indexOf(dragState), 1);
+			}
 		}
 		e.preventDefault();
 	});
@@ -371,7 +387,12 @@ function main() {
 		e.preventDefault();
 	});
 	addEventListener('pointermove', function (e) {
-		moveMouse(e.pageX, e.pageY);
+		updateMouse(e);
+		for (const dragState of dragStates) {
+			if (dragState.pointerId === e.pointerId) {
+				dragState.pointerPos = toWorldCoords(e.pageX, e.pageY);
+			}
+		}
 	}, false);
 
 	/*(onresize = function () {
@@ -582,6 +603,43 @@ function findClosestPoint(x, y, maxDistance = Infinity) {
 	return closestPoint;
 }
 
+function startDrag({ x, y }, pointerId) {
+	const nearToMouse = findClosestPoint(x, y, dragMaxDistToSelect);
+	if (nearToMouse) {
+		undoable();
+		let dragging = [nearToMouse];
+		// select all connected points with Shift
+		if (keys.Shift) {
+			if (!groupsComputedThisFrame) {
+				computeGroups();
+				groupsComputedThisFrame = true;
+			}
+			dragging = points.filter(p => groups.get(p) === groups.get(nearToMouse));
+		}
+		// if there's a selection, drag the whole selection
+		if (selection.points.includes(nearToMouse)) {
+			dragging = Array.from(selection.points);
+		}
+
+		let dragOffsets;
+		if (dragging.length === 1) {
+			dragOffsets = [{ x: 0, y: 0 }];
+		} else {
+			dragOffsets = dragging.map(p => ({
+				x: p.x - x,
+				y: p.y - y,
+			}));
+		}
+		dragStates.push({
+			dragging,
+			dragOffsets,
+			pointerId,
+			pointerPos: { x, y },
+		});
+	}
+}
+
+
 function step() {
 	// Drawing setup
 	if (canvas.width != innerWidth || canvas.height != innerHeight) {
@@ -601,7 +659,7 @@ function step() {
 
 	ctx.save();
 
-	let groupsComputedThisFrame = false;
+	groupsComputedThisFrame = false;
 
 	// I don't want to trigger multiple tools at once,
 	// so I'm temporarily changing the selected tool for transient tool shortcuts.
@@ -800,38 +858,22 @@ function step() {
 		}
 	}
 	const nearToMouse = findClosestPoint(mouse.x, mouse.y, dragMaxDistToSelect);
-	if ((mouse.right || (mouse.left && selectedTool === TOOL_DRAG))) {
-		if (!mousePrevious.right && !mousePrevious.left) {
-			if (nearToMouse) {
-				undoable();
-				dragging = [nearToMouse];
-				// select all connected points with Shift
-				if (keys.Shift) {
-					if (!groupsComputedThisFrame) {
-						computeGroups();
-						groupsComputedThisFrame = true;
-					}
-					dragging = points.filter(p => groups.get(p) === groups.get(nearToMouse));
-				}
-				// if there's a selection, drag the whole selection
-				if (selection.points.includes(nearToMouse)) {
-					dragging = Array.from(selection.points);
-				}
-
-				if (dragging.length === 1) {
-					dragOffsets = [{ x: 0, y: 0 }];
-				} else {
-					dragOffsets = dragging.map(p => ({
-						x: p.x - mouse.x,
-						y: p.y - mouse.y,
-					}));
-				}
-			}
-		} else if (dragging.length) {
+	if (mouse.right && !mousePrevious.right) { // using LMB with Drag tool is handled elsewhere
+		rmbDragState = startDrag(mouse, mouse.pointerId);
+	}
+	if (!mouse.right && rmbDragState) {
+		const index = dragStates.indexOf(rmbDragState);
+		if (index > -1) {
+			dragStates.splice(index, 1);
+		}
+		rmbDragState = null;
+	}
+	for (const { dragging, dragOffsets, pointerPos } of dragStates) {
+		if (dragging.length) {
 			for (let i = 0; i < dragging.length; i++) {
 				const p = dragging[i];
-				const target_x = mouse.x + dragOffsets[i].x;
-				const target_y = mouse.y + dragOffsets[i].y;
+				const target_x = pointerPos.x + dragOffsets[i].x;
+				const target_y = pointerPos.y + dragOffsets[i].y;
 
 				if (play && !p.fixed) {
 					p.fx += (target_x - p.x) * mouseDragForce;
@@ -849,14 +891,14 @@ function step() {
 				}
 			}
 		}
-	} else {
-		dragging = [];
 	}
-	if (selectedTool === TOOL_DRAG && !dragging.length && nearToMouse) {
+	if (selectedTool === TOOL_DRAG && dragStates.every(({ dragging }) => !dragging.length) && nearToMouse) {
 		toolDraw(ctx, "drag", false, false, nearToMouse);
-	} else if (dragging.length) {
-		for (const p of dragging) {
-			toolDraw(ctx, "drag", true, false, p);
+	} else {
+		for (const { dragging } of dragStates) {
+			for (const p of dragging) {
+				toolDraw(ctx, "drag", true, false, p);
+			}
 		}
 	}
 	if (selectedTool !== TOOL_ADD_ROPE) {
@@ -1475,6 +1517,7 @@ function step() {
 	mousePrevious.right = mouse.right;
 	mousePrevious.x = mouse.x;
 	mousePrevious.y = mouse.y;
+	mousePrevious.pointerId = mouse.pointerId; // pretty silly, not needed
 
 	// Not possible to click buttons in the middle of step(), don't worry. :)
 	selectedTool = prevTool;
@@ -1979,9 +2022,6 @@ function toggleTodo() {
 			</li>
 			<li>
 				Generalize "Slow Motion" to a time scale slider.
-			</li>
-			<li>
-				Support multi-touch for the Drag tool. (And maybe other tools?)
 			</li>
 			<li>
 				Ideally (but this would be hard), fix collision.
