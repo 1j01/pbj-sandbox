@@ -805,7 +805,7 @@ function step() {
 				const target_x = mouse.x + dragOffsets[i].x;
 				const target_y = mouse.y + dragOffsets[i].y;
 
-				if (play) {
+				if (play && !p.fixed) {
 					p.fx += (target_x - p.x) * mouseDragForce;
 					p.fy += (target_y - p.y) * mouseDragForce;
 					p.vx *= mouseDragDampingFactor;
