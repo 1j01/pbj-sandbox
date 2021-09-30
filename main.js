@@ -987,7 +987,7 @@ function step() {
 		}
 	}
 
-	const windowElements = document.querySelectorAll(".os-window, #always-available-controls button");
+	const windowElements = document.querySelectorAll(".os-window:not(.closing), #always-available-controls button");
 	for (const windowElement of windowElements) {
 		windowElement.rect = windowElement.getBoundingClientRect();
 		if (windowElement.rect_at_last_creak) {
