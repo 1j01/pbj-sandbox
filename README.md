@@ -1,7 +1,7 @@
 
-# <img src="pbj-sandbox-logo.svg" height="32"> Point Based Jelly Sandbox
+# <img src="pbj-sandbox-logo.svg" height="32"> PBJ Sandbox
 
-A point-based physics sandbox, with several tools to construct shapes and scenes.
+A point-based jelly physics sandbox, with several tools to construct shapes and scenes.
 
 You can [check it out here](https://1j01.github.io/pbp2d).
 
