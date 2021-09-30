@@ -850,6 +850,15 @@ function step() {
 			c.p1.fy += dy / d * dd * f;
 			c.p2.fx -= dx / d * dd * f;
 			c.p2.fy -= dy / d * dd * f;
+			// special handling for ragdolls
+			// try to keep legs' points vertically aligned
+			if ((c.p1.part === "foot" && c.p2.part === "knee") || (c.p2.part === "foot" && c.p1.part === "knee")) {
+				c.p1.fx += dx * 0.5;
+			}
+			if ((c.p1.part === "knee" && c.p2.part === "hip") || (c.p2.part === "knee" && c.p1.part === "hip")) {
+				c.p1.fx += dx * 0.5;
+			}
+
 			// breaking distance was previously c.dist * 3; c.dist + 120 keeps it the same for the standard distance of 60 (60*3 = 180 = 60 + 120), while making the rope stronger
 			if (dd > c.dist + 120) {
 				connections.splice(j, 1);
