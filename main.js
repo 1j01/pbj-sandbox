@@ -1685,9 +1685,9 @@ function positionElement(element, positionString) {
 }
 
 function toggleOptionsWindow() {
-	if ($optionsWindow) {
+	// console.log("$optionsWindow.closed:", $optionsWindow ? $optionsWindow.closed : "(?)");
+	if ($optionsWindow && !$optionsWindow.closed) {
 		$optionsWindow.close();
-		$optionsWindow = null;
 		return;
 	}
 	$optionsWindow = new $Window({
@@ -1891,9 +1891,9 @@ function toggleOptionsWindow() {
 	themeSelect.onchange();
 }
 function toggleToolsWindow() {
-	if ($toolsWindow) {
+	// console.log("$toolsWindow.closed:", $toolsWindow ? $toolsWindow.closed : "(?)");
+	if ($toolsWindow && !$toolsWindow.closed) {
 		$toolsWindow.close();
-		$toolsWindow = null;
 		return;
 	}
 	$toolsWindow = new $Window({
@@ -1938,9 +1938,9 @@ function toggleToolsWindow() {
 }
 
 function toggleTodo() {
-	if ($todoWindow) {
+	// console.log("$todoWindow.closed:", $todoWindow ? $todoWindow.closed : "(?)");
+	if ($todoWindow && !$todoWindow.closed) {
 		$todoWindow.close();
-		$todoWindow = null;
 		return;
 	}
 	$todoWindow = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
@@ -1995,9 +1995,9 @@ function toggleTodo() {
 	positionElement($todoWindow[0], "top right");
 }
 function toggleHelp() {
-	if ($helpWindow) {
+	// console.log("$helpWindow.closed:", $helpWindow ? $helpWindow.closed : "(?)");
+	if ($helpWindow && !$helpWindow.closed) {
 		$helpWindow.close();
-		$helpWindow = null;
 		return;
 	}
 	$helpWindow = new $Window({ title: "Help", resizable: true, maximizeButton: false, minimizeButton: false });
@@ -2017,9 +2017,9 @@ function toggleHelp() {
 	positionElement($helpWindow[0], "top");
 }
 function toggleAbout() {
-	if ($aboutWindow) {
+	// console.log("$aboutWindow.closed:", $aboutWindow ? $aboutWindow.closed : "(?)");
+	if ($aboutWindow && !$aboutWindow.closed) {
 		$aboutWindow.close();
-		$aboutWindow = null;
 		return;
 	}
 	$aboutWindow = new $Window({ title: "About", resizable: true, maximizeButton: false, minimizeButton: false });

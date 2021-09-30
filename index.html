@@ -140,6 +140,7 @@
 				}, 0);
 			}, 0);
 			$w.on("close", (event) => {
+				$w.closed = "CLOSED OR CLOSING";
 				event.preventDefault();
 				$w.addClass("closing");
 				$w.css({
