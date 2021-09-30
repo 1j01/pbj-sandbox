@@ -855,25 +855,27 @@ function step() {
 			if ((c.p1.part === "foot" && c.p2.part === "knee") || (c.p2.part === "foot" && c.p1.part === "knee")) {
 				const foot = c.p1.part === "foot" ? c.p1 : c.p2;
 				const knee = c.p1.part === "foot" ? c.p2 : c.p1;
-				foot.fx += (knee.x - foot.x) * 0.1;
+				foot.fx += (knee.x - foot.x) * 0.5;
+				// foot.fx *= 0.1;
+				knee.fx -= (knee.x - foot.x) * 0.5;
+				// knee.fx *= 0.1;
 			}
 			if ((c.p1.part === "knee" && c.p2.part === "hip") || (c.p2.part === "knee" && c.p1.part === "hip")) {
 				const knee = c.p1.part === "knee" ? c.p1 : c.p2;
 				const hip = c.p1.part === "knee" ? c.p2 : c.p1;
 				knee.fx += (hip.x - knee.x) * 0.05;
+				// knee.fx *= 0.1;
+				hip.fx -= (hip.x - knee.x) * 0.05;
+				// hip.fx *= 0.1;
+				// knee.fx += (hip.x - knee.x) * 0.05;
 			}
-			// arms too (haha)
-			if ((c.p1.part === "shoulder" && c.p2.part === "elbow") || (c.p2.part === "shoulder" && c.p1.part === "elbow")) {
-				const shoulder = c.p1.part === "shoulder" ? c.p1 : c.p2;
-				const elbow = c.p1.part === "shoulder" ? c.p2 : c.p1;
-				elbow.fx += (shoulder.x - elbow.x) * 0.05;
+			// and body (chest/bottom)
+			if ((c.p1.part === "chest" && c.p2.part === "bottom") || (c.p2.part === "chest" && c.p1.part === "bottom")) {
+				const chest = c.p1.part === "chest" ? c.p1 : c.p2;
+				const bottom = c.p1.part === "chest" ? c.p2 : c.p1;
+				chest.fx += (bottom.x - chest.x) * 0.2;
+				bottom.fx -= (bottom.x - chest.x) * 0.2;
 			}
-			if ((c.p1.part === "elbow" && c.p2.part === "hand") || (c.p2.part === "elbow" && c.p1.part === "hand")) {
-				const elbow = c.p1.part === "elbow" ? c.p1 : c.p2;
-				const hand = c.p1.part === "elbow" ? c.p2 : c.p1;
-				hand.fx += (elbow.x - hand.x) * 0.1;
-			}
-
 
 			// breaking distance was previously c.dist * 3; c.dist + 120 keeps it the same for the standard distance of 60 (60*3 = 180 = 60 + 120), while making the rope stronger
 			if (dd > c.dist + 120) {
@@ -2118,16 +2120,16 @@ function make_doll({ x, y, color, width, height } = {}) {
 	const hips = [];
 	for (let side = -1; side <= 1; side += 2) {
 		// Arm(s)
-		const shoulder = make_point({ x: x + side * (width/2 + 0), y: y + 10, color, part: "shoulder" });
-		const elbow = make_point({ x: x + side * (width/2 + 5), y: y + 30, color, part: "elbow" });
-		const hand = make_point({ x: x + side * (width/2 + 10), y: y + 50, color, part: "hand" });
+		const shoulder = make_point({ x: x + side * (width/2 + 0), y: y + 10, color, part: "shoulder", side });
+		const elbow = make_point({ x: x + side * (width/2 + 5), y: y + 30, color, part: "elbow", side });
+		const hand = make_point({ x: x + side * (width/2 + 10), y: y + 50, color, part: "hand", side });
 		connect_if_not_connected(shoulder, elbow, dollConnections, { dist: limbLength, force: 1 }); // upper arm
 		connect_if_not_connected(elbow, hand, dollConnections, { dist: limbLength, force: 1 }); // lower arm
 		connect_if_not_connected(shoulder, chest, dollConnections, { dist: width / 2, force: 2 }); // shoulder
 		// Leg(s)
-		const hip = make_point({ x: x + side * (width/2 + 0), y: y + 70, color, part: "hip" });
-		const knee = make_point({ x: x + side * (width/2 + 5), y: y + 90, color, part: "knee" });
-		const foot = make_point({ x: x + side * (width/2 + 10), y: y + 110, color, part: "foot" });
+		const hip = make_point({ x: x + side * (width/2 + 0), y: y + 70, color, part: "hip", side });
+		const knee = make_point({ x: x + side * (width/2 + 5), y: y + 90, color, part: "knee", side });
+		const foot = make_point({ x: x + side * (width/2 + 10), y: y + 110, color, part: "foot", side });
 		connect_if_not_connected(hip, knee, dollConnections, { dist: limbLength, force: 1 }); // upper leg
 		connect_if_not_connected(knee, foot, dollConnections, { dist: limbLength, force: 1 }); // lower leg
 		connect_if_not_connected(hip, bottom, dollConnections, { dist: width / 2, force: 2 }); // hip
