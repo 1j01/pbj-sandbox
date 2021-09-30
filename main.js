@@ -2032,27 +2032,10 @@ function toggleAbout() {
 	`);
 	positionElement($aboutWindow[0], "top");
 }
-function showNoticeOfMovingURL() {
-	const $w = new $Window({ title: "Moving", resizable: true, maximizeButton: false, minimizeButton: false });
-	$w.$content.html(`
-		<div style="padding:0 2em; max-width: 50em;">
-			<h1>Project rename: PBP2D → PBJ Sandbox</h1>
-			<p>This project has been renamed to PBJ Sandbox.</p>
-			<p>The URL will be changing to <a href="https://1j01.github.io/pbj-sandbox">1j01.github.io/pbj-sandbox</a>.</p>
-			<p>I can't make a redirect, so I'm making this notice for any users of the <a href="https://archive.org/">Internet Archive</a>,
-			especially their useful <a href="https://github.com/internetarchive/wayback-machine-webextension">browser extension</a>
-			which shows you old versions of webpages when they're not available (among other features).</p>
-			<p>You can also find PBJ Sandbox on <a href="https://isaiahodhner.io">my website</a>
-			and <a href="https://github.com/1j01/pbj-sandbox">GitHub</a>.</p>
-		</div>
-	`);
-	positionElement($w[0], "top");
-}
 
 main();
 toggleOptionsWindow();
 toggleToolsWindow();
-showNoticeOfMovingURL();
 
 document.querySelector("#options-button").onclick = toggleOptionsWindow;
 document.querySelector("#tools-button").onclick = toggleToolsWindow;
