@@ -412,11 +412,11 @@ function main() {
 		creakBuffer = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
 		const data = creakBuffer.getChannelData(0);
 		// for (var i = 0; i < data.length; i++) {
-			// data[i] =
-			// 	((Math.random() * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 2) / 10) +
-			// 	// sand noise
-			// 	// ((Math.random() * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 2) / 10);
-			// 	0;
+		// data[i] =
+		// 	((Math.random() * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 2) / 10) +
+		// 	// sand noise
+		// 	// ((Math.random() * 2 - 1) * Math.pow((i - data.length) / actx.sampleRate, 2) / 10);
+		// 	0;
 		// }
 		// generate pink noise
 		const s = { b0: 0, b1: 0, b2: 0, b3: 0, b4: 0, b5: 0, b6: 0 };
@@ -439,7 +439,7 @@ function main() {
 		// made it decay and add some sine waves
 		for (var i = 0; i < data.length; i++) {
 			for (var j = 0; j < 10; j++) {
-				data[i] += Math.sin(i/actx.sampleRate * 51 * (j * 2.1 + 50)) * 0.1;
+				data[i] += Math.sin(i / actx.sampleRate * 51 * (j * 2.1 + 50)) * 0.1;
 			}
 			data[i] *= Math.pow(1 - (i / data.length), 20) / 10;
 		}
@@ -1713,7 +1713,7 @@ function initGUI() {
 			find("#fullscreen-button").classList.remove("selected");
 		}
 	});
-	  
+
 	var audioCheckbox = find("#sfx-checkbox");
 	var audioVizCheckbox = find("#sfx-viz-checkbox");
 	var audioStyleSelect = find("#sfx-style-select");
