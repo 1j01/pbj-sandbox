@@ -180,7 +180,7 @@ function serialize(points, connections, isSelection) {
 	// Also don't reorder these keys, because that could make it `formatVersion:<some other number>`
 	// That said, this is just a toy, and there's no actual import/export feature.
 	return ARSON.stringify({
-		format: "pbp2d",
+		format: "pbj-sandbox",
 		formatVersion: 0.1,
 		isSelection: !!isSelection,
 		points: points,
@@ -2027,7 +2027,7 @@ function toggleAbout() {
 		<div style="padding:0 2em;">
 			<h1>PBJ Sandbox</h1>
 			<p>Made by <a href="https://isaiahodhner.io">Isaiah Odhner</a>.</p>
-			<p>Open source on <a href="https://github.com/1j01/pbp2d">GitHub</a>, licensed WTFPL or CC0.</p>
+			<p>Open source on <a href="https://github.com/1j01/pbj-sandbox">GitHub</a>, licensed WTFPL or CC0.</p>
 		</div>
 	`);
 	positionElement($aboutWindow[0], "top");
@@ -2043,7 +2043,7 @@ function showNoticeOfMovingURL() {
 			especially their useful <a href="https://github.com/internetarchive/wayback-machine-webextension">browser extension</a>
 			which shows you old versions of webpages when they're not available (among other features).</p>
 			<p>You can also find PBJ Sandbox on <a href="https://isaiahodhner.io">my website</a>
-			and <a href="https://github.com/1j01/pbp2d">GitHub</a>.</p>
+			and <a href="https://github.com/1j01/pbj-sandbox">GitHub</a>.</p>
 		</div>
 	`);
 	positionElement($w[0], "top");

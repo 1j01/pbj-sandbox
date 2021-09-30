@@ -3,9 +3,9 @@
 
 A point-based jelly physics sandbox, with several tools to construct shapes and scenes.
 
-You can [check it out here](https://1j01.github.io/pbp2d).
+You can [check it out here](https://1j01.github.io/pbj-sandbox).
 
-<a href="https://1j01.github.io/pbp2d"><img src="icon-48x48.png"></a>
+<a href="https://1j01.github.io/pbj-sandbox"><img src="icon-48x48.png"></a>
 
 ## Features
 
@@ -21,7 +21,7 @@ You can [check it out here](https://1j01.github.io/pbp2d).
 - Keyboard shortcuts to switch tools (and to use some tools without switching)
 - Touch support
 
-<a href="https://1j01.github.io/pbp2d"><img src="icon-47x47.png"></a>
+<a href="https://1j01.github.io/pbj-sandbox"><img src="icon-47x47.png"></a>
 
 ## Ways to Lose Data
 
