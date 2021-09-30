@@ -958,7 +958,7 @@ function step() {
 			// "air friction"
 			//p.vx*=0.99;
 			//p.vy*=0.99;
-			// Gravity, and special handling for flowers
+			// Gravity, and special handling for flowers and ragdolls.
 			if (p.color === "DarkOrchid") {
 				const wind_x = Math.sin(time / 1000 * (1 + Math.sin(time / 10000)) + p.x / 400) / 20;
 				// const wind_y = Math.sin(time / 1000 * (1 + Math.sin(time / 10000)) + p.y / 400) / 20;
@@ -971,6 +971,19 @@ function step() {
 				p.vy *= 0.9;
 				p.vx += wind_x;
 				// p.vy += wind_y;
+			} else if (p.part) {
+				p.vy += gravity;
+				if (p.part === "head") {
+					p.vy -= gravity * 1.5;
+				} else if (p.part === "chest") {
+					p.vy -= gravity * 2.5;
+				} else if (p.part === "shoulder") {
+					p.vy -= gravity * 0.2;
+				} else if (p.part === "hand") {
+					p.vx += Math.sin(time / 1000 * (1 + Math.sin(time / 10000)) + p.x / 400) / 20;
+				} else if (p.part === "hip") {
+					p.vy -= gravity * 0.5;
+				}
 			} else {
 				p.vy += gravity;
 			}
@@ -2062,16 +2075,17 @@ function make_doll({ x, y, color, width, height } = {}) {
 	const head = make_ball({
 		x: x,
 		y: y,
-		color: "DarkOrchid",
+		color,
 		numPoints: 4,
 		size: 10,
+		part: "head",
 	});
 	dollPoints.push(...head.points);
 	dollConnections.push(...head.connections);
 	// Torso
-	const chest = make_point({ x: x, y: y + 20, color });
-	const bottom = make_point({ x: x, y: y + 60, color });
-	connect_if_not_connected(chest, bottom, dollConnections, { dist: height, force: 2 });
+	const chest = make_point({ x: x, y: y + 20, color, part: "chest" });
+	const bottom = make_point({ x: x, y: y + 60, color, part: "bottom" });
+	connect_if_not_connected(chest, bottom, dollConnections, { dist: height + width, force: 2 });
 	dollPoints.push(chest, bottom);
 	connect_if_not_connected(chest, head.points[0], dollConnections, { dist: 0, force: 2 }); // neck
 	// Limbs
@@ -2079,16 +2093,16 @@ function make_doll({ x, y, color, width, height } = {}) {
 	const hips = [];
 	for (let side = -1; side <= 1; side += 2) {
 		// Arm(s)
-		const shoulder = make_point({ x: x + side * (width/2 + 0), y: y + 10, color });
-		const elbow = make_point({ x: x + side * (width/2 + 5), y: y + 30, color });
-		const hand = make_point({ x: x + side * (width/2 + 10), y: y + 50, color });
+		const shoulder = make_point({ x: x + side * (width/2 + 0), y: y + 10, color, part: "shoulder" });
+		const elbow = make_point({ x: x + side * (width/2 + 5), y: y + 30, color, part: "elbow" });
+		const hand = make_point({ x: x + side * (width/2 + 10), y: y + 50, color, part: "hand" });
 		connect_if_not_connected(shoulder, elbow, dollConnections, { dist: limbLength, force: 1 }); // upper arm
 		connect_if_not_connected(elbow, hand, dollConnections, { dist: limbLength, force: 1 }); // lower arm
 		connect_if_not_connected(shoulder, chest, dollConnections, { dist: width / 2, force: 2 }); // shoulder
 		// Leg(s)
-		const hip = make_point({ x: x + side * (width/2 + 0), y: y + 70, color });
-		const knee = make_point({ x: x + side * (width/2 + 5), y: y + 90, color });
-		const foot = make_point({ x: x + side * (width/2 + 10), y: y + 110, color });
+		const hip = make_point({ x: x + side * (width/2 + 0), y: y + 70, color, part: "hip" });
+		const knee = make_point({ x: x + side * (width/2 + 5), y: y + 90, color, part: "knee" });
+		const foot = make_point({ x: x + side * (width/2 + 10), y: y + 110, color, part: "foot" });
 		connect_if_not_connected(hip, knee, dollConnections, { dist: limbLength, force: 1 }); // upper leg
 		connect_if_not_connected(knee, foot, dollConnections, { dist: limbLength, force: 1 }); // lower leg
 		connect_if_not_connected(hip, bottom, dollConnections, { dist: width / 2, force: 2 }); // hip
