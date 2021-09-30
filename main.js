@@ -38,7 +38,7 @@ const tools = [
 		id: TOOL_ADD_BALL,
 		name: "Make Ball",
 		shortcut: "B",
-		tooltip: "Create a group of interconnected points forming a round or polygonal shape."
+		tooltip: "Create balls and polygons. Move the mouse up and down to choose the size, and left and right to choose the number of points. Hold Shift to make sturdier balls (where the connections vary in target length)."
 	},
 	{
 		id: TOOL_ADD_DOLL,
@@ -118,6 +118,8 @@ var keys = {};
 var selectedTool = TOOL_ADD_POINTS;
 var lastRopePoint = null;
 var connectorToolPoint = null;
+var ballToolBall = null;
+var ballToolStartPos = null;
 var dragging = [];
 var dragOffsets = [];
 var selection = {
@@ -677,7 +679,33 @@ function step() {
 	} else if (selectedTool === TOOL_ADD_BALL) {
 		if (mouse.left && !mousePrevious.left) {
 			undoable();
-			add_ball({ x: mouse.x, y: mouse.y, numPoints: 5 + ~~(Math.random() * 4), size: 20 + Math.random() * 30 });
+			ballToolStartPos = { x: mouse.x, y: mouse.y };
+		}
+		if (mouse.left) {
+			if (ballToolBall) {
+				// remove old ball's points and connections
+				for (const point of ballToolBall.points) {
+					points.splice(points.indexOf(point), 1);
+				}
+				for (const connection of ballToolBall.connections) {
+					connections.splice(connections.indexOf(connection), 1);
+				}
+			}
+			const variableDistances = keys.Shift;
+			ballToolBall = add_ball({
+				// x: mouse.x,
+				// y: mouse.y,
+				// numPoints: 5 + ~~(Math.random() * 4),
+				// size: 20 + Math.random() * 130,
+				// variableDistances: Math.random() > 0.5,
+				x: ballToolStartPos.x,
+				y: ballToolStartPos.y,
+				numPoints: ~~(Math.min(variableDistances ? 20 : 13, Math.max(3, (mouse.x - ballToolStartPos.x) / 100 + 8))),
+				size: ~~(Math.abs(mouse.y - ballToolStartPos.y) / 2 + 20),
+				variableDistances,
+			});
+		} else {
+			ballToolBall = null; // it's finalized, don't remove it later
 		}
 	} else if (selectedTool === TOOL_ADD_DOLL) {
 		if (mouse.left && !mousePrevious.left) {
@@ -2085,7 +2113,7 @@ function add_point_at_mouse() {
 }
 
 // Note: radius is not directly proportional to size or numPoints.
-function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60, ...pointOptions }) {
+function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60, variableDistances = false, ...pointOptions }) {
 	const ballPoints = [];
 	const ballConnections = [];
 	for (let i = 0; i < numPoints; i++) {
@@ -2111,8 +2139,8 @@ function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60, ...pointOpt
 				continue; // don't connect to self
 			}
 			// Note: it produces some dope shapes with force: 2 
-			// connect_if_not_connected(p1, p2, ballConnections, { dist: size, force: 2 });
-			connect_if_not_connected(p1, p2, ballConnections, { dist: size, force: 1 });
+			const dist = variableDistances ? Math.hypot(p1.x - p2.x, p1.y - p2.y) : size;
+			connect_if_not_connected(p1, p2, ballConnections, { dist, force: 1 });
 		}
 	}
 	return {
@@ -2124,6 +2152,7 @@ function add_ball(options) {
 	const ball = make_ball(options);
 	points.push(...ball.points);
 	connections.push(...ball.connections);
+	return ball;
 }
 
 function make_doll({ x, y, color, width, height } = {}) {
@@ -2196,6 +2225,7 @@ function add_doll(options) {
 	const doll = make_doll(options);
 	points.push(...doll.points);
 	connections.push(...doll.connections);
+	return doll;
 }
 
 // Test scene: a bunch of balls of different types.
