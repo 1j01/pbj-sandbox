@@ -859,7 +859,7 @@ function step() {
 				// foot.fx *= 0.1;
 				knee.fx -= (knee.x - foot.x) * 0.5;
 				// knee.fx *= 0.1;
-				foot.fx += Math.sin(Date.now() / 400 + foot.side * Math.PI/4) * 0.6;
+				foot.fx += Math.sin(Date.now() / 400 + foot.side * Math.PI/4) * 0.9;
 			}
 			if ((c.p1.part === "knee" && c.p2.part === "hip") || (c.p2.part === "knee" && c.p1.part === "hip")) {
 				const knee = c.p1.part === "knee" ? c.p1 : c.p2;
@@ -869,6 +869,9 @@ function step() {
 				hip.fx -= (hip.x - knee.x) * 0.05;
 				// hip.fx *= 0.1;
 				// knee.fx += (hip.x - knee.x) * 0.05;
+				if (hip.y > knee.y) {
+					hip.fy -= 0.5;
+				}
 			}
 			// and body (chest/bottom)
 			if ((c.p1.part === "chest" && c.p2.part === "bottom") || (c.p2.part === "chest" && c.p1.part === "bottom")) {
