@@ -855,22 +855,24 @@ function step() {
 			if ((c.p1.part === "foot" && c.p2.part === "knee") || (c.p2.part === "foot" && c.p1.part === "knee")) {
 				const foot = c.p1.part === "foot" ? c.p1 : c.p2;
 				const knee = c.p1.part === "foot" ? c.p2 : c.p1;
-				foot.fx += (knee.x - foot.x) * 0.5;
-				// foot.fx *= 0.1;
-				knee.fx -= (knee.x - foot.x) * 0.5;
-				// knee.fx *= 0.1;
-				foot.fx += Math.sin(Date.now() / 400 + foot.side * Math.PI/4) * 0.9;
+				if (knee.y > foot.y) {
+					knee.fy -= 0.5;
+					foot.fy += 0.5;
+				} else {
+					foot.fx += (knee.x - foot.x) * 0.5;
+					knee.fx -= (knee.x - foot.x) * 0.5;
+				}
+				foot.fx += Math.sin(Date.now() / 400 + foot.side * Math.PI / 4) * 0.6;
 			}
 			if ((c.p1.part === "knee" && c.p2.part === "hip") || (c.p2.part === "knee" && c.p1.part === "hip")) {
 				const knee = c.p1.part === "knee" ? c.p1 : c.p2;
 				const hip = c.p1.part === "knee" ? c.p2 : c.p1;
-				knee.fx += (hip.x - knee.x) * 0.05;
-				// knee.fx *= 0.1;
-				hip.fx -= (hip.x - knee.x) * 0.05;
-				// hip.fx *= 0.1;
-				// knee.fx += (hip.x - knee.x) * 0.05;
 				if (hip.y > knee.y) {
 					hip.fy -= 0.5;
+					knee.fy += 0.5;
+				} else {
+					knee.fx += (hip.x - knee.x) * 0.05;
+					hip.fx -= (hip.x - knee.x) * 0.05;
 				}
 			}
 			// and body (chest/bottom)
@@ -879,6 +881,7 @@ function step() {
 				const bottom = c.p1.part === "chest" ? c.p2 : c.p1;
 				chest.fx += (bottom.x - chest.x) * 0.2;
 				bottom.fx -= (bottom.x - chest.x) * 0.2;
+				bottom.fx += Math.sin(Date.now() / 400 * 2) * 0.6;
 			}
 
 			// breaking distance was previously c.dist * 3; c.dist + 120 keeps it the same for the standard distance of 60 (60*3 = 180 = 60 + 120), while making the rope stronger
@@ -2096,9 +2099,9 @@ function add_ball(options) {
 
 function make_doll({ x, y, color, width, height } = {}) {
 	color = color ?? `hsl(${~~(Math.random() * 360)},${~~(Math.random() * 50 + 50)}%,${~~(Math.random() * 50 + 50)}%)`;
-	height = height ?? (Math.random() * 50 + 10);
-	width = width ?? (height * (Math.random() * 1 + 1) / 2);
-	const limbLength = height * 0.8;
+	height = height ?? (Math.random() * 20 + 20);
+	width = width ?? (height * (Math.random() * 2 + 1) / 2);
+	const limbLength = height * 1;
 
 	const dollPoints = [];
 	const dollConnections = [];
