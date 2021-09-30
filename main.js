@@ -860,8 +860,20 @@ function step() {
 			if ((c.p1.part === "knee" && c.p2.part === "hip") || (c.p2.part === "knee" && c.p1.part === "hip")) {
 				const knee = c.p1.part === "knee" ? c.p1 : c.p2;
 				const hip = c.p1.part === "knee" ? c.p2 : c.p1;
-				knee.fx += (hip.x - knee.x) * 0.1;
+				knee.fx += (hip.x - knee.x) * 0.05;
 			}
+			// arms too (haha)
+			if ((c.p1.part === "shoulder" && c.p2.part === "elbow") || (c.p2.part === "shoulder" && c.p1.part === "elbow")) {
+				const shoulder = c.p1.part === "shoulder" ? c.p1 : c.p2;
+				const elbow = c.p1.part === "shoulder" ? c.p2 : c.p1;
+				elbow.fx += (shoulder.x - elbow.x) * 0.05;
+			}
+			if ((c.p1.part === "elbow" && c.p2.part === "hand") || (c.p2.part === "elbow" && c.p1.part === "hand")) {
+				const elbow = c.p1.part === "elbow" ? c.p1 : c.p2;
+				const hand = c.p1.part === "elbow" ? c.p2 : c.p1;
+				hand.fx += (elbow.x - hand.x) * 0.1;
+			}
+
 
 			// breaking distance was previously c.dist * 3; c.dist + 120 keeps it the same for the standard distance of 60 (60*3 = 180 = 60 + 120), while making the rope stronger
 			if (dd > c.dist + 120) {
