@@ -1256,7 +1256,6 @@ function step() {
 			connections.splice(j,1);
 			continue;
 		}*/
-		var hit = false;
 		if (collision && play) {
 			for (var i = points.length - 1; i >= 0; i--) {
 				var p = points[i];
@@ -1334,8 +1333,6 @@ function step() {
 					}
 
 					if (is) {
-						hit = true;
-
 						// Note: normal can point either way
 						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
 						// hence the negation when rendering the normal’s arrow
@@ -1421,7 +1418,6 @@ function step() {
 		}
 		/**
 		var r = Math.random();
-		ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p1.color;
 		ctx.strokeStyle = c.p1.color;
 		ctx.beginPath();
 		ctx.moveTo(
@@ -1435,7 +1431,6 @@ function step() {
 			(c.p2.y - c.p1.y) * 0.4 + c.p1.y
 		);
 		ctx.stroke();
-		ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p2.color;
 		ctx.strokeStyle = c.p2.color;
 		ctx.beginPath();
 		ctx.moveTo(
@@ -1462,13 +1457,11 @@ function step() {
 			ctx.stroke();
 			ctx.setLineDash([]);
 		} else {
-			ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p1.color;
 			ctx.strokeStyle = c.p1.color;
 			ctx.beginPath();
 			ctx.moveTo((c.p2.x - c.p1.x) * 0.2 + c.p1.x, (c.p2.y - c.p1.y) * 0.2 + c.p1.y);
 			ctx.lineTo((c.p2.x - c.p1.x) * 0.4 + c.p1.x, (c.p2.y - c.p1.y) * 0.4 + c.p1.y);
 			ctx.stroke();
-			ctx.strokeStyle = hit && Math.random() < 0.9 ? "white" : c.p2.color;
 			ctx.strokeStyle = c.p2.color;
 			ctx.beginPath();
 			ctx.moveTo((c.p2.x - c.p1.x) * 0.8 + c.p1.x, (c.p2.y - c.p1.y) * 0.8 + c.p1.y);
