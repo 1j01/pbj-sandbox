@@ -118,9 +118,8 @@ var keys = {};
 var selectedTool = TOOL_ADD_POINTS;
 var lastRopePoint = null;
 var connectorToolPoint = null;
-var ballToolBall = null;
-var ballToolStartPos = null;
-var dragStates = []; // {dragging, dragOffsets, pointerId}
+var ballToolStates = []; // {ball, startPos, pointerPos,pointerId}
+var dragStates = []; // {dragging, dragOffsets, pointerPos, pointerId}
 var rmbDragState = null;
 var selection = {
 	points: [],
@@ -361,6 +360,14 @@ function main() {
 		}
 		if (selectedTool === TOOL_DRAG) {
 			startDrag(toWorldCoords(e.pageX, e.pageY), e.pointerId);
+		} else if (selectedTool === TOOL_ADD_BALL) {
+			undoable();
+			ballToolStates.push({
+				ball: null,
+				startPos: toWorldCoords(e.pageX, e.pageY),
+				pointerPos: toWorldCoords(e.pageX, e.pageY),
+				pointerId: e.pointerId,
+			});
 		}
 		e.preventDefault();
 		deselectTextAndBlur();
@@ -374,6 +381,11 @@ function main() {
 		for (const dragState of dragStates) {
 			if (dragState.pointerId === e.pointerId) {
 				dragStates.splice(dragStates.indexOf(dragState), 1);
+			}
+		}
+		for (const ballToolState of ballToolStates) {
+			if (ballToolState.pointerId === e.pointerId) {
+				ballToolStates.splice(ballToolStates.indexOf(ballToolState), 1);
 			}
 		}
 		e.preventDefault();
@@ -391,6 +403,11 @@ function main() {
 		for (const dragState of dragStates) {
 			if (dragState.pointerId === e.pointerId) {
 				dragState.pointerPos = toWorldCoords(e.pageX, e.pageY);
+			}
+		}
+		for (const ballToolState of ballToolStates) {
+			if (ballToolState.pointerId === e.pointerId) {
+				ballToolState.pointerPos = toWorldCoords(e.pageX, e.pageY);
 			}
 		}
 	}, false);
@@ -735,35 +752,30 @@ function step() {
 			add_point_at_mouse();
 		}
 	} else if (selectedTool === TOOL_ADD_BALL) {
-		if (mouse.left && !mousePrevious.left) {
-			undoable();
-			ballToolStartPos = { x: mouse.x, y: mouse.y };
-		}
-		if (mouse.left) {
-			if (ballToolBall) {
+		for (const ballToolState of ballToolStates) {
+			const { startPos, pointerPos } = ballToolState;
+			if (ballToolState.ball) {
 				// remove old ball's points and connections
-				for (const point of ballToolBall.points) {
+				for (const point of ballToolState.ball.points) {
 					points.splice(points.indexOf(point), 1);
 				}
-				for (const connection of ballToolBall.connections) {
+				for (const connection of ballToolState.ball.connections) {
 					connections.splice(connections.indexOf(connection), 1);
 				}
 			}
 			const variableDistances = keys.Shift;
-			ballToolBall = add_ball({
+			ballToolState.ball = add_ball({
 				// x: mouse.x,
 				// y: mouse.y,
 				// numPoints: 5 + ~~(Math.random() * 4),
 				// size: 20 + Math.random() * 130,
 				// variableDistances: Math.random() > 0.5,
-				x: ballToolStartPos.x,
-				y: ballToolStartPos.y,
-				numPoints: ~~(Math.min(variableDistances ? 20 : 13, Math.max(3, (mouse.x - ballToolStartPos.x) / 100 + 8))),
-				size: ~~(Math.abs(mouse.y - ballToolStartPos.y) / 2 + 20),
+				x: startPos.x,
+				y: startPos.y,
+				numPoints: ~~(Math.min(variableDistances ? 20 : 13, Math.max(3, (pointerPos.x - startPos.x) / 100 + 8))),
+				size: ~~(Math.abs(pointerPos.y - startPos.y) / 2 + 20),
 				variableDistances,
 			});
-		} else {
-			ballToolBall = null; // it's finalized, don't remove it later
 		}
 	} else if (selectedTool === TOOL_ADD_DOLL) {
 		if (mouse.left && !mousePrevious.left) {
