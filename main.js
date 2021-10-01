@@ -1222,7 +1222,16 @@ function step() {
 				// Glue tool (undoable handled elsewhere)
 				doGlue ||
 				// Auto-Connect behavior
-				(autoConnect && d < autoConnectMaxDist && countConnections(p) < 6 && countConnections(p2) < 3)
+				(autoConnect &&
+					d < autoConnectMaxDist &&
+					countConnections(p) < 6 &&
+					countConnections(p2) < 3 &&
+					// don't connect to terrain
+					p.color !== "green" &&
+					p2.color !== "green" &&
+					p.color !== "DarkOrchid" &&
+					p2.color !== "DarkOrchid"
+				)
 			) {
 				if (areDirectlyConnected(p, p2, connections)) {
 					canGlue = doGlue = false;
