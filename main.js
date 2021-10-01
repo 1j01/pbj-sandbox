@@ -1683,17 +1683,10 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 // but I'd have to include that information in the serialized world state,
 // so I'm just using named colors to identify the terrain.
 function removeTerrain() {
-	for (var i = points.length - 1; i >= 0; i--) {
-		if (points[i].color == "green" || points[i].color == "DarkOrchid") {
-			for (var j = connections.length - 1; j >= 0; j--) {
-				var c = connections[j];
-				if (c.p1 == points[i]) {
-					connections.splice(j, 1);
-				}
-			}
-			points.splice(i, 1);
-		}
-	}
+	deletePoints(points.filter((point) =>
+		point.color == "green" ||
+		point.color == "DarkOrchid"
+	));
 }
 function createTerrain() {
 	var x = Math.random() * 200;
