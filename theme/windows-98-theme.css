@@ -6,3 +6,12 @@
 .for-win98-only {
 	display: unset !important;
 }
+
+/* TODO: this should be part of the os-gui.js library */
+input[type=text],
+input[type=number],
+input:not([type]) {
+	border-image: var(--inset-deep-border-image);
+	background: var(--Window);
+	color: var(--WindowText);
+}
