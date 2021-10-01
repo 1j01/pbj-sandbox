@@ -56,7 +56,7 @@ const tools = [
 		id: TOOL_PRECISE_CONNECTOR,
 		name: "Precise Connector",
 		shortcut: "C",
-		tooltip: "Drag from one point to another to connect them, or if they're already connected, to delete the connection. Hold Shift to create arbitrary-length connections."
+		tooltip: "Drag from one point to another to connect them, or if they’re already connected, to delete the connection. Hold Shift to create arbitrary-length connections."
 	},
 	{
 		id: TOOL_SELECT,
@@ -89,7 +89,7 @@ const keyboardShortcuts = [
 	{ modifiers: [], code: "Period", action: add_point_at_mouse },
 	{ modifiers: ["Shift"], code: "Period", action: add_point_at_mouse },
 	{ modifiers: [], code: "NumpadDecimal", action: add_point_at_mouse },
-	// Shift+NumpadDecimal may not work because it sends "Delete" instead, but it's awkward to use anyways.
+	// Shift+NumpadDecimal may not work because it sends "Delete" instead, but it’s awkward to use anyways.
 	{ modifiers: ["Shift"], code: "NumpadDecimal", action: add_point_at_mouse },
 ];
 // Add keyboard shortcuts for selecting tools.
@@ -178,8 +178,8 @@ function serialize(points, connections, isSelection) {
 	// Note: if I ever change this to JSON,
 	// I should bump the version to >2, since ARSON stringifies as JSON but with values as indices,
 	// and formatVersion ends up looking like `formatVersion:2`
-	// Also don't reorder these keys, because that could make it `formatVersion:<some other number>`
-	// That said, this is just a toy, and there's no actual import/export feature.
+	// Also don’t reorder these keys, because that could make it `formatVersion:<some other number>`
+	// That said, this is just a toy, and there’s no actual import/export feature.
 	return ARSON.stringify({
 		format: "pbj-sandbox",
 		formatVersion: 0.1,
@@ -277,9 +277,9 @@ function togglePlay() {
 }
 
 function main() {
-	canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+	canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
-	addEventListener('keydown', function (e) {
+	addEventListener("keydown", function (e) {
 		if (e.defaultPrevented) {
 			return;
 		}
@@ -288,12 +288,12 @@ function main() {
 			document.activeElement instanceof HTMLTextAreaElement ||
 			!window.getSelection().isCollapsed
 		) {
-			return; // don't prevent interaction with inputs or textareas, or copying text in windows
+			return; // don’t prevent interaction with inputs or textareas, or copying text in windows
 		}
 
 		keys[e.key] = true;
 		keys[e.code] = true;
-		// console.log(`key '${e.key}', code '${e.code}', keyCode ${e.keyCode}`);
+		// console.log(`key "${e.key}", code "${e.code}", keyCode ${e.keyCode}`);
 
 		let matched = false;
 		for (const shortcut of keyboardShortcuts) {
@@ -327,8 +327,8 @@ function main() {
 		// 	console.log("No shortcut matched:", e);
 		// }
 	});
-	addEventListener('keyup', function (e) { delete keys[e.key]; delete keys[e.code]; });
-	addEventListener('blur', function (e) { keys = {}; }); // prevents stuck keys, especially Shift when switching tabs with Ctrl+Shift+Tab (also Ctrl+Shift+T, Ctrl+Shift+N, etc.)
+	addEventListener("keyup", function (e) { delete keys[e.key]; delete keys[e.code]; });
+	addEventListener("blur", function (e) { keys = {}; }); // prevents stuck keys, especially Shift when switching tabs with Ctrl+Shift+Tab (also Ctrl+Shift+T, Ctrl+Shift+N, etc.)
 	var deselectTextAndBlur = function () {
 		if (window.getSelection) {
 			if (window.getSelection().empty) {  // Chrome
@@ -355,7 +355,7 @@ function main() {
 		mouse.pointerId = pointerId;
 	};
 	canvas.style.touchAction = "none";
-	canvas.addEventListener('pointerdown', function (e) {
+	canvas.addEventListener("pointerdown", function (e) {
 		updateMouse(e);
 		if (e.button == 0) {
 			mouse.left = true;
@@ -378,7 +378,7 @@ function main() {
 		e.preventDefault();
 		deselectTextAndBlur();
 	});
-	addEventListener('pointerup', function (e) {
+	addEventListener("pointerup", function (e) {
 		if (e.button == 0) {
 			mouse.left = false;
 		} else {
@@ -396,7 +396,7 @@ function main() {
 		}
 		e.preventDefault();
 	});
-	addEventListener('pointercancel', function (e) {
+	addEventListener("pointercancel", function (e) {
 		if (e.button == 0) {
 			mouse.left = false;
 		} else {
@@ -404,7 +404,7 @@ function main() {
 		}
 		e.preventDefault();
 	});
-	addEventListener('pointermove', function (e) {
+	addEventListener("pointermove", function (e) {
 		updateMouse(e);
 		for (const dragState of dragStates) {
 			if (dragState.pointerId === e.pointerId) {
@@ -464,7 +464,7 @@ function main() {
 		gain.connect(actx.destination);
 
 		oscillator = actx.createOscillator();
-		oscillator.type = 'square';
+		oscillator.type = "square";
 		oscillator.frequency.setValueAtTime(440, actx.currentTime); // value in hertz
 		oscillator.connect(gain);
 		oscillator.start();
@@ -559,7 +559,7 @@ function toolDraw(ctx, intent, dragging, bold, p1, p2) {
 	}
 	if (p1 && p2) {
 		if (intent === "disconnect") {
-			ctx.lineWidth = 4; // has to be visible together with the existing connection's line
+			ctx.lineWidth = 4; // has to be visible together with the existing connection’s line
 		} else {
 			ctx.lineWidth = bold ? 2 : 1;
 		}
@@ -639,7 +639,7 @@ function startDrag({ x, y }, pointerId) {
 			}
 			dragging = points.filter(p => groups.get(p) === groups.get(nearToMouse));
 		}
-		// if there's a selection, drag the whole selection
+		// if there’s a selection, drag the whole selection
 		if (selection.points.includes(nearToMouse)) {
 			dragging = Array.from(selection.points);
 		}
@@ -674,7 +674,7 @@ function step() {
 	}
 
 	// Clear, or partially clear, leaving a trail.
-	// If paused with ghost trails enabled, don't clear at all.
+	// If paused with ghost trails enabled, don’t clear at all.
 	const alpha = play ? Math.pow(1 - ghostTrails, 4) : (ghostTrails > 0 ? 0 : 1);
 	ctx.fillStyle = `rgba(0,0,20,${alpha})`;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -684,20 +684,20 @@ function step() {
 
 	groupsComputedThisFrame = false;
 
-	// I don't want to trigger multiple tools at once,
-	// so I'm temporarily changing the selected tool for transient tool shortcuts.
-	// This way I don't have to worry about the if-else chain much.
+	// I don’t want to trigger multiple tools at once,
+	// so I’m temporarily changing the selected tool for transient tool shortcuts.
+	// This way I don’t have to worry about the if-else chain much.
 	// TODO: should I also show the temporary tool in the toolbox?
 	const prevTool = selectedTool;
 
-	// Quickly switch to the Precise Connector tool and back when you release '/'
+	// Quickly switch to the Precise Connector tool and back when you release ‘/’
 	// Other ways this could work (alternate UI ideas):
 	// - Add a point at the mouse connected to the closest point.
 	// - Connect the two points closest to the mouse.
 	if (keys.Slash) {
 		selectedTool = TOOL_PRECISE_CONNECTOR;
 	}
-	// handled differently (Space immediately triggers the Glue tool's behavior)
+	// handled differently (Space immediately triggers the Glue tool’s behavior)
 	// not sure it SHOULD though? could try it the other way
 	// if (keys.Space) {
 	// 	selectedTool = TOOL_GLUE;
@@ -761,7 +761,7 @@ function step() {
 		for (const ballToolState of ballToolStates) {
 			const { startPos, pointerPos } = ballToolState;
 			if (ballToolState.ball) {
-				// remove old ball's points and connections
+				// remove old ball’s points and connections
 				deletePoints(ballToolState.ball.points);
 			}
 			const variableDistances = keys.Shift;
@@ -823,7 +823,7 @@ function step() {
 			(connectorToolPoint && closestPoint) ?
 				Math.hypot(connectorToolPoint.x - closestPoint.x, connectorToolPoint.y - closestPoint.y) :
 				0;
-		// going with a standard distance for connections, unless it's too long
+		// going with a standard distance for connections, unless it’s too long
 		// (at some point it would break), and in that case a custom distance
 		const standardDistance = 60;
 		const useCustomDistance = keys.Shift || distBetweenPoints > standardDistance * 2;
@@ -919,7 +919,7 @@ function step() {
 		// just prevents a weird scenario where you can continue a rope after switching tools while making a rope
 		lastRopePoint = null;
 		// you could do a similar thing with the select tool, but whatever
-		// it's not like something bad happens
+		// it’s not like something bad happens
 	}
 
 	if (play) {
@@ -941,7 +941,7 @@ function step() {
 			c.p2.fx -= dx / d * dd * f;
 			c.p2.fy -= dy / d * dd * f;
 			// special handling for ragdolls
-			// try to keep legs' points vertically aligned
+			// try to keep legs’ points vertically aligned
 			if ((c.p1.part === "foot" && c.p2.part === "knee") || (c.p2.part === "foot" && c.p1.part === "knee")) {
 				const foot = c.p1.part === "foot" ? c.p1 : c.p2;
 				const knee = c.p1.part === "foot" ? c.p2 : c.p1;
@@ -1152,9 +1152,9 @@ function step() {
 					p.y >= r.top && p.y <= r.bottom
 				) {
 					// convert to rect unit coords (0 = left, 1 = right, 0 = top, 1 = bottom)
-					// then find whether it's in each of two diagonal halves
-					// and use that to find whether it's in opposing diagonal quadrants
-					// i.e. whether it's more horizontal or more vertical
+					// then find whether it’s in each of two diagonal halves
+					// and use that to find whether it’s in opposing diagonal quadrants
+					// i.e. whether it’s more horizontal or more vertical
 					var in_upper_right_half = (p.x - r.left) / r.width > (p.y - r.top) / r.height;
 					var in_upper_left_half = (r.right - p.x) / r.width > (p.y - r.top) / r.height;
 					var in_left_or_right_quadrant = in_upper_right_half ^ in_upper_left_half;
@@ -1226,7 +1226,7 @@ function step() {
 					d < autoConnectMaxDist &&
 					countConnections(p) < 6 &&
 					countConnections(p2) < 3 &&
-					// don't connect to terrain
+					// don’t connect to terrain
 					p.color !== "green" &&
 					p2.color !== "green" &&
 					p.color !== "DarkOrchid" &&
@@ -1262,7 +1262,7 @@ function step() {
 				if (p == c.p1 || p == c.p2) continue;
 				if (areConnected(p, c.p1)) continue;
 				// if (areConnected(p, c.p2)) continue; // assuming the connectedness works, this is unnecessary
-				//this check shouldn't be here
+				//this check shouldn’t be here
 				// if (p.x != p.px || p.y != p.py) {
 				if (true) {
 
@@ -1282,9 +1282,9 @@ function step() {
 					// 	is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
 					// }
 					// but if the line is rotating, it SHOULD have a hour-glass shape to represent its movement, or better a rounded bow-tie shape
-					// the real problem is... well it's unreliable, I'm trying to figure it out
+					// the real problem is... well it’s unreliable, I’m trying to figure it out
 
-					// I'm gonna try enlarging quad region?
+					// I’m gonna try enlarging quad region?
 					// This is gonna be complicated and stupid, but it might help...
 					// const nudge_amount = 30;
 					// let quad_points = [[c.p1.x, c.p1.y], [c.p1.px, c.p1.py], [c.p2.px, c.p2.py], [c.p2.x, c.p2.y]];
@@ -1337,11 +1337,11 @@ function step() {
 
 						// Note: normal can point either way
 						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
-						// hence the negation when rendering the normal's arrow
-						// THIS IS NOT INTENTIONAL, it's just bad math.
+						// hence the negation when rendering the normal’s arrow
+						// THIS IS NOT INTENTIONAL, it’s just bad math.
 						// I tried flipping the signs and sines and cosines for a while
-						// but didn't get it to work while being more sensible.
-						// Maybe later I'll go at it again.
+						// but didn’t get it to work while being more sensible.
+						// Maybe later I’ll go at it again.
 						// (Keep in mind, the drawArrow function is also arbitrary in its base angle)
 						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
 						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy; // normal-aligned space
@@ -1352,8 +1352,8 @@ function step() {
 						var p_bounce_angle = p_bounce_angle_connection_space - normal;
 						// TODO: determine this from positions instead of velocities?
 						var on_one_side_of_line = p_vx_connection_space > 0 ? false : p_vx_connection_space < 0 ? true :
-							// for points that are fixed/unmoving, determine the side the point is on from the line's velocity
-							// FIXME: this doesn't make sense if the line is rotating
+							// for points that are fixed/unmoving, determine the side the point is on from the line’s velocity
+							// FIXME: this doesn’t make sense if the line is rotating
 							(p1_vx_connection_space + p2_vx_connection_space) / 2 > 0;
 
 						// apply a force to the line from the particle
@@ -1371,7 +1371,7 @@ function step() {
 						c.p2.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
 						c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
 
-						// move the line so it doesn't collide immediately again
+						// move the line so it doesn’t collide immediately again
 						var hack = 1;
 						// which side the particle is further away from, move the line to that side
 						var towards_a_side_x = Math.sin(normal + (on_one_side_of_line ? Math.PI : 0));
@@ -1391,13 +1391,13 @@ function step() {
 						// debugLines.push({
 						// 	p1: { x: p1_x_off, y: p1_y_off },
 						// 	p2: { x: p2_x_off, y: p2_y_off },
-						// 	color: on_one_side_of_line ? '#00afff' : '#ff00ff',
+						// 	color: on_one_side_of_line ? "#00afff" : "#ff00ff",
 						// });
 
 						// more accurate bounce, right? if we use the intersection point
 						p.x = is.x;
 						p.y = is.y;
-						// move the point so it doesn't collide immediately again
+						// move the point so it doesn’t collide immediately again
 						var hack = 1;
 						if (!p.fixed) {
 							p.x -= towards_a_side_x * hack;
@@ -1541,7 +1541,7 @@ function step() {
 	mousePrevious.y = mouse.y;
 	mousePrevious.pointerId = mouse.pointerId; // pretty silly, not needed
 
-	// Not possible to click buttons in the middle of step(), don't worry. :)
+	// Not possible to click buttons in the middle of step(), don’t worry. :)
 	selectedTool = prevTool;
 
 	if (play && collision && !groupsComputedThisFrame) {
@@ -1681,7 +1681,7 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 		// 	],
 		// 	color: "#ff00ff",
 		// });
-		// uneducated guess ("hopefully it won't matter")
+		// uneducated guess ("hopefully it won’t matter")
 		return { x: (line_x1 + line_x2) / 2, y: (line_y1 + line_y2) / 2 };
 	}
 	// if (pointInQuad(line_x1, line_y1, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4)) {
@@ -1689,8 +1689,8 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 
 // For removal of generated terrain,
 // I could store the points and connections that relate to the terrain,
-// but I'd have to include that information in the serialized world state,
-// so I'm just using named colors to identify the terrain.
+// but I’d have to include that information in the serialized world state,
+// so I’m just using named colors to identify the terrain.
 function removeTerrain() {
 	deletePoints(points.filter((point) =>
 		point.color == "green" ||
@@ -1790,14 +1790,14 @@ function toggleOptionsWindow() {
 		<div style="padding-top: 3px; padding-bottom: 3px;">
 			<label title="Change the look of the windows.">
 				<span style="padding-right: 0.5em;">Theme:</span>
-				<div class='select-wrapper'><select id='theme-select'>
-					<option value='sandbox-theme'>Sandbox</option>
-					<option value='retrofuturist-theme'>Retrofuturist</option>
-					<option value='windows-98-theme'>Windows 98</option>
+				<div class="select-wrapper"><select id="theme-select">
+					<option value="sandbox-theme">Sandbox</option>
+					<option value="retrofuturist-theme">Retrofuturist</option>
+					<option value="windows-98-theme">Windows 98</option>
 				</select></div>
 			</label>
 		</div>
-		<button id='fullscreen-button' title='Make the application fill the entire screen. Useful especially for mobile, where screens are smaller and browser address bars can cause problems due to their scroll-to-hide feature.'>
+		<button id="fullscreen-button" title="Make the application fill the entire screen. Useful especially for mobile, where screens are smaller and browser address bars can cause problems due to their scroll-to-hide feature.">
 			<span>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488.4 488.4" style="height: 1.2em; vertical-align: middle; margin-right: 5px;">
 					<path d="M441 408 339 306l-33 33 102 102h-80v47h160V328h-47zM339 183 441 81v79h47V0H328v47h80L306 150zM150 306 47 408v-80H0v160h160v-47H81l102-102zM160 47V0H0v160h47V81l103 102 33-33L81 47z" fill="currentColor"/>
@@ -1806,41 +1806,41 @@ function toggleOptionsWindow() {
 			</span>
 		</button>
 		<h3>Audio:</h3>
-		<label title='Enables or disables sound generation. Note that you need connections between points for sound to work.'>
-			<input type='checkbox' id='sfx-checkbox'/>Audio
+		<label title="Enables or disables sound generation. Note that you need connections between points for sound to work.">
+			<input type="checkbox" id="sfx-checkbox"/>Audio
 		</label>
-		<label title='Shows some internals of how the sound is generated. It looks kind of like a classic frequency analyzer, but it's not.'>
-			<input type='checkbox' id='sfx-viz-checkbox'/>Audio Visualization
+		<label title="Shows some internals of how the sound is generated. It looks kind of like a classic frequency analyzer, but it’s not.">
+			<input type="checkbox" id="sfx-viz-checkbox"/>Audio Visualization
 		</label>
-		<label title='Changes the quality of generated sound.'>
+		<label title="Changes the quality of generated sound.">
 			<span style="padding-right: 0.5em;">Audio Style:</span>
-			<div class='select-wrapper'><select id='sfx-style-select'>
-				<option value='0'>Scorched Earth</option>
-				<option value='1'>Collisions</option>
-				<option value='2'>Hybrid</option>
+			<div class="select-wrapper"><select id="sfx-style-select">
+				<option value="0">Scorched Earth</option>
+				<option value="1">Collisions</option>
+				<option value="2">Hybrid</option>
 			</select></div>
 		</label>
 		<h3>Simulation:</h3>
-		<label title='Hint: Try zero gravity!'>
+		<label title="Hint: Try zero gravity!">
 			<span style="padding-right: 0.5em;">Gravity:</span>
-			<input type='number' id='gravity-input' step='0.05' min='-50' max='50' style="margin-bottom: 4px"/>
+			<input type="number" id="gravity-input" step="0.05" min="-50" max="50" style="margin-bottom: 4px"/>
 		</label>
-		<label title='Connect any points that are near each other. The number of connections is limited per point.'>
-			<input type='checkbox' id='auto-connect-checkbox'/>Auto-Connect
+		<label title="Connect any points that are near each other. The number of connections is limited per point.">
+			<input type="checkbox" id="auto-connect-checkbox"/>Auto-Connect
 		</label>
-		<label title='Generate (or remove) some grassy terrain. Toggle off and on to regenerate.'>
-			<input type='checkbox' id='terrain-checkbox'/>Terrain
+		<label title="Generate (or remove) some grassy terrain. Toggle off and on to regenerate.">
+			<input type="checkbox" id="terrain-checkbox"/>Terrain
 		</label>
-		<label title='The collision system needs a lot of work.'>
-			<input type='checkbox' id='collision-checkbox'/>Poor, Broken Collision
+		<label title="The collision system needs a lot of work.">
+			<input type="checkbox" id="collision-checkbox"/>Poor, Broken Collision
 		</label>
-		<label title='This may not be a physically accurate time scale. There are probably other things it should scale, but it only scales the application of velocity.'>
-			<input type='checkbox' id='slowmo-checkbox'/>Slow Motion
+		<label title="This may not be a physically accurate time scale. There are probably other things it should scale, but it only scales the application of velocity.">
+			<input type="checkbox" id="slowmo-checkbox"/>Slow Motion
 		</label>
-		<label title='Pause and resume the simulation.'><input type='checkbox' id='play-checkbox' aria-keyshortcuts="P"/>Play (P)</label>
+		<label title="Pause and resume the simulation."><input type="checkbox" id="play-checkbox" aria-keyshortcuts="P"/>Play (P)</label>
 		<h3>Sim Visuals:</h3>
-		<label title='Leave a visual trail behind all objects.'>
-			Ghost Trails: <input type='range' id='ghost-trails-slider' min='0' max='1' step='0.01'/>
+		<label title="Leave a visual trail behind all objects.">
+			Ghost Trails: <input type="range" id="ghost-trails-slider" min="0" max="1" step="0.01"/>
 		</label>
 	`);
 	positionElement($optionsWindow[0], "top left");
@@ -1855,7 +1855,7 @@ function toggleOptionsWindow() {
 			document.documentElement.requestFullscreen();
 		}
 	};
-	document.addEventListener('fullscreenchange', (event) => {
+	document.addEventListener("fullscreenchange", (event) => {
 		if (document.fullscreenElement) {
 			findEl("#fullscreen-button").classList.add("selected");
 		} else {
@@ -1876,7 +1876,7 @@ function toggleOptionsWindow() {
 		});
 		$errorWindow.$content.html(`
 			<p>Initialization failed, audio is not available.</p>
-			<pre class='padded'/>
+			<pre class="padded"/>
 		`);
 		const errorText = `${audioSetupError.stack}`.includes(audioSetupError.message) ? audioSetupError.stack : `${audioSetupError.message}\n\n${audioSetupError.stack}`;
 		$errorWindow.$content[0].querySelector("pre").textContent = errorText;
@@ -1906,7 +1906,7 @@ function toggleOptionsWindow() {
 		if (!audioCheckbox.checked) {
 			const $w = new $Window({ title: "Audio Not Enabled", resizable: false, maximizeButton: false, minimizeButton: false });
 			$w.$content.html(`
-				<p>Check the box to enable 'Audio' first.</p>
+				<p>Check the box to enable ‘Audio’ first.</p>
 			`);
 			$w.$Button("OK", () => $w.close()).focus();
 			$w.center();
@@ -1922,7 +1922,7 @@ function toggleOptionsWindow() {
 				const $w = new $Window({ title: "Audio Not Enabled", resizable: false, maximizeButton: false, minimizeButton: false });
 				$w.$content.html(`
 					<p>You <em>can</em> enjoy the viz without sound, but...</p>
-					<p>Check the box to enable 'Audio' to hear it.</p>
+					<p>Check the box to enable ‘Audio’ to hear it.</p>
 				`);
 				$w.$Button("OK", () => $w.close()).focus();
 				$w.center();
@@ -2047,7 +2047,7 @@ function toggleTodo() {
 			<li>
 				Ideally (but this would be hard), fix collision.
 				<br>(Things no clip and get stuck in each other.
-				<br>It just doesn't really work.)
+				<br>It just doesn’t really work.)
 			</li>
 			<!--
 			<li>
@@ -2067,12 +2067,12 @@ function toggleTodo() {
 			</li>
 			<li>
 				Import/export selections.
-				I don't want to implement importing/exporting an entire scene,
-				because it wouldn't work well with the toy nature of windows being collidable and the viewport border being collidable,
+				I don’t want to implement importing/exporting an entire scene,
+				because it wouldn’t work well with the toy nature of windows being collidable and the viewport border being collidable,
 				but I could do selection import/export.
-				(and you'll just have to deal with whether the imported object fits,
-				and whether it's supposed to work in zero gravity or whatever.)
-				But if I do this, I have to change the serialization format just because it's stupid,
+				(and you’ll just have to deal with whether the imported object fits,
+				and whether it’s supposed to work in zero gravity or whatever.)
+				But if I do this, I have to change the serialization format just because it’s stupid,
 				with the formatVersion being unclear due to how ARSON works (see comment in serialize)
 			</li>
 			<li>
@@ -2101,7 +2101,7 @@ function toggleHelp() {
 		<p>Use the Select tool to select points in a rectangle, or <kbd>Ctrl+A</kbd> to select all points, and <kbd>Ctrl+D</kbd> to deselect all.</p>
 		<p>Press <kbd>Ctrl+C</kbd> to copy the selection (or <kbd>Ctrl+X</kbd> to cut), and <kbd>Ctrl+V</kbd> to paste near the mouse.</p>
 		<p>Press <kbd>Delete</kbd> to remove the selected points.</p>
-		<p>There is no save/load, and it doesn't copy to the system clipboard, only an internal clipboard.</p>
+		<p>There is no save/load, and it doesn’t copy to the system clipboard, only an internal clipboard.</p>
 	`);
 	positionElement($helpWindow[0], "top");
 }
@@ -2197,7 +2197,7 @@ function make_ball({ x, y, vx = 0, vy = 0, numPoints = 8, size = 60, variableDis
 		for (let j = 0; j < numPoints; j++) {
 			const p2 = ballPoints[j];
 			if (i === j) {
-				continue; // don't connect to self
+				continue; // don’t connect to self
 			}
 			// Note: it produces some dope shapes with force: 2 
 			const dist = variableDistances ? Math.hypot(p1.x - p2.x, p1.y - p2.y) : size;
@@ -2335,7 +2335,7 @@ for (let along_line = 0, base_x = 400; along_line <= 1 && base_x + line_width + 
 		connect_if_not_connected(p1, p2, connections, { dist: line_width });
 
 		// make a point to throw at the line (OR LET BE HIT BY A LINE)
-		// I'm not testing the edge case of whether it collides when x positions are the same, I want it to definitely collide
+		// I’m not testing the edge case of whether it collides when x positions are the same, I want it to definitely collide
 		const projectile_x = base_x + 0.005 + along_line * (line_width - 0.01);
 		if (base_y < innerHeight / 2) {
 			points.push({
