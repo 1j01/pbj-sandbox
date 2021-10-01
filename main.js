@@ -1787,7 +1787,7 @@ function toggleOptionsWindow() {
 		<h3>User Interface:</h3>
 		<div style="padding-top: 3px; padding-bottom: 3px;">
 			<label title="Change the look of the windows.">
-				Theme:
+				<span style="padding-right: 0.5em;">Theme:</span>
 				<div class='select-wrapper'><select id='theme-select'>
 					<option value='sandbox-theme'>Sandbox</option>
 					<option value='retrofuturist-theme'>Retrofuturist</option>
@@ -1806,7 +1806,7 @@ function toggleOptionsWindow() {
 			<input type='checkbox' id='sfx-viz-checkbox'/>Audio Visualization
 		</label>
 		<label title='Changes the quality of generated sound.'>
-			Audio Style:
+			<span style="padding-right: 0.5em;">Audio Style:</span>
 			<div class='select-wrapper'><select id='sfx-style-select'>
 				<option value='0'>Scorched Earth</option>
 				<option value='1'>Collisions</option>
@@ -1815,7 +1815,8 @@ function toggleOptionsWindow() {
 		</label>
 		<h3>Simulation:</h3>
 		<label title='Hint: Try zero gravity!'>
-			Gravity: <input type='number' id='gravity-input' step='0.05' min='-50' max='50' style="margin-bottom: 4px"/>
+			<span style="padding-right: 0.5em;">Gravity:</span>
+			<input type='number' id='gravity-input' step='0.05' min='-50' max='50' style="margin-bottom: 4px"/>
 		</label>
 		<label title='Connect any points that are near each other. The number of connections is limited per point.'>
 			<input type='checkbox' id='auto-connect-checkbox'/>Auto-Connect
