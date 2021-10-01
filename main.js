@@ -235,10 +235,10 @@ function cutSelected() {
 	copySelected();
 	deleteSelected();
 }
-function deleteSelected() {
-	undoable();
-	for (var i = selection.points.length - 1; i >= 0; i--) {
-		var p = selection.points[i];
+function deletePoints(pointsToDelete) {
+	// (no undoable! maybe I should indicate this in the function names somehow)
+	for (var i = pointsToDelete.length - 1; i >= 0; i--) {
+		var p = pointsToDelete[i];
 		for (var j = connections.length - 1; j >= 0; j--) {
 			var c = connections[j];
 			if (c.p1 === p || c.p2 === p) {
@@ -247,6 +247,10 @@ function deleteSelected() {
 		}
 		points.splice(points.indexOf(p), 1);
 	}
+}
+function deleteSelected() {
+	undoable();
+	deletePoints(selection.points);
 	deselect();
 }
 function paste() {
@@ -758,12 +762,7 @@ function step() {
 			const { startPos, pointerPos } = ballToolState;
 			if (ballToolState.ball) {
 				// remove old ball's points and connections
-				for (const point of ballToolState.ball.points) {
-					points.splice(points.indexOf(point), 1);
-				}
-				for (const connection of ballToolState.ball.connections) {
-					connections.splice(connections.indexOf(connection), 1);
-				}
+				deletePoints(ballToolState.ball.points);
 			}
 			const variableDistances = keys.Shift;
 			ballToolState.ball = add_ball({
