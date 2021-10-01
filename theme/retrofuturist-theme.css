@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700&display=swap');
 
+kbd {
+	border-top-left-radius: 10px 15px;
+	border-bottom-right-radius: 10px 15px;
+}
+
 .window.closing,
 .window.closing * {
 	pointer-events: none !important;

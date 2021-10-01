@@ -2091,6 +2091,7 @@ function toggleHelp() {
 		return;
 	}
 	$helpWindow = new $Window({ title: "Help", resizable: true, maximizeButton: false, minimizeButton: false });
+	$helpWindow.addClass("help-window");
 	$helpWindow.$content.html(`
 		<p>Select a tool in the Tools box, then click to use it. You can also right-click to drag points.</p>
 		<p>To connect points, use the Glue tool or Precise Connector. Hold <kbd>/</kbd> to temporarily use to the Precise Connector, or Space to immediately Glue.</p>

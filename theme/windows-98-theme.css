@@ -7,6 +7,23 @@
 	display: unset !important;
 }
 
+.help-window .window-content {
+	background: var(--InfoWindow);
+	color: var(--InfoText);
+	border-image: var(--inset-deep-border-image);
+	margin-top: 1px;
+	user-select: text;
+	cursor: text;
+	font-family: Tahoma, sans-serif;
+}
+
+kbd {
+	background: white;
+	color: black;
+	font: inherit;
+	font-size: 10pt;
+}
+
 /* TODO: this should be part of the os-gui.js library */
 input[type=text],
 input[type=number],

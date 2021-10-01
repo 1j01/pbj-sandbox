@@ -1,4 +1,14 @@
 
+kbd {
+	background: white;
+	border-radius: 3px;
+	box-shadow: 0 1px 0 1px rgba(0, 0, 0, 0.6),  0 3px 0 1px rgba(0, 0, 0, 0.1);
+	font: inherit;
+	font-size: 80%;
+	padding: 2px 5px;
+	padding-top: 4px;
+}
+
 .window.closing,
 .window.closing * {
 	pointer-events: none !important;
