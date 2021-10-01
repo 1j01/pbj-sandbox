@@ -159,6 +159,7 @@ var debugLines = []; // reset per frame
 // derived state for performance optimization
 // Note: `groups` is computed manually when needed, at most once per frame (with a flag)
 var groups = new Map(); // point to group id, for connected groups (used for avoiding self-collision)
+var groupsComputedThisFrame = false;
 
 // audio (initialized later)
 var actx; // AudioContext
