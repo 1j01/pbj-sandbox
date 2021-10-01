@@ -127,41 +127,45 @@
 	color: aqua;
 }
 
-.window button,
-.window .button,
-.window input[type="submit"] {
+.window-close-button,
+.window-content button,
+.window-content .button,
+.window-content input[type="submit"] {
 	background: rgba(0, 0, 0, 0.1);
 	color: #CCC;
 	border: 0;
 	cursor: pointer;
 	outline: 1px solid rgba(255, 255, 255, 0.4);
 }
-.window button:hover,
-.window button:focus,
-.window .button:hover,
-.window .button:focus,
-.window input[type="submit"]:hover,
-.window input[type="submit"]:focus {
+.window-close-button:hover,
+.window-close-button:focus,
+.window-content button:hover,
+.window-content button:focus,
+.window-content .button:hover,
+.window-content .button:focus,
+.window-content input[type="submit"]:hover,
+.window-content input[type="submit"]:focus {
 	background: #555;
 	background: rgba(255, 255, 255, 0.2);
 	color: white;
 }
-.window button:active,
-.window .button:active,
-.window input[type="submit"]:active {
+.window-close-button:active,
+.window-content button:active,
+.window-content .button:active,
+.window-content input[type="submit"]:active {
 	background: #333;
 	background: rgba(255, 255, 255, 0.1);
 	color: #FFF;
 }
-.window button.selected {
+.window-content button.selected {
 	background: rgba(50, 100, 100, 0.5) !important;
 	color: #DFF !important;
 }
 [disabled] {
 	opacity: 0.5;
 }
-.window input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]),
-.window textarea {
+.window-content input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]),
+.window-content textarea {
 	color: #FFF;
 	background: #000;
 	box-shadow: 0 0 10px 1px rgba(0, 155, 255, 0);
@@ -169,14 +173,14 @@
 	border: 0;
 }
 
-.window input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):focus,
-.window textarea:focus {
+.window-content input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):focus,
+.window-content textarea:focus {
 	box-shadow: 0 0 10px 1px rgba(0, 155, 255, 0.9);
 	outline: solid 1px rgba(255, 255, 255, 0.3);
 	outline-offset: 0;
 }
 
-.window input[type="checkbox"] {
+.window-content input[type="checkbox"] {
 	background:#000;
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -186,26 +190,26 @@
 	vertical-align: top;
 	border: solid 1px rgba(255, 255, 255, 0.3);
 }
-.window input[type="checkbox"]:checked {
+.window-content input[type="checkbox"]:checked {
 	box-shadow: 0 0 5px #0CF;
 }
-.window input[type="checkbox"]::after {
+.window-content input[type="checkbox"]::after {
 	content: "x";
 	color: rgb(0, 155, 255);
 	opacity: 0;
 }
-.window input[type="checkbox"]:checked::after {
+.window-content input[type="checkbox"]:checked::after {
 	content: "✓";
 	color: rgb(0, 155, 255);
 	opacity: 1;
 }
-.window textarea {
+.window-content textarea {
 	transition: outline, box-shadow .2s ease;
 }
-.window ::selection {
+.window-content ::selection {
 	background: rgba(0, 200, 255, 0.5);
 }
-.window ::-moz-selection {
+.window-content ::-moz-selection {
 	background: rgba(0, 200, 255, 0.5);
 }
 

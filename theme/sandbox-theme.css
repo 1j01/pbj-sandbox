@@ -374,6 +374,12 @@ button,
 	/* width: 100%; */
 	border: 0;
 }
+#always-available-controls button {
+	border-radius: 0.5em; /* reduced for somewhat more convincing collision detection */
+	/* make these buttons take up less space so they all fit in one row on mobile */
+	min-width: 3rem;
+	padding: 0 0.5em;
+}
 .window-content button span {
 	display: block;
 	padding: 0.5em;
