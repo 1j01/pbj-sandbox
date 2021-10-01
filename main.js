@@ -1799,9 +1799,10 @@ function toggleOptionsWindow() {
 		</div>
 		<button id="fullscreen-button" title="Make the application fill the entire screen. Useful especially for mobile, where screens are smaller and browser address bars can cause problems due to their scroll-to-hide feature.">
 			<span>
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488.4 488.4" style="height: 1.2em; vertical-align: middle; margin-right: 5px;">
+				<svg class="not-for-win98" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488.4 488.4" style="height: 1.2em; vertical-align: middle; margin-right: 5px;">
 					<path d="M441 408 339 306l-33 33 102 102h-80v47h160V328h-47zM339 183 441 81v79h47V0H328v47h80L306 150zM150 306 47 408v-80H0v160h160v-47H81l102-102zM160 47V0H0v160h47V81l103 102 33-33L81 47z" fill="currentColor"/>
 				</svg>
+				<img style="display: none; vertical-align: middle;" class="for-win98-only" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAGFBMVEUAAACAgIDAwMD///8AAAAAAIAAAP8A///iy0mHAAAAAXRSTlMAQObYZgAAAAFiS0dEAxEMTPIAAAAHdElNRQfiBhgXFBXXrxyyAAAAYUlEQVQI1zWNyxGAIAwFHzMWIEoDQgXK6JmDLUgHkgqE9k3CsJe82fwAY4UZWDwTHEyIzM7hfN5SNeRMRQMLNVcm6q1SWzdE7ZMQx7oetgm4FQjrlrTaw8tPTPLUiZGRhB96ZhWiMUISWwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOC0wNi0yNFQyMzoyMDoyMS0wNDowMOdKx70AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTgtMDYtMjRUMjM6MjA6MjEtMDQ6MDCWF38BAAAAAElFTkSuQmCC">
 				Fullscreen
 			</span>
 		</button>
