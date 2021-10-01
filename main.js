@@ -358,16 +358,18 @@ function main() {
 		} else {
 			mouse.right = true;
 		}
-		if (selectedTool === TOOL_DRAG) {
-			startDrag(toWorldCoords(e.pageX, e.pageY), e.pointerId);
-		} else if (selectedTool === TOOL_ADD_BALL) {
-			undoable();
-			ballToolStates.push({
-				ball: null,
-				startPos: toWorldCoords(e.pageX, e.pageY),
-				pointerPos: toWorldCoords(e.pageX, e.pageY),
-				pointerId: e.pointerId,
-			});
+		if (e.button == 0) {
+			if (selectedTool === TOOL_DRAG) {
+				startDrag(toWorldCoords(e.pageX, e.pageY), e.pointerId);
+			} else if (selectedTool === TOOL_ADD_BALL) {
+				undoable();
+				ballToolStates.push({
+					ball: null,
+					startPos: toWorldCoords(e.pageX, e.pageY),
+					pointerPos: toWorldCoords(e.pageX, e.pageY),
+					pointerId: e.pointerId,
+				});
+			}
 		}
 		e.preventDefault();
 		deselectTextAndBlur();
