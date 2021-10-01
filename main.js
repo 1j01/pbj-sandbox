@@ -2037,6 +2037,7 @@ function toggleTodo() {
 		return;
 	}
 	$todoWindow = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
+	$todoWindow.addClass("todo-window");
 	$todoWindow.$content.html(`
 		<ul>
 			<li>
