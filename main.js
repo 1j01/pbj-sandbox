@@ -2291,9 +2291,9 @@ function add_doll(options) {
 }
 
 // Test scene: a bunch of balls of different types.
-// for (let numPoints = 3, x = 500; numPoints < 10; numPoints+=3, x += 200) {
+// for (let numPoints = 3, x = 500; numPoints < 15; numPoints+=3, x += 200) {
 // 	for (let size = 30, y = 100; size < 100; size += 30, y += 200, x += 0) {
-// 		add_ball({ numPoints, size, x, y });
+// 		add_ball({ numPoints, size, x, y, variableDistances: x > 900 });
 // 	}
 // }
 
