@@ -95,9 +95,19 @@ kbd {
 	position: absolute;
 	top: 0;
 	left: 0;
-	min-width: 100%;
+
+	/* Wanting to size an element based on its parent's size, but rotated, i.e. width corresponding to height */
+	/* There's no way to reference the parent's width/height explicitly. */
+	/* Here's one solution (kind of), using aspect-ratio to get a square the max of each dimension: */
+	/* min-width: 100%;
 	min-height: 100%;
-	aspect-ratio: 1;
+	aspect-ratio: 1; */
+	/* That's not ideal, and browser support wasn't good enough for my phone. */
+	/* Here's an even LESS optimal solution, but with better support: */
+	width: max(100vw, 100vh);
+	height: max(100vw, 100vh);
+	/* Just sizing it to the upper bound of what texture could be shown. Pretty lame. */
+
 	background: url("wood-texture.jpg") repeat, white;
 	box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.8);
 	background-size: 210px;
@@ -121,19 +131,19 @@ kbd {
 }
 /* top right corner */
 .window .handle:nth-child(3) {
-	transform: rotate(45deg) scale(var(--scale)) scaleX(300%) translate(0, 170%);
+	transform: rotate(45deg) scale(var(--scale)) scaleX(3) translate(0, 170%);
 }
 /* bottom left corner */
 .window .handle:nth-child(7) {
-	transform: rotate(45deg) scale(var(--scale)) scaleX(300%) translate(0, -170%);
+	transform: rotate(45deg) scale(var(--scale)) scaleX(3) translate(0, -170%);
 }
 /* top left corner */
 .window .handle:nth-child(5) {
-	transform: rotate(-45deg) scale(var(--scale)) scaleX(300%) translate(0, 170%);
+	transform: rotate(-45deg) scale(var(--scale)) scaleX(3) translate(0, 170%);
 }
 /* bottom right corner */
 .window .handle:nth-child(9) {
-	transform: rotate(-45deg) scale(var(--scale)) scaleX(300%) translate(0, -170%);
+	transform: rotate(-45deg) scale(var(--scale)) scaleX(3) translate(0, -170%);
 }
 /* horizontally-resizing handles (vertical walls) */
 .window .handle:nth-child(10)::before,
@@ -142,23 +152,23 @@ kbd {
 }
 /* right */
 .window .handle:nth-child(10) {
-	transform: scaleX(500%) translate(-50%, 0);
+	transform: scaleX(5) translate(-50%, 0);
 	clip-path: polygon(0 20px, 100% 0, 100% 100%, 0 calc(100% - 20px));
 }
 /* left */
 .window .handle:nth-child(6) {
-	transform: scaleX(500%) translate(50%, 0);
+	transform: scaleX(5) translate(50%, 0);
 	clip-path: polygon(100% 20px, 0 0, 0 100%, 100% calc(100% - 20px));
 }
 /* vertically-resizing handles (horizontal walls) */
 /* top */
 .window .handle:nth-child(8) {
-	transform: scaleY(500%) translate(0, -50%);
+	transform: scaleY(5) translate(0, -50%);
 	clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 100%, 0 100%);
 }
 /* bottom */
 .window .handle:nth-child(4) {
-	transform: scaleY(500%) translate(0, 50%);
+	transform: scaleY(5) translate(0, 50%);
 	clip-path: polygon(20px 100%, calc(100% - 20px) 100%, 100% 0, 0 0);
 }
 /* all non-corner handles */
