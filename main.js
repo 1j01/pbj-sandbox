@@ -1954,9 +1954,6 @@ function toggleOptionsWindow() {
 			removeTerrain();
 		}
 	};
-	if (terrainEnabled) {
-		createTerrain();
-	}
 	findEl("#gravity-input").value = gravity;
 	findEl("#gravity-input").onchange = function () {
 		gravity = Number(this.value);
@@ -2129,6 +2126,9 @@ document.querySelector("#todo-button").onclick = toggleTodo;
 document.querySelector("#about-button").onclick = toggleAbout;
 document.querySelector("#help-button").onclick = toggleHelp;
 
+if (terrainEnabled) {
+	createTerrain();
+}
 
 function connect_if_not_connected(p1, p2, connections, options = {}) {
 	if (p1 === p2) {
