@@ -86,11 +86,11 @@ const keyboardShortcuts = [
 	{ modifiers: [], code: "Space", action: undoable },
 
 	// Add points without selecting the Add Points tool.
-	{ modifiers: [], code: "Period", action: add_point_at_mouse },
-	{ modifiers: ["Shift"], code: "Period", action: add_point_at_mouse },
-	{ modifiers: [], code: "NumpadDecimal", action: add_point_at_mouse },
+	{ modifiers: [], code: "Period", action: add_point_at_mouse_undoable },
+	{ modifiers: ["Shift"], code: "Period", action: add_point_at_mouse_undoable },
+	{ modifiers: [], code: "NumpadDecimal", action: add_point_at_mouse_undoable },
 	// Shift+NumpadDecimal may not work because it sends "Delete" instead, but it’s awkward to use anyways.
-	{ modifiers: ["Shift"], code: "NumpadDecimal", action: add_point_at_mouse },
+	{ modifiers: ["Shift"], code: "NumpadDecimal", action: add_point_at_mouse_undoable },
 ];
 // Add keyboard shortcuts for selecting tools.
 for (const tool of tools) {
@@ -2162,6 +2162,10 @@ function make_point(options) {
 	}, options);
 }
 
+function add_point_at_mouse_undoable() {
+	undoable();
+	add_point_at_mouse();
+}
 function add_point_at_mouse() {
 	points.push(make_point({
 		x: mouse.x,
