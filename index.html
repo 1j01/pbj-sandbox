@@ -162,6 +162,157 @@
 	</script>
 
 	<script src="main.js"></script>
+
+	<script>
+		// helper for software demos
+		// display keystrokes in a list that fade away after a bit
+		function visualizeKeystrokes() {
+			var useSymbols = false;
+			var maxListLength = 10;
+
+			var ul = document.createElement("ul");
+			ul.className = "keystrokes";
+			document.body.appendChild(ul);
+
+			var modifiers = [
+				{ name: "Ctrl", symbol: "⌃", key: "Control", prop: "ctrlKey" },
+				{ name: "Alt", symbol: "⌥", key: "Alt", prop: "altKey" },
+				{ name: "Shift", symbol: "⇧", key: "Shift", prop: "shiftKey" },
+				{ name: "Meta", symbol: "⌘", key: "Meta", prop: "metaKey" },
+			];
+
+			function renderListItem(li, event, key) {
+				li.textContent = "";
+				for (const modifier of modifiers) {
+					if (event[modifier.prop]) {
+						const kbd = document.createElement("kbd");
+						if (useSymbols) {
+							kbd.textContent = modifier.symbol;
+						} else {
+							kbd.textContent = modifier.name;
+						}
+						li.appendChild(kbd);
+						li.appendChild(document.createTextNode("+"));
+					}
+				}
+				if (key) {
+					const kbd = document.createElement("kbd");
+					if (key === " ") {
+						kbd.textContent = "Space";
+					} else if (key.length === 1) {
+						kbd.textContent = key.toUpperCase();
+					} else {
+						kbd.textContent = key;
+					}
+					li.appendChild(kbd);
+				}
+				li.dataset.keyCombo = li.textContent;
+				li.dataset.repetitions = 1;
+			}
+
+			// TODO: stagger fade outs by a minimum amount to make it feel calmer
+			function fadeOutEventually(li) {
+				if (li.dataset.timerId) {
+					clearTimeout(li.dataset.timerId);
+				}
+				li.dataset.timerId = setTimeout(() => {
+					li.style.opacity = 0;
+					setTimeout(() => {
+						li.style.opacity = 0;
+					});
+					setTimeout(() => {
+						li.remove();
+					}, 1000);
+				}, 5000);
+			}
+
+			var modifiersLI = document.createElement("li");
+			var lastKeyComboLI;
+			addEventListener("keydown", function (event) {
+				const isModifier = event.key === "Alt" || event.key === "Control" || event.key === "Meta" || event.key === "Shift";
+				// console.log(event.key, event.code, event.keyCode, event.location, isModifier);
+				if (isModifier) {
+					renderListItem(modifiersLI, event, null);
+					ul.appendChild(modifiersLI);
+					modifiersLI.style.opacity = 1;
+				} else {
+					const li = document.createElement("li");
+					renderListItem(li, event, event.key);
+					if (
+						lastKeyComboLI &&
+						lastKeyComboLI.dataset.keyCombo === li.dataset.keyCombo &&
+						lastKeyComboLI.style.opacity !== "0"
+					) {
+						if (!event.repeat) {
+							lastKeyComboLI.dataset.repetitions = parseInt(lastKeyComboLI.dataset.repetitions) + 1;
+						}
+						fadeOutEventually(lastKeyComboLI);
+
+						// modifiersLI.remove(); // looks super weird to have the list shift
+						renderListItem(modifiersLI, event, event.key);
+						modifiersLI.style.opacity = 0;
+					} else {
+						lastKeyComboLI = li;
+						ul.appendChild(li);
+						fadeOutEventually(li);
+
+						modifiersLI.remove();
+
+						if (ul.childElementCount > maxListLength) {
+							ul.firstElementChild.remove();
+						}
+					}
+				}
+				
+			});
+			addEventListener("keyup", function (event) {
+				const anyModifiers = modifiers.some(modifier => event[modifier.prop]);
+				if (!anyModifiers) {
+					modifiersLI.style.opacity = 0;
+				} else {
+					modifiersLI.style.opacity = 1;
+					renderListItem(modifiersLI, event, null);
+				}
+			});
+			addEventListener("blur", function (event) {
+				modifiersLI.style.opacity = 0;
+			});
+		}
+	</script>
+	<style>
+		.keystrokes {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			pointer-events: none;
+			z-index: 999999999;
+			list-style: none;
+			padding: 10px;
+			mask-image: linear-gradient(transparent, 5%, rgba(0, 0, 0, 1.0));
+			-webkit-mask-image: linear-gradient(transparent, 5%, rgba(0, 0, 0, 1.0));
+		}
+		.keystrokes li {
+			color: white;
+			font-size: 1.5em;
+			text-shadow: 0 2px 0 black, 0 0 1px black, 0 0 1px black, 0 0 2px black;
+			transition: opacity .8s ease-out;
+		}
+		.keystrokes li:not(:last-child) {
+			margin-bottom: 5px;
+		}
+		.keystrokes li:not([data-repetitions="1"])::after {
+			content: "×" attr(data-repetitions);
+			display: inline-block;
+			border-radius: 1em;
+			background: rgba(187, 187, 187, 0.8);
+			color: black;
+			text-shadow: none;
+			margin-left: 20px;
+			font-size: 0.8em;
+			padding: 2px 5px;
+			box-shadow: 0 0 1px black, 0 2px 0 rgba(0, 0, 0, 0.4);
+		}
+	</style>
 </body>
 
 </html>
