@@ -1781,7 +1781,7 @@ function toggleOptionsWindow() {
 	// Note: Some controls are mentioned by name in dialog text.
 	$optionsWindow.$content.html(`
 		<h3>User Interface:</h3>
-		<div style="padding-top: 3px; padding-bottom: 3px;">
+		<div class="field-row" style="padding-top: 3px; padding-bottom: 3px;">
 			<label title="Change the look of the windows.">
 				<span style="padding-right: 0.5em;">Theme:</span>
 				<div class="select-wrapper"><select id="theme-select">
@@ -1791,52 +1791,84 @@ function toggleOptionsWindow() {
 				</select></div>
 			</label>
 		</div>
-		<button id="fullscreen-button" class="toggle" title="Make the application fill the entire screen. Useful especially for mobile, where screens are smaller and browser address bars can cause problems due to their scroll-to-hide feature.">
-			<span>
-				<svg class="not-for-win98" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488.4 488.4" style="height: 1.2em; vertical-align: middle; margin-right: 5px;">
-					<path d="M441 408 339 306l-33 33 102 102h-80v47h160V328h-47zM339 183 441 81v79h47V0H328v47h80L306 150zM150 306 47 408v-80H0v160h160v-47H81l102-102zM160 47V0H0v160h47V81l103 102 33-33L81 47z" fill="currentColor"/>
-				</svg>
-				<img style="display: none; vertical-align: middle;" class="for-win98-only" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAGFBMVEUAAACAgIDAwMD///8AAAAAAIAAAP8A///iy0mHAAAAAXRSTlMAQObYZgAAAAFiS0dEAxEMTPIAAAAHdElNRQfiBhgXFBXXrxyyAAAAYUlEQVQI1zWNyxGAIAwFHzMWIEoDQgXK6JmDLUgHkgqE9k3CsJe82fwAY4UZWDwTHEyIzM7hfN5SNeRMRQMLNVcm6q1SWzdE7ZMQx7oetgm4FQjrlrTaw8tPTPLUiZGRhB96ZhWiMUISWwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOC0wNi0yNFQyMzoyMDoyMS0wNDowMOdKx70AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTgtMDYtMjRUMjM6MjA6MjEtMDQ6MDCWF38BAAAAAElFTkSuQmCC">
-				Fullscreen
-			</span>
-		</button>
+		<div class="field-row">
+			<button id="fullscreen-button" class="toggle" title="Make the application fill the entire screen. Useful especially for mobile, where screens are smaller and browser address bars can cause problems due to their scroll-to-hide feature.">
+				<span>
+					<svg class="not-for-win98" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488.4 488.4" style="height: 1.2em; vertical-align: middle; margin-right: 5px;">
+						<path d="M441 408 339 306l-33 33 102 102h-80v47h160V328h-47zM339 183 441 81v79h47V0H328v47h80L306 150zM150 306 47 408v-80H0v160h160v-47H81l102-102zM160 47V0H0v160h47V81l103 102 33-33L81 47z" fill="currentColor"/>
+					</svg>
+					<img style="display: none; vertical-align: middle;" class="for-win98-only" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAGFBMVEUAAACAgIDAwMD///8AAAAAAIAAAP8A///iy0mHAAAAAXRSTlMAQObYZgAAAAFiS0dEAxEMTPIAAAAHdElNRQfiBhgXFBXXrxyyAAAAYUlEQVQI1zWNyxGAIAwFHzMWIEoDQgXK6JmDLUgHkgqE9k3CsJe82fwAY4UZWDwTHEyIzM7hfN5SNeRMRQMLNVcm6q1SWzdE7ZMQx7oetgm4FQjrlrTaw8tPTPLUiZGRhB96ZhWiMUISWwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOC0wNi0yNFQyMzoyMDoyMS0wNDowMOdKx70AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTgtMDYtMjRUMjM6MjA6MjEtMDQ6MDCWF38BAAAAAElFTkSuQmCC">
+					Fullscreen
+				</span>
+			</button>
+		</div>
 		<h3>Audio:</h3>
-		<label title="Enables or disables sound generation. Note that you need connections between points for sound to work.">
-			<input type="checkbox" id="sfx-checkbox"/>Audio
-		</label>
-		<label title="Shows some internals of how the sound is generated. It looks kind of like a classic frequency analyzer, but it’s not.">
-			<input type="checkbox" id="sfx-viz-checkbox"/>Audio Visualization
-		</label>
-		<label title="Changes the quality of generated sound.">
-			<span style="padding-right: 0.5em;">Audio Style:</span>
-			<div class="select-wrapper"><select id="sfx-style-select">
-				<option value="0">Scorched Earth</option>
-				<option value="1">Collisions</option>
-				<option value="2">Hybrid</option>
-			</select></div>
-		</label>
+		<div class="field-row">
+			<input type="checkbox" id="sfx-checkbox"/>
+			<label for="sfx-checkbox" title="Enables or disables sound generation. Note that you need connections between points for sound to work.">
+				Audio
+			</label>
+		</div>
+		<div class="field-row">
+			<input type="checkbox" id="sfx-viz-checkbox"/>
+			<label for="sfx-viz-checkbox" title="Shows some internals of how the sound is generated. It looks kind of like a classic frequency analyzer, but it’s not.">
+				Audio Visualization
+			</label>
+		</div>
+		<div class="field-row">
+			<label title="Changes the quality of generated sound.">
+				<span style="padding-right: 0.5em;">Audio Style:</span>
+				<div class="select-wrapper"><select id="sfx-style-select">
+					<option value="0">Scorched Earth</option>
+					<option value="1">Collisions</option>
+					<option value="2">Hybrid</option>
+				</select></div>
+			</label>
+		</div>
 		<h3>Simulation:</h3>
-		<label title="Hint: Try zero gravity!">
-			<span style="padding-right: 0.5em;">Gravity:</span>
-			<input type="number" id="gravity-input" step="0.05" min="-50" max="50" style="margin-bottom: 4px"/>
-		</label>
-		<label title="Connect any points that are near each other. The number of connections is limited per point.">
-			<input type="checkbox" id="auto-connect-checkbox"/>Auto-Connect
-		</label>
-		<label title="Generate (or remove) some grassy terrain. Toggle off and on to regenerate.">
-			<input type="checkbox" id="terrain-checkbox"/>Terrain
-		</label>
-		<label title="The collision system needs a lot of work.">
-			<input type="checkbox" id="collision-checkbox"/>Poor, Broken Collision
-		</label>
-		<label title="This may not be a physically accurate time scale. There are probably other things it should scale, but it only scales the application of velocity.">
-			<input type="checkbox" id="slowmo-checkbox"/>Slow Motion
-		</label>
-		<label title="Pause and resume the simulation."><input type="checkbox" id="play-checkbox" aria-keyshortcuts="P"/>Play (P)</label>
+		<div class="field-row">
+			<label title="Hint: Try zero gravity!">
+				<span style="padding-right: 0.5em;">Gravity:</span>
+				<input type="number" id="gravity-input" step="0.05" min="-50" max="50" style="margin-bottom: 4px"/>
+			</label>
+		</div>
+		<div class="field-row">
+			<input type="checkbox" id="auto-connect-checkbox"/>
+			<label for="auto-connect-checkbox" title="Connect any points that are near each other. The number of connections is limited per point.">
+				Auto-Connect
+			</label>
+		</div>
+		<div class="field-row">
+			<input type="checkbox" id="terrain-checkbox"/>
+			<label for="terrain-checkbox" title="Generate (or remove) some grassy terrain. Toggle off and on to regenerate.">
+				Terrain
+			</label>
+		</div>
+		<div class="field-row">
+			<input type="checkbox" id="collision-checkbox"/>
+			<label for="collision-checkbox" title="The collision system needs a lot of work.">
+				Poor, Broken Collision
+			</label>
+		</div>
+		<div class="field-row">
+			<input type="checkbox" id="slowmo-checkbox"/>
+			<label for="slowmo-checkbox" title="This may not be a physically accurate time scale. There are probably other things it should scale, but it only scales the application of velocity.">
+				Slow Motion
+			</label>
+		</div>
+		<div class="field-row">
+			<input type="checkbox" id="play-checkbox" aria-keyshortcuts="P"/>
+			<label for="play-checkbox" title="Pause and resume the simulation.">
+				Play (P)
+			</label>
+		</div>
 		<h3>Sim Visuals:</h3>
-		<label title="Leave a visual trail behind all objects.">
-			Ghost Trails: <input type="range" id="ghost-trails-slider" min="0" max="1" step="0.01"/>
-		</label>
+		<div class="field-row-stacked">
+			<label for="ghost-trails-slider" title="Leave a visual trail behind all objects.">
+				Ghost Trails:
+			</label>
+			<input type="range" id="ghost-trails-slider" min="0" max="1" step="0.01"/>
+		</div>
 	`);
 	positionElement($optionsWindow[0], "top left");
 	$optionsWindow[0].style.top = `${document.querySelector("#always-available-controls").getBoundingClientRect().bottom + 10}px`;

@@ -1,4 +1,5 @@
 @import "../lib/os-gui/windows-98.css";
+@import "../lib/98.css/98.custom-build.css";
 
 .not-for-win98 {
 	display: none;
