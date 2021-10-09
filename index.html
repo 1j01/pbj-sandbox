@@ -195,8 +195,79 @@
 				{ name: "Shift", symbol: "⇧", key: "Shift", prop: "shiftKey" },
 				{ name: "Meta", symbol: "⌘", key: "Meta", prop: "metaKey" },
 			];
+			var keyNames = {
+				Backspace: useSymbols ? "⌫" : "Backspace",
+				Tab: useSymbols ? "⇥" : "Tab",
+				Enter: useSymbols ? "⏎" : "Enter",
+				Escape: useSymbols ? "⎋" : "Escape",
+				Space: useSymbols ? "␣" : "Space",
+				Delete: useSymbols ? "⌦" : "Delete",
+				Home: useSymbols ? "⇱" : "Home",
+				End: useSymbols ? "⇲" : "End",
+				PageUp: useSymbols ? "⇞" : "Page Up",
+				PageDown: useSymbols ? "⇟" : "Page Down",
+				ArrowLeft: "←",
+				ArrowUp: "↑",
+				ArrowRight: "→",
+				ArrowDown: "↓",
+				Insert: useSymbols ? "⌤" : "Insert",
+				NumLock: useSymbols ? "⌘" : "NumLock",
+				CapsLock: useSymbols ? "⇪" : "CapsLock",
+				ScrollLock: useSymbols ? "⇧" : "ScrollLock",
+				Backquote: "`",
+				Backslash: "\\",
+				Comma: ",",
+				Minus: "-",
+				Period: ".",
+				Slash: "/",
+				Semicolon: ";",
+				Equal: "=",
+				BracketLeft: "[",
+				BracketRight: "]",
+				Quote: "'",
+				Escape: "Esc",
+				Digit1: "1",
+				Digit2: "2",
+				Digit3: "3",
+				Digit4: "4",
+				Digit5: "5",
+				Digit6: "6",
+				Digit7: "7",
+				Digit8: "8",
+				Digit9: "9",
+				Digit0: "0",
+				KeyQ: "Q",
+				KeyW: "W",
+				KeyE: "E",
+				KeyR: "R",
+				KeyT: "T",
+				KeyY: "Y",
+				KeyU: "U",
+				KeyI: "I",
+				KeyO: "O",
+				KeyP: "P",
+				KeyA: "A",
+				KeyS: "S",
+				KeyD: "D",
+				KeyF: "F",
+				KeyG: "G",
+				KeyH: "H",
+				KeyJ: "J",
+				KeyK: "K",
+				KeyL: "L",
+				KeyZ: "Z",
+				KeyX: "X",
+				KeyC: "C",
+				KeyV: "V",
+				KeyB: "B",
+				KeyN: "N",
+				KeyM: "M",
+				IntlBackslash: "\\", // what is this?
+				IntlRo: "ろ",
+				IntlYen: "¥",
+			};
 
-			function renderListItem(li, event, key) {
+			function renderListItem(li, event, showNonModifier) {
 				li.textContent = "";
 				for (const modifier of modifiers) {
 					if (event[modifier.prop]) {
@@ -210,15 +281,9 @@
 						li.appendChild(document.createTextNode("+"));
 					}
 				}
-				if (key) {
+				if (showNonModifier) {
 					const kbd = document.createElement("kbd");
-					if (key === " ") {
-						kbd.textContent = "Space";
-					} else if (key.length === 1) {
-						kbd.textContent = key.toUpperCase();
-					} else {
-						kbd.textContent = key;
-					}
+					kbd.textContent = keyNames[event.code] || event.key;
 					li.appendChild(kbd);
 				}
 				li.dataset.keyCombo = li.textContent;
@@ -247,12 +312,12 @@
 				const isModifier = event.key === "Alt" || event.key === "Control" || event.key === "Meta" || event.key === "Shift";
 				// console.log(event.key, event.code, event.keyCode, event.location, isModifier);
 				if (isModifier) {
-					renderListItem(modifiersLI, event, null);
+					renderListItem(modifiersLI, event, false);
 					ul.appendChild(modifiersLI);
 					modifiersLI.style.opacity = 1;
 				} else {
 					const li = document.createElement("li");
-					renderListItem(li, event, event.key);
+					renderListItem(li, event, true);
 					if (
 						lastKeyComboLI &&
 						lastKeyComboLI.dataset.keyCombo === li.dataset.keyCombo &&
@@ -264,7 +329,7 @@
 						fadeOutEventually(lastKeyComboLI);
 
 						// modifiersLI.remove(); // looks super weird to have the list shift
-						renderListItem(modifiersLI, event, event.key);
+						renderListItem(modifiersLI, event, true);
 						modifiersLI.style.opacity = 0;
 					} else {
 						lastKeyComboLI = li;
@@ -286,7 +351,7 @@
 					modifiersLI.style.opacity = 0;
 				} else {
 					modifiersLI.style.opacity = 1;
-					renderListItem(modifiersLI, event, null);
+					renderListItem(modifiersLI, event, false);
 				}
 			});
 			addEventListener("blur", function (event) {
