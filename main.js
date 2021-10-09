@@ -81,7 +81,7 @@ const keyboardShortcuts = [
 	},
 	{ modifiers: [], code: "Delete", action: deleteSelected },
 	{ modifiers: [], code: "KeyP", action: togglePlay },
-	{ modifiers: [], code: "F1", action: toggleHelp },
+	{ modifiers: [], code: "F1", action: () => windowToggles.help.toggleWindow() },
 
 	// Glue selected points together without selecting the Glue tool.
 	// This handled elsewhere except for creating an undo state.
@@ -1766,12 +1766,7 @@ function positionElement(element, positionString) {
 	element.style.top = y + "px";
 }
 
-function toggleOptionsWindow() {
-	// console.log("$optionsWindow.closed:", $optionsWindow ? $optionsWindow.closed : "(?)");
-	if ($optionsWindow && !$optionsWindow.closed) {
-		$optionsWindow.close();
-		return;
-	}
+function createOptionsWindow() {
 	$optionsWindow = new $Window({
 		title: "Options",
 		resizable: true,
@@ -2008,13 +2003,9 @@ function toggleOptionsWindow() {
 	};
 	themeSelect.value = windowTheme;
 	themeSelect.onchange();
+	return $optionsWindow;
 }
-function toggleToolsWindow() {
-	// console.log("$toolsWindow.closed:", $toolsWindow ? $toolsWindow.closed : "(?)");
-	if ($toolsWindow && !$toolsWindow.closed) {
-		$toolsWindow.close();
-		return;
-	}
+function createToolsWindow() {
 	$toolsWindow = new $Window({
 		title: "Tools",
 		resizable: true,
@@ -2054,14 +2045,10 @@ function toggleToolsWindow() {
 		}
 	};
 	selectTool(selectedTool);
+	return $toolsWindow;
 }
 
-function toggleTodo() {
-	// console.log("$todoWindow.closed:", $todoWindow ? $todoWindow.closed : "(?)");
-	if ($todoWindow && !$todoWindow.closed) {
-		$todoWindow.close();
-		return;
-	}
+function createTodoWindow() {
 	$todoWindow = new $Window({ title: "Todo", resizable: true, maximizeButton: false, minimizeButton: false });
 	$todoWindow.addClass("todo-window");
 	$todoWindow.$content.html(`
@@ -2110,13 +2097,9 @@ function toggleTodo() {
 		</ul>
 	`);
 	positionElement($todoWindow[0], "top right");
+	return $todoWindow;
 }
-function toggleHelp() {
-	// console.log("$helpWindow.closed:", $helpWindow ? $helpWindow.closed : "(?)");
-	if ($helpWindow && !$helpWindow.closed) {
-		$helpWindow.close();
-		return;
-	}
+function createHelpWindow() {
 	$helpWindow = new $Window({ title: "Help", resizable: true, maximizeButton: false, minimizeButton: false });
 	$helpWindow.addClass("help-window");
 	$helpWindow.$content.html(`
@@ -2133,13 +2116,9 @@ function toggleHelp() {
 		<p>There is no save/load, and it doesn’t copy to the system clipboard, only an internal clipboard.</p>
 	`);
 	positionElement($helpWindow[0], "top");
+	return $helpWindow;
 }
-function toggleAbout() {
-	// console.log("$aboutWindow.closed:", $aboutWindow ? $aboutWindow.closed : "(?)");
-	if ($aboutWindow && !$aboutWindow.closed) {
-		$aboutWindow.close();
-		return;
-	}
+function createAboutWindow() {
 	$aboutWindow = new $Window({ title: "About", resizable: true, maximizeButton: false, minimizeButton: false });
 	$aboutWindow.$content.html(`
 		<div style="padding:0 2em;">
@@ -2149,17 +2128,41 @@ function toggleAbout() {
 		</div>
 	`);
 	positionElement($aboutWindow[0], "top");
+	return $aboutWindow;
+}
+
+const windowToggles = {
+	options: { button: document.querySelector("#options-button"), createWindow: createOptionsWindow },
+	tools: { button: document.querySelector("#tools-button"), createWindow: createToolsWindow },
+	todo: { button: document.querySelector("#todo-button"), createWindow: createTodoWindow },
+	about: { button: document.querySelector("#about-button"), createWindow: createAboutWindow },
+	help: { button: document.querySelector("#help-button"), createWindow: createHelpWindow },
+}
+for (const [key, obj] of Object.entries(windowToggles)) {
+	const { button, createWindow } = obj;
+	obj.createWindow = () => { throw new Error("Did you mean openWindow?"); };
+	obj.openWindow = () => {
+		obj.$window = createWindow();
+		obj.$window.on("close", () => {
+			obj.$window = null;
+			button.classList.remove("selected");
+		});
+		button.classList.add("selected");
+	};
+	obj.toggleWindow = () => {
+		if (obj.$window && !obj.$window.closed) {
+			obj.$window.close();
+			button.classList.remove("selected");
+		} else {
+			obj.openWindow();
+		}
+	};
+	button.onclick = obj.toggleWindow;
 }
 
 main();
-toggleOptionsWindow();
-toggleToolsWindow();
-
-document.querySelector("#options-button").onclick = toggleOptionsWindow;
-document.querySelector("#tools-button").onclick = toggleToolsWindow;
-document.querySelector("#todo-button").onclick = toggleTodo;
-document.querySelector("#about-button").onclick = toggleAbout;
-document.querySelector("#help-button").onclick = toggleHelp;
+windowToggles.options.openWindow();
+windowToggles.tools.openWindow();
 
 if (terrainEnabled) {
 	createTerrain();
