@@ -66,6 +66,7 @@ const tools = [
 	},
 ];
 // Note: some keyboard shortcuts are handled with `keys` state (for continuous effects).
+// Note: aria-keyshortcuts should be kept in sync.
 const keyboardShortcuts = [
 	{ modifiers: ["CtrlCmd"], code: "KeyZ", action: undo, enable: () => undos.length > 0 },
 	{ modifiers: ["CtrlCmd"], code: "KeyY", action: redo, enable: () => redos.length > 0 },
@@ -80,6 +81,7 @@ const keyboardShortcuts = [
 	},
 	{ modifiers: [], code: "Delete", action: deleteSelected },
 	{ modifiers: [], code: "KeyP", action: togglePlay },
+	{ modifiers: [], code: "F1", action: toggleHelp },
 
 	// Glue selected points together without selecting the Glue tool.
 	// This handled elsewhere except for creating an undo state.
