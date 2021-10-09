@@ -1865,7 +1865,7 @@ function createOptionsWindow() {
 			</label>
 			<input type="range" id="ghost-trails-slider" min="0" max="1" step="0.01"/>
 		</div>
-		<!-- Fix scrollbar that appears even though there's no width/height/max-width/max-height -->
+		<!-- Fix scrollbar that appears even though there’s no width/height/max-width/max-height -->
 		<div style="margin-bottom: 10px;">
 	`);
 	positionElement($optionsWindow[0], "top left");
@@ -2285,16 +2285,16 @@ function make_doll({ x, y, color, width, height } = {}) {
 	const hips = [];
 	for (let side = -1; side <= 1; side += 2) {
 		// Arm(s)
-		const shoulder = make_point({ x: x + side * (width/2 + 0), y: y + 10, color, part: "shoulder", side });
-		const elbow = make_point({ x: x + side * (width/2 + 5), y: y + 30, color, part: "elbow", side });
-		const hand = make_point({ x: x + side * (width/2 + 10), y: y + 50, color, part: "hand", side });
+		const shoulder = make_point({ x: x + side * (width / 2 + 0), y: y + 10, color, part: "shoulder", side });
+		const elbow = make_point({ x: x + side * (width / 2 + 5), y: y + 30, color, part: "elbow", side });
+		const hand = make_point({ x: x + side * (width / 2 + 10), y: y + 50, color, part: "hand", side });
 		connect_if_not_connected(shoulder, elbow, dollConnections, { dist: limbLength, force: 1 }); // upper arm
 		connect_if_not_connected(elbow, hand, dollConnections, { dist: limbLength, force: 1 }); // lower arm
 		connect_if_not_connected(shoulder, chest, dollConnections, { dist: width / 2, force: 2 }); // shoulder
 		// Leg(s)
-		const hip = make_point({ x: x + side * (width/2 + 0), y: y + 70, color, part: "hip", side });
-		const knee = make_point({ x: x + side * (width/2 + 5), y: y + 90, color, part: "knee", side });
-		const foot = make_point({ x: x + side * (width/2 + 10), y: y + 110, color, part: "foot", side });
+		const hip = make_point({ x: x + side * (width / 2 + 0), y: y + 70, color, part: "hip", side });
+		const knee = make_point({ x: x + side * (width / 2 + 5), y: y + 90, color, part: "knee", side });
+		const foot = make_point({ x: x + side * (width / 2 + 10), y: y + 110, color, part: "foot", side });
 		connect_if_not_connected(hip, knee, dollConnections, { dist: limbLength, force: 1 }); // upper leg
 		connect_if_not_connected(knee, foot, dollConnections, { dist: limbLength, force: 1 }); // lower leg
 		connect_if_not_connected(hip, bottom, dollConnections, { dist: width / 2, force: 2 }); // hip
