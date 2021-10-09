@@ -1869,6 +1869,8 @@ function toggleOptionsWindow() {
 			</label>
 			<input type="range" id="ghost-trails-slider" min="0" max="1" step="0.01"/>
 		</div>
+		<!-- Fix scrollbar that appears even though there's no width/height/max-width/max-height -->
+		<div style="margin-bottom: 10px;">
 	`);
 	positionElement($optionsWindow[0], "top left");
 	$optionsWindow[0].style.top = `${document.querySelector("#always-available-controls").getBoundingClientRect().bottom + 10}px`;
