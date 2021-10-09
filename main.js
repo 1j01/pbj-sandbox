@@ -1862,7 +1862,6 @@ function toggleOptionsWindow() {
 				Play (P)
 			</label>
 		</div>
-		<h3>Sim Visuals:</h3>
 		<div class="field-row-stacked">
 			<label for="ghost-trails-slider" title="Leave a visual trail behind all objects.">
 				Ghost Trails:
