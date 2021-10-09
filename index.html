@@ -76,7 +76,22 @@
 			user-select: none;
 		}
 
-		/* for windows 98 theme where this wrapper isn't used, and thus doesn't have this */
+		/* 98.css defines this, but I'm including it here to use it for all themes */
+		.field-row {
+			display: flex;
+			align-items: center;
+		}
+		.field-row-stacked {
+			display: flex;
+			flex-direction: column;
+		}
+		/* 98.css normally has this on label generally but I made it more specific (in my custom build and here) */
+		.field-row label {
+			display: inline-flex;
+			align-items: center;
+		}
+
+		/* this wrapper is used for retrofuturist theme, but needs to be defined for all themes (given that it's in the DOM) */
 		.select-wrapper {
 			display: inline-block;
 		}

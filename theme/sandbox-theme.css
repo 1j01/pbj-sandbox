@@ -295,13 +295,13 @@ button,
 	font: 1em/1.5 "Manjari",
 	sans-serif;
 } */
-.window-content label {
+/* .window-content label {
 	display: flex;
-}
+} */
 
-.window-content button,
+.window-content > button,
 .window-content h2,
-.window-content label {
+.window-content .field-row {
 	margin-bottom: 0.6em;
 }
 .window-content button,
@@ -312,7 +312,7 @@ button,
 	margin-left: auto;
 	margin-right: auto;
 }
-.window-content label {
+.window-content .field-row {
 	align-items: center;
 	flex-wrap: wrap;
 	position: relative;
