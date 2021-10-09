@@ -1809,7 +1809,7 @@ function toggleOptionsWindow() {
 				Audio
 			</label>
 		</div>
-		<div class="field-row">
+		<div class="field-row" style="display: none">
 			<input type="checkbox" id="sfx-viz-checkbox"/>
 			<label for="sfx-viz-checkbox" title="Shows some internals of how the sound is generated. It looks kind of like a classic frequency analyzer, but it’s not.">
 				Audio Visualization
