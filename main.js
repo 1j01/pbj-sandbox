@@ -1303,6 +1303,8 @@ function step() {
 						if (!p.fixed) {
 							p.x = pOnLine.x;
 							p.y = pOnLine.y;
+							p.x += (p.x - prevX) * 0.05;
+							p.y += (p.y - prevY) * 0.05;
 
 							// apply fake impulse
 							const f = 0.9;
