@@ -1307,14 +1307,19 @@ function step() {
 							p.y += (p.y - prevY) * 0.05;
 
 							// apply fake impulse
-							const f = 0.9;
+							const f = 0.66;
 							// not using fx because that will be overwritten on the next iteration, right?
 							p.vx += (p.x - prevX) * f;
 							p.vy += (p.y - prevY) * f;
 						}
 					}
 					if (pOnLine) {
-						// move the line
+						// apply force to the line
+						const f = 0.33;
+						c.p1.vx += (prevX - pOnLine.x) * f;
+						c.p1.vy += (prevY - pOnLine.y) * f;
+						c.p2.vx += (prevX - pOnLine.x) * f;
+						c.p2.vy += (prevY - pOnLine.y) * f;
 					}
 				}
 
