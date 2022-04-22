@@ -143,7 +143,7 @@ const autoConnectMaxDist = 50;
 
 // options
 var play = true;
-var collision = false;
+var collision = true;
 var slowmo = false; // TODO: generalize to a time scale
 var autoConnect = false;
 var gravity = 0.1;
@@ -162,6 +162,8 @@ var debugLines = []; // reset per frame
 // Note: `groups` is computed manually when needed, at most once per frame (with a flag)
 var groups = new Map(); // point to group id, for connected groups (used for avoiding self-collision)
 var groupsComputedThisFrame = false;
+
+var lineSides = new Map(); // Map of point to Map of connection to { side: true/false }
 
 // audio (initialized later)
 var actx; // AudioContext
@@ -927,6 +929,22 @@ function step() {
 
 	if (play) {
 
+		for (var i = 0; i < points.length; i++) {
+			const p = points[i];
+			if (!lineSides.has(p)) {
+				lineSides.set(p, new Map());
+			}
+			for (var j = 0; j < connections.length; j++) {
+				const c = connections[j];
+				// record which side of the line the point is on
+				const signedDistToLine = (c.p1.x - c.p2.x) * (p.y - c.p2.y) - (c.p1.y - c.p2.y) * (p.x - c.p2.x);
+				
+				// if (!lineSides.get(p).has(c) || point passed beside line / is no longer near it) {
+					lineSides.get(p).set(c, signedDistToLine);
+				// }
+			}
+		}
+
 		var freq = 440; // or something
 		var amplitude = 0;
 		//for(var g=0;g<4;g++){
@@ -1264,158 +1282,139 @@ function step() {
 				if (p == c.p1 || p == c.p2) continue;
 				if (areConnected(p, c.p1)) continue;
 				// if (areConnected(p, c.p2)) continue; // assuming the connectedness works, this is unnecessary
-				//this check shouldn’t be here
-				// if (p.x != p.px || p.y != p.py) {
-				if (true) {
-
-					// var is = intersectLineLine(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p2.x, c.p2.y)
-					// 	|| intersectLineLine(p.x, p.y, p.px, p.py, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
-					// HACK
-					// is = is
-					// 	|| intersectLineLine(p.x, p.y, p.px, p.py-1, c.p1.x, c.p1.y, c.p2.x, c.p2.y)
-					// 	|| intersectLineLine(p.x, p.y, p.px, p.py-1, c.p1.px, c.p1.py, c.p2.px, c.p2.py);
-					// the moving line is really a quad, not two lines
-					// var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
-					// but if the line is rotating, it makes a self-intersecting quad (an hourglass shape), which has a weak spot
-					// let is;
-					// if (intersectLineLine(c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y)) {
-					// 	is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.x, c.p2.y, c.p2.px, c.p2.py, ctx);
-					// } else {
-					// 	is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
-					// }
-					// but if the line is rotating, it SHOULD have a hour-glass shape to represent its movement, or better a rounded bow-tie shape
-					// the real problem is... well it’s unreliable, I’m trying to figure it out
-
-					// I’m gonna try enlarging quad region?
-					// This is gonna be complicated and stupid, but it might help...
-					// const nudge_amount = 30;
-					// let quad_points = [[c.p1.x, c.p1.y], [c.p1.px, c.p1.py], [c.p2.px, c.p2.py], [c.p2.x, c.p2.y]];
-
-					// for (let i = 0; i < quad_points.length; i++) {
-					// 	const qpi = quad_points[i];
-					// 	for (let j = 0; j < quad_points.length; j++) {
-					// 		if (i === j) continue;
-					// 		const qpj = quad_points[j];
-					// 		let dist = Math.hypot(qpi[0] - qpj[0], qpi[1] - qpj[1]);
-					// 		qpi.fx = qpi.fx ?? 0;
-					// 		qpi.fy = qpi.fy ?? 0;
-					// 		if (dist < 1) { dist = 1; }
-					// 		qpi.fx -= (qpj[0] - qpi[0]) / dist;
-					// 		qpi.fy -= (qpj[1] - qpi[1]) / dist;
-					// 		// qpi.fx = 0.001; // testing the normalize below
-					// 		// qpi.fy = 0.001;
-					// 	}
-					// }
-					// for (let i = 0; i < quad_points.length; i++) {
-					// 	const qp = quad_points[i];
-					// 	// normalize before applying
-					// 	const d = Math.hypot(qp.fx, qp.fy);
-					// 	// if (d < 0.01) {
-					// 	// 	do thick line test instead?
-					// 	// }
-					// 	qp[0] += qp.fx / d * nudge_amount;
-					// 	qp[1] += qp.fy / d * nudge_amount;
-					// }
-					// const is = intersectLineQuad(p.x, p.y, p.px, p.py, ...quad_points.flat(), ctx);
-
-					// GONNA DO SEPARATE MOVEMENT QUAD AND STATIC "THICK LINE" QUAD
-					var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
-					if (!is) {
-						const normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
-						const nudge_amount = 1;
-						const qx1 = c.p1.x + Math.sin(normal) * nudge_amount;
-						const qy1 = c.p1.y + Math.cos(normal) * nudge_amount;
-						const qx2 = c.p2.x + Math.sin(normal) * nudge_amount;
-						const qy2 = c.p2.y + Math.cos(normal) * nudge_amount;
-						const qx3 = c.p2.x - Math.sin(normal) * nudge_amount;
-						const qy3 = c.p2.y - Math.cos(normal) * nudge_amount;
-						const qx4 = c.p1.x - Math.sin(normal) * nudge_amount;
-						const qy4 = c.p1.y - Math.cos(normal) * nudge_amount;
-						is = intersectLineQuad(p.x, p.y, p.px, p.py, qx1, qy1, qx2, qy2, qx3, qy3, qx4, qy4, ctx);
-					}
-
-					if (is) {
-						// Note: normal can point either way
-						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
-						// hence the negation when rendering the normal’s arrow
-						// THIS IS NOT INTENTIONAL, it’s just bad math.
-						// I tried flipping the signs and sines and cosines for a while
-						// but didn’t get it to work while being more sensible.
-						// Maybe later I’ll go at it again.
-						// (Keep in mind, the drawArrow function is also arbitrary in its base angle)
-						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
-						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy; // normal-aligned space
-						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
-						var p1_vx_connection_space = Math.sin(normal) * c.p1.vx + Math.cos(normal) * c.p1.vy;
-						var p2_vx_connection_space = Math.sin(normal) * c.p2.vx + Math.cos(normal) * c.p2.vy;
-						var p_bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
-						var p_bounce_angle = p_bounce_angle_connection_space - normal;
-						// TODO: determine this from positions instead of velocities?
-						var on_one_side_of_line = p_vx_connection_space > 0 ? false : p_vx_connection_space < 0 ? true :
-							// for points that are fixed/unmoving, determine the side the point is on from the line’s velocity
-							// FIXME: this doesn’t make sense if the line is rotating
-							(p1_vx_connection_space + p2_vx_connection_space) / 2 > 0;
-
-						// apply a force to the line from the particle
-						const p1_dist = Math.hypot(p.x - c.p1.x, p.y - c.p1.y);
-						const p2_dist = Math.hypot(p.x - c.p2.x, p.y - c.p2.y);
-						const f = 1 / 2 / (p1_dist + p2_dist);
-						c.p1.fx += p.vx * p2_dist * f;
-						c.p1.fy += p.vy * p2_dist * f;
-						c.p2.fx += p.vx * p1_dist * f;
-						c.p2.fy += p.vy * p1_dist * f;
-
-						const line_bounce_force = 2;
-						c.p1.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
-						c.p1.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
-						c.p2.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
-						c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
-
-						// move the line so it doesn’t collide immediately again
-						var hack = 1;
-						// which side the particle is further away from, move the line to that side
-						var towards_a_side_x = Math.sin(normal + (on_one_side_of_line ? Math.PI : 0));
-						var towards_a_side_y = Math.cos(normal + (on_one_side_of_line ? Math.PI : 0));
-						var p1_x_off = c.p1.x + towards_a_side_x * hack;
-						var p1_y_off = c.p1.y + towards_a_side_y * hack;
-						var p2_x_off = c.p2.x + towards_a_side_x * hack;
-						var p2_y_off = c.p2.y + towards_a_side_y * hack;
-						if (!c.p1.fixed) {
-							c.p1.x = p1_x_off;
-							c.p1.y = p1_y_off;
-						}
-						if (!c.p2.fixed) {
-							c.p2.x = p2_x_off;
-							c.p2.y = p2_y_off;
-						}
-						// debugLines.push({
-						// 	p1: { x: p1_x_off, y: p1_y_off },
-						// 	p2: { x: p2_x_off, y: p2_y_off },
-						// 	color: on_one_side_of_line ? "#00afff" : "#ff00ff",
-						// });
-
-						// more accurate bounce, right? if we use the intersection point
-						p.x = is.x;
-						p.y = is.y;
-						// move the point so it doesn’t collide immediately again
-						var hack = 1;
+				
+				const sideBeforeStep = lineSides.get(p).get(c);
+				const sideAfterStep = (c.p1.x - c.p2.x) * (p.y - c.p2.y) - (c.p1.y - c.p2.y) * (p.x - c.p2.x);
+				// console.log("sideBeforeStep", sideBeforeStep, "sideAfterStep", sideAfterStep);
+				if (sideBeforeStep * sideAfterStep < 0) {
+					// collision
+					
+					// record position so we can make/fake an impulse from the change in position
+					const prevX = p.x;
+					const prevY = p.y;
+					
+					// bring point onto the line
+					// sideAfterStep is the signed distance to the line
+					// we could combine some calculations, but whatever
+					
+					const pOnLine = projectPointOntoLineSegment(c.p1, c.p2, p);
+					// console.log("collision", pOnLine);
+					if (pOnLine) {
 						if (!p.fixed) {
-							p.x -= towards_a_side_x * hack;
-							p.y -= towards_a_side_y * hack;
-						}
-						// apply the bounce angle to the particle
-						var original_speed = Math.hypot(p.vx, p.vy);
-						var speed = original_speed * 0.7;
-						p.vx = -Math.sin(-p_bounce_angle) * speed;
-						p.vy = -Math.cos(-p_bounce_angle) * speed;
+							p.x = pOnLine.x;
+							p.y = pOnLine.y;
 
-						// some debug
-						// ctx.strokeStyle = "aqua";
-						// drawArrow(ctx, is.x, is.y, -normal, 50);
-						// ctx.strokeStyle = "red";
-						// drawArrow(ctx, is.x, is.y, p_bounce_angle, 50);
+							// apply fake impulse
+							const f = 0.9;
+							// not using fx because that will be overwritten on the next iteration, right?
+							p.vx += (p.x - prevX) * f;
+							p.vy += (p.y - prevY) * f;
+						}
+					}
+					if (pOnLine) {
+						// move the line
 					}
 				}
+
+				/*
+				// GONNA DO SEPARATE MOVEMENT QUAD AND STATIC "THICK LINE" QUAD
+				var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
+				if (!is) {
+					const normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
+					const nudge_amount = 1;
+					const qx1 = c.p1.x + Math.sin(normal) * nudge_amount;
+					const qy1 = c.p1.y + Math.cos(normal) * nudge_amount;
+					const qx2 = c.p2.x + Math.sin(normal) * nudge_amount;
+					const qy2 = c.p2.y + Math.cos(normal) * nudge_amount;
+					const qx3 = c.p2.x - Math.sin(normal) * nudge_amount;
+					const qy3 = c.p2.y - Math.cos(normal) * nudge_amount;
+					const qx4 = c.p1.x - Math.sin(normal) * nudge_amount;
+					const qy4 = c.p1.y - Math.cos(normal) * nudge_amount;
+					is = intersectLineQuad(p.x, p.y, p.px, p.py, qx1, qy1, qx2, qy2, qx3, qy3, qx4, qy4, ctx);
+				}
+
+				if (is) {
+					// Note: normal can point either way
+					// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
+					// hence the negation when rendering the normal’s arrow
+					// THIS IS NOT INTENTIONAL, it’s just bad math.
+					// I tried flipping the signs and sines and cosines for a while
+					// but didn’t get it to work while being more sensible.
+					// Maybe later I’ll go at it again.
+					// (Keep in mind, the drawArrow function is also arbitrary in its base angle)
+					var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
+					var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy; // normal-aligned space
+					var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
+					var p1_vx_connection_space = Math.sin(normal) * c.p1.vx + Math.cos(normal) * c.p1.vy;
+					var p2_vx_connection_space = Math.sin(normal) * c.p2.vx + Math.cos(normal) * c.p2.vy;
+					var p_bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
+					var p_bounce_angle = p_bounce_angle_connection_space - normal;
+					// TODO: determine this from positions instead of velocities?
+					var on_one_side_of_line = p_vx_connection_space > 0 ? false : p_vx_connection_space < 0 ? true :
+						// for points that are fixed/unmoving, determine the side the point is on from the line’s velocity
+						// FIXME: this doesn’t make sense if the line is rotating
+						(p1_vx_connection_space + p2_vx_connection_space) / 2 > 0;
+
+					// apply a force to the line from the particle
+					const p1_dist = Math.hypot(p.x - c.p1.x, p.y - c.p1.y);
+					const p2_dist = Math.hypot(p.x - c.p2.x, p.y - c.p2.y);
+					const f = 1 / 2 / (p1_dist + p2_dist);
+					c.p1.fx += p.vx * p2_dist * f;
+					c.p1.fy += p.vy * p2_dist * f;
+					c.p2.fx += p.vx * p1_dist * f;
+					c.p2.fy += p.vy * p1_dist * f;
+
+					const line_bounce_force = 2;
+					c.p1.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
+					c.p1.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
+					c.p2.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
+					c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
+
+					// move the line so it doesn’t collide immediately again
+					var hack = 1;
+					// which side the particle is further away from, move the line to that side
+					var towards_a_side_x = Math.sin(normal + (on_one_side_of_line ? Math.PI : 0));
+					var towards_a_side_y = Math.cos(normal + (on_one_side_of_line ? Math.PI : 0));
+					var p1_x_off = c.p1.x + towards_a_side_x * hack;
+					var p1_y_off = c.p1.y + towards_a_side_y * hack;
+					var p2_x_off = c.p2.x + towards_a_side_x * hack;
+					var p2_y_off = c.p2.y + towards_a_side_y * hack;
+					if (!c.p1.fixed) {
+						c.p1.x = p1_x_off;
+						c.p1.y = p1_y_off;
+					}
+					if (!c.p2.fixed) {
+						c.p2.x = p2_x_off;
+						c.p2.y = p2_y_off;
+					}
+					// debugLines.push({
+					// 	p1: { x: p1_x_off, y: p1_y_off },
+					// 	p2: { x: p2_x_off, y: p2_y_off },
+					// 	color: on_one_side_of_line ? "#00afff" : "#ff00ff",
+					// });
+
+					// more accurate bounce, right? if we use the intersection point
+					p.x = is.x;
+					p.y = is.y;
+					// move the point so it doesn’t collide immediately again
+					var hack = 1;
+					if (!p.fixed) {
+						p.x -= towards_a_side_x * hack;
+						p.y -= towards_a_side_y * hack;
+					}
+					// apply the bounce angle to the particle
+					var original_speed = Math.hypot(p.vx, p.vy);
+					var speed = original_speed * 0.7;
+					p.vx = -Math.sin(-p_bounce_angle) * speed;
+					p.vy = -Math.cos(-p_bounce_angle) * speed;
+
+					// some debug
+					// ctx.strokeStyle = "aqua";
+					// drawArrow(ctx, is.x, is.y, -normal, 50);
+					// ctx.strokeStyle = "red";
+					// drawArrow(ctx, is.x, is.y, p_bounce_angle, 50);
+				}
+				*/
 			}
 		}
 		/**
@@ -1682,6 +1681,33 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 	}
 	// if (pointInQuad(line_x1, line_y1, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4)) {
 }
+function projectPointOntoLineSegment (p0, p1, q) {
+
+	// p0 and p1 define the line segment
+	// q is the reference point
+	// returns point on the line closest to q
+
+	if (p0.x == p1.x && p0.y == p1.y) p0.x -= 0.00001;
+
+	const u_numerator = ((q.x - p0.x) * (p1.x - p0.x)) + ((q.y - p0.y) * (p1.y - p0.y));
+	const u_denominator = Math.pow(p1.x - p0.x, 2) + Math.pow(p1.y - p0.y, 2);
+	const u = u_numerator / u_denominator;
+
+	const r = {
+		x: p0.x + (u * (p1.x - p0.x)),
+		y: p0.y + (u * (p1.y - p0.y))
+	}
+
+	const min_x = Math.min(p0.x, p1.x);
+	const max_x = Math.max(p0.x, p1.x);
+	const min_y = Math.min(p0.y, p1.y);
+	const max_y = Math.max(p0.y, p1.y);
+
+	const is_valid = (r.x >= min_x && r.x <= max_x) && (r.y >= min_y && r.y <= max_y);
+
+	return is_valid ? r : null;
+}
+
 
 // For removal of generated terrain,
 // I could store the points and connections that relate to the terrain,
@@ -2336,8 +2362,8 @@ function add_doll(options) {
 // }
 
 // Test scene: Throw two balls at each other
-// add_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
-// add_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
+add_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
+add_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
 
 // Test scene: collision false negatives
 // add_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
