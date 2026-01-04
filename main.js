@@ -1299,25 +1299,43 @@ function step() {
 
 					const pOnLine = projectPointOntoLineSegment(c.p1, c.p2, p);
 					// console.log("collision", pOnLine);
-					// TODO: account for segments with only one fixed point
-					// and distribute force according to distance along the segment, introducing torque
-					const segmentMovementFraction = (c.p1.fixed || c.p2.fixed) ? 0 : (p.fixed ? 1 : 1 / 3);
 					if (pOnLine) {
-						const fudge = 1.01;
+						const diffX = c.p2.x - c.p1.x;
+						const diffY = c.p2.y - c.p1.y;
+						const lenSq = diffX * diffX + diffY * diffY;
+						const alongLineFraction = lenSq > 0
+							? ((pOnLine.x - c.p1.x) * diffX + (pOnLine.y - c.p1.y) * diffY) / lenSq
+							: 0;
+
+						const rodMass = 3; // 2 points plus some for the segment
+						const rodMovementFraction = (c.p1.fixed && c.p2.fixed) ? 0 : (p.fixed ? 1 : 1 / rodMass);
+						const pMovementFraction = 1 - rodMovementFraction;
+						// distribute force according to distance along the segment, introducing torque
+						// (in some way - not assumed to be physically accurate)
+						const rodP1MovementFraction = (c.p1.fixed) ? 0 : (c.p2.fixed ? 1 : (1 - alongLineFraction) * rodMovementFraction);
+						const rodP2MovementFraction = (c.p2.fixed) ? 0 : (c.p1.fixed ? 1 : alongLineFraction * rodMovementFraction);
+						// TODO: check the line is moved such that p stays on it;
+						// it probably doesn't, if we're moving the ends differently
+						// (and the fact that I had to increase the fudge factor supports that hypothesis)
+						const fudge = 1.5;
 						if (!p.fixed) {
-							p.x += (pOnLine.x - p.x) * (1 - segmentMovementFraction) * fudge;
-							p.y += (pOnLine.y - p.y) * (1 - segmentMovementFraction) * fudge;
-							p.vx += (pOnLine.x - p.x) * (1 - segmentMovementFraction) * fudge;
-							p.vy += (pOnLine.y - p.y) * (1 - segmentMovementFraction) * fudge;
+							p.x += (pOnLine.x - prevX) * pMovementFraction * fudge;
+							p.y += (pOnLine.y - prevY) * pMovementFraction * fudge;
+							p.vx += (pOnLine.x - prevX) * pMovementFraction * fudge;
+							p.vy += (pOnLine.y - prevY) * pMovementFraction * fudge;
 						}
-						c.p1.x += (prevX - pOnLine.x) * segmentMovementFraction * fudge;
-						c.p1.y += (prevY - pOnLine.y) * segmentMovementFraction * fudge;
-						c.p2.x += (prevX - pOnLine.x) * segmentMovementFraction * fudge;
-						c.p2.y += (prevY - pOnLine.y) * segmentMovementFraction * fudge;
-						c.p1.vx += (prevX - pOnLine.x) * segmentMovementFraction * fudge;
-						c.p1.vy += (prevY - pOnLine.y) * segmentMovementFraction * fudge;
-						c.p2.vx += (prevX - pOnLine.x) * segmentMovementFraction * fudge;
-						c.p2.vy += (prevY - pOnLine.y) * segmentMovementFraction * fudge;
+						if (!c.p1.fixed) {
+							c.p1.x += (prevX - pOnLine.x) * rodP1MovementFraction * fudge;
+							c.p1.y += (prevY - pOnLine.y) * rodP1MovementFraction * fudge;
+							c.p1.vx += (prevX - pOnLine.x) * rodP1MovementFraction * fudge;
+							c.p1.vy += (prevY - pOnLine.y) * rodP1MovementFraction * fudge;
+						}
+						if (!c.p2.fixed) {
+							c.p2.x += (prevX - pOnLine.x) * rodP2MovementFraction * fudge;
+							c.p2.y += (prevY - pOnLine.y) * rodP2MovementFraction * fudge;
+							c.p2.vx += (prevX - pOnLine.x) * rodP2MovementFraction * fudge;
+							c.p2.vy += (prevY - pOnLine.y) * rodP2MovementFraction * fudge;
+						}
 					}
 					// if (pOnLine) {
 					// 	if (!p.fixed) {
