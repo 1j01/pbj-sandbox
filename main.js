@@ -940,8 +940,9 @@ function step() {
 				const signedDistToLine = (c.p1.x - c.p2.x) * (p.y - c.p2.y) - (c.p1.y - c.p2.y) * (p.x - c.p2.x);
 
 				// if (!lineSides.get(p).has(c) || point passed beside line / is no longer near it) {
-				lineSides.get(p).set(c, signedDistToLine);
-				// }
+				if (signedDistToLine !== 0) { // zero isn't useful information; better remember old side
+					lineSides.get(p).set(c, signedDistToLine);
+				}
 			}
 		}
 
@@ -1283,7 +1284,7 @@ function step() {
 				if (areConnected(p, c.p1)) continue;
 				// if (areConnected(p, c.p2)) continue; // assuming the connectedness works, this is unnecessary
 
-				const sideBeforeStep = lineSides.get(p).get(c);
+				const sideBeforeStep = lineSides.get(p).get(c) ?? 0;
 				const sideAfterStep = (c.p1.x - c.p2.x) * (p.y - c.p2.y) - (c.p1.y - c.p2.y) * (p.x - c.p2.x);
 				// console.log("sideBeforeStep", sideBeforeStep, "sideAfterStep", sideAfterStep);
 				if (sideBeforeStep * sideAfterStep < 0) {
