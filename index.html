@@ -81,10 +81,12 @@
 			display: flex;
 			align-items: center;
 		}
+
 		.field-row-stacked {
 			display: flex;
 			flex-direction: column;
 		}
+
 		/* 98.css normally has this on label generally but I made it more specific (in my custom build and here) */
 		.field-row label {
 			display: inline-flex;
@@ -110,25 +112,30 @@
 	<!-- "window-content" here is a hack so I don't have to change all the scoped CSS -->
 	<div id="always-available-controls" class="window-content">
 		<button id='tools-button' title='Switch between interaction modes, such as dragging or shape-adding.'><span>
-			<img style="display: none; vertical-align: middle;" class="for-win98-only" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAANlBMVEUAAACBgICAgYCAgIGAgIABAAD///7//////v8AAAD+///AwMDBwMDAwMHAwcAAAAGAgAD//wDZ76ZXAAAAEnRSTlMA//////////////////////9ewYY+AAAAWUlEQVR4nKXOQQ6AMAgEQIorFNGW/v+zRq2J7dU9kclCIKLERAsDK/VAwCIq2TqkDZ73o7B0gdfqxVFNHzEzAmDX9J65cYj5DDpBxAihOu6EtrES7T98Pj0B7MwDnan62uIAAAAASUVORK5CYII=">
-			Tools
-		</span></button>
+				<img style="display: none; vertical-align: middle;" class="for-win98-only"
+					src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAANlBMVEUAAACBgICAgYCAgIGAgIABAAD///7//////v8AAAD+///AwMDBwMDAwMHAwcAAAAGAgAD//wDZ76ZXAAAAEnRSTlMA//////////////////////9ewYY+AAAAWUlEQVR4nKXOQQ6AMAgEQIorFNGW/v+zRq2J7dU9kclCIKLERAsDK/VAwCIq2TqkDZ73o7B0gdfqxVFNHzEzAmDX9J65cYj5DDpBxAihOu6EtrES7T98Pj0B7MwDnan62uIAAAAASUVORK5CYII=">
+				Tools
+			</span></button>
 		<button id='options-button' title='Change simulation settings, audio, and UI theme.'><span>
-			<img style="display: none; vertical-align: middle;" class="for-win98-only" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAFVBMVEUAAACAgIAAAADAwMD///+AgAD//wCscRewAAAAAXRSTlMAQObYZgAAAAFiS0dEBI9o2VEAAAAHdElNRQfiBhoAMxjAu68UAAAAZElEQVQI12MQBAMFBgZhYxBAYRgKikAZSiZQhkqooTCYoRym6KSqwCBs4qKa6BQGZBiKqgBFlECKw5yU3IJAjKCUlCQQQ1ktyDUMrDhUKVU1CWSFklGQkgIDyG4hIM2gBAYKDACD1RTJ+pL33QAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOC0wNi0yNlQwMDo1MToyNC0wNDowMKiPG6cAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTgtMDYtMjZUMDA6NTE6MjQtMDQ6MDDZ0qMbAAAAAElFTkSuQmCC">
-			Options
-		</span></button>
+				<img style="display: none; vertical-align: middle;" class="for-win98-only"
+					src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAFVBMVEUAAACAgIAAAADAwMD///+AgAD//wCscRewAAAAAXRSTlMAQObYZgAAAAFiS0dEBI9o2VEAAAAHdElNRQfiBhoAMxjAu68UAAAAZElEQVQI12MQBAMFBgZhYxBAYRgKikAZSiZQhkqooTCYoRym6KSqwCBs4qKa6BQGZBiKqgBFlECKw5yU3IJAjKCUlCQQQ1ktyDUMrDhUKVU1CWSFklGQkgIDyG4hIM2gBAYKDACD1RTJ+pL33QAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOC0wNi0yNlQwMDo1MToyNC0wNDowMKiPG6cAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTgtMDYtMjZUMDA6NTE6MjQtMDQ6MDDZ0qMbAAAAAElFTkSuQmCC">
+				Options
+			</span></button>
 		<button id='help-button' title='Get help on using this application.' aria-keyshortcuts="F1"><span>
-			<img style="display: none; vertical-align: middle;" class="for-win98-only" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAGFBMVEUAAACAgAD//wDAwMCAgIAAAAD///8AAIAx3LzMAAAAAXRSTlMAQObYZgAAAAFiS0dEBmFmuH0AAAAHdElNRQfiBBMBJCWbWhFOAAAAY0lEQVQI12NgAAJBQQEQxcCopGQIZggpKSk7gAUUhZQCGFxcXJVMnIEMtzTTUJEgMCMtrVRJGcxwFVIyZWBwS3FxEwIKgKVEXBwgIqkg00AioqECEBGQbrAInAGWcg0FAqBaABADGWWRey3DAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE4LTA0LTE5VDAxOjM2OjM3LTA0OjAwK/YzVAAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxOC0wNC0xOVQwMTozNjozNy0wNDowMFqri+gAAAAASUVORK5CYII=">
-			Help
-		</span></button>
+				<img style="display: none; vertical-align: middle;" class="for-win98-only"
+					src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAGFBMVEUAAACAgAD//wDAwMCAgIAAAAD///8AAIAx3LzMAAAAAXRSTlMAQObYZgAAAAFiS0dEBmFmuH0AAAAHdElNRQfiBBMBJCWbWhFOAAAAY0lEQVQI12NgAAJBQQEQxcCopGQIZggpKSk7gAUUhZQCGFxcXJVMnIEMtzTTUJEgMCMtrVRJGcxwFVIyZWBwS3FxEwIKgKVEXBwgIqkg00AioqECEBGQbrAInAGWcg0FAqBaABADGWWRey3DAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE4LTA0LTE5VDAxOjM2OjM3LTA0OjAwK/YzVAAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxOC0wNC0xOVQwMTozNjozNy0wNDowMFqri+gAAAAASUVORK5CYII=">
+				Help
+			</span></button>
 		<button id='about-button' title='Show information about this application.'><span>
-			<img style="display: none; vertical-align: middle;" class="for-win98-only" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAElBMVEUAAACAgID///8AAAAAAP/AwMBf5JN4AAAAAXRSTlMAQObYZgAAAAFiS0dEAmYLfGQAAAAHdElNRQfiBhoAKi6UAZOVAAAAX0lEQVQI11XNwQ3AIAgF0G9cQBo7QD/1rjEuYNzA/Xcp2vTQf+EFAgAQkQCLkNQMOHJ0zo3YqQEHV1I2XDZiWZ34x7mRim3dY3DaybaWisE3pirrh2+6q0nDC9QPzvAAK9gNFiZoqz4AAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjZUMDA6NDI6NDYtMDQ6MDDTxmfKAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTI2VDAwOjQyOjQ2LTA0OjAwopvfdgAAAABJRU5ErkJggg==">
-			About
-		</span></button>
+				<img style="display: none; vertical-align: middle;" class="for-win98-only"
+					src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAElBMVEUAAACAgID///8AAAAAAP/AwMBf5JN4AAAAAXRSTlMAQObYZgAAAAFiS0dEAmYLfGQAAAAHdElNRQfiBhoAKi6UAZOVAAAAX0lEQVQI11XNwQ3AIAgF0G9cQBo7QD/1rjEuYNzA/Xcp2vTQf+EFAgAQkQCLkNQMOHJ0zo3YqQEHV1I2XDZiWZ34x7mRim3dY3DaybaWisE3pirrh2+6q0nDC9QPzvAAK9gNFiZoqz4AAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjZUMDA6NDI6NDYtMDQ6MDDTxmfKAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTI2VDAwOjQyOjQ2LTA0OjAwopvfdgAAAABJRU5ErkJggg==">
+				About
+			</span></button>
 		<button id='todo-button' title='See noted future improvements.'><span>
-			<img style="display: none; vertical-align: middle;" class="for-win98-only" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAGFBMVEUAAACAgIAAAAD//8DAwMAA//8AgID////Kljo+AAAAAXRSTlMAQObYZgAAAAFiS0dEBxZhiOsAAAAHdElNRQfiBhoALSurKvHdAAAAVklEQVQI12NgQABGQSAQAjGMgcCJgUmBSRnMUA1SDYIwkoKSlEAMtSSlJKgaNQiDgQGqGKxdCMwQNjZWVhKCMkyEwDJGJoIKQIazi6KgEshSJSBAcgMAsbwPxcOTRf0AAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjZUMDA6NDU6NDMtMDQ6MDBjIlMUAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTI2VDAwOjQ1OjQzLTA0OjAwEn/rqAAAAABJRU5ErkJggg==">
-			Todo
-		</span></button>
+				<img style="display: none; vertical-align: middle;" class="for-win98-only"
+					src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAGFBMVEUAAACAgIAAAAD//8DAwMAA//8AgID////Kljo+AAAAAXRSTlMAQObYZgAAAAFiS0dEBxZhiOsAAAAHdElNRQfiBhoALSurKvHdAAAAVklEQVQI12NgQABGQSAQAjGMgcCJgUmBSRnMUA1SDYIwkoKSlEAMtSSlJKgaNQiDgQGqGKxdCMwQNjZWVhKCMkyEwDJGJoIKQIazi6KgEshSJSBAcgMAsbwPxcOTRf0AAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDYtMjZUMDA6NDU6NDMtMDQ6MDBjIlMUAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA2LTI2VDAwOjQ1OjQzLTA0OjAwEn/rqAAAAABJRU5ErkJggg==">
+				Todo
+			</span></button>
 	</div>
 	<script>
 		// Hack: There's no global window creation / close event in the os-gui library, yet.
@@ -343,7 +350,7 @@
 						}
 					}
 				}
-				
+
 			});
 			addEventListener("keyup", function (event) {
 				const anyModifiers = modifiers.some(modifier => event[modifier.prop]);
@@ -371,15 +378,18 @@
 			mask-image: linear-gradient(transparent, 5%, rgba(0, 0, 0, 1.0));
 			-webkit-mask-image: linear-gradient(transparent, 5%, rgba(0, 0, 0, 1.0));
 		}
+
 		.keystrokes li {
 			color: white;
 			font-size: 1.5em;
 			text-shadow: 0 2px 0 black, 0 0 1px black, 0 0 1px black, 0 0 2px black;
 			transition: opacity .8s ease-out;
 		}
+
 		.keystrokes li:not(:last-child) {
 			margin-bottom: 5px;
 		}
+
 		.keystrokes li:not([data-repetitions="1"])::after {
 			content: "×" attr(data-repetitions);
 			display: inline-block;

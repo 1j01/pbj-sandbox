@@ -4,6 +4,7 @@
 .not-for-win98 {
 	display: none;
 }
+
 .for-win98-only {
 	display: unset !important;
 }

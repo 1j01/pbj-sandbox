@@ -1,9 +1,8 @@
-
 kbd {
 	background: white;
 	color: black;
 	border-radius: 3px;
-	box-shadow: 0 1px 0 1px rgba(0, 0, 0, 0.6),  0 3px 0 1px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 1px 0 1px rgba(0, 0, 0, 0.6), 0 3px 0 1px rgba(0, 0, 0, 0.1);
 	font: inherit;
 	font-size: 80%;
 	padding: 2px 5px;
@@ -15,6 +14,7 @@ kbd {
 .window.closing * {
 	pointer-events: none !important;
 }
+
 .window {
 	transition: opacity .5s ease-in-out;
 	position: absolute;
@@ -26,6 +26,7 @@ kbd {
 	font-family: sans-serif;
 	border-radius: 6px;
 }
+
 .window::before {
 	/* so sand doesn't show through the miter joints */
 	content: "";
@@ -39,18 +40,22 @@ kbd {
 	/* outline: 1px solid rgba(128, 129, 289, 0.4); */
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.6) inset, 0 0 5px 2px rgba(0, 0, 0, 0.6);
 }
+
 .window .window-content {
 	background: rgba(255, 255, 255, 0.3);
 	color: black;
 	margin: 20px;
 	margin-top: 0;
 }
+
 .window .window-content::before {
 	/* extra padding on the top of the window (in addition to what is otherwise specified) due to sandbox seats */
 	content: "";
 	display: block;
-	height: 20px; /* less due to the titlebar */
+	height: 20px;
+	/* less due to the titlebar */
 }
+
 .window .window-content::after {
 	/* extra padding on the bottom of the window (in addition to what is otherwise specified) due to sandbox seats */
 	content: "";
@@ -64,6 +69,7 @@ kbd {
 	margin: 16px;
 	margin-bottom: 0;
 }
+
 .window .window-title-area {
 	cursor: move;
 	line-height: 1.5;
@@ -77,18 +83,23 @@ kbd {
 	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
 	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 	text-align: center;
-    padding-left: 24px; /* center relative to the window (mirror the space for the close button) */
+	padding-left: 24px;
+	/* center relative to the window (mirror the space for the close button) */
 }
+
 .window .window-title {
 	pointer-events: none;
 }
+
 .window .window-title-area:hover,
 .window.dragging .window-title-area {
 	background-color: aqua;
 }
+
 .window .handle {
 	overflow: hidden;
 }
+
 /* using a pseudo element for the texture in order to rotate it independently from the element */
 /* (there is no background-transform or background-rotate property in CSS) */
 .window .handle::before {
@@ -115,93 +126,120 @@ kbd {
 	background-size: 210px;
 	background-blend-mode: multiply;
 }
+
 .window .handle:hover::before,
-.window .handle.resizing::before { /* not a thing as of writing, but should be */
+.window .handle.resizing::before {
+	/* not a thing as of writing, but should be */
 	/* background-color: rgba(155, 230, 230, 1); */
 	background-color: aqua;
 }
+
 /* corner handles */
 .window .handle:nth-child(2n+1) {
 	z-index: 1;
 	color: white;
-	box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.8); /* this gets scaled */
+	box-shadow: 0 0 0.3px rgba(0, 0, 0, 0.8);
+	/* this gets scaled */
 	--scale: 8;
 	border-radius: 15%;
 }
+
 .window .handle:nth-child(2n+1)::before {
-	background-size: calc(210px / var(--scale) / 3) calc(210px / var(--scale)); /* counteracting the scale */
+	background-size: calc(210px / var(--scale) / 3) calc(210px / var(--scale));
+	/* counteracting the scale */
 }
+
 /* top right corner */
 .window .handle:nth-child(3) {
 	transform: rotate(45deg) scale(var(--scale)) scaleX(3) translate(0, 170%);
 }
+
 /* bottom left corner */
 .window .handle:nth-child(7) {
 	transform: rotate(45deg) scale(var(--scale)) scaleX(3) translate(0, -170%);
 }
+
 /* top left corner */
 .window .handle:nth-child(5) {
 	transform: rotate(-45deg) scale(var(--scale)) scaleX(3) translate(0, 170%);
 }
+
 /* bottom right corner */
 .window .handle:nth-child(9) {
 	transform: rotate(-45deg) scale(var(--scale)) scaleX(3) translate(0, -170%);
 }
+
 /* horizontally-resizing handles (vertical walls) */
 .window .handle:nth-child(10)::before,
 .window .handle:nth-child(6)::before {
-	transform: rotate(-90deg); /* negative anchors it correctly, visible while resizing */
+	transform: rotate(-90deg);
+	/* negative anchors it correctly, visible while resizing */
 }
+
 /* right */
 .window .handle:nth-child(10) {
 	transform: scaleX(5) translate(-50%, 0);
 	clip-path: polygon(0 20px, 100% 0, 100% 100%, 0 calc(100% - 20px));
 }
+
 /* left */
 .window .handle:nth-child(6) {
 	transform: scaleX(5) translate(50%, 0);
 	clip-path: polygon(100% 20px, 0 0, 0 100%, 100% calc(100% - 20px));
 }
+
 /* vertically-resizing handles (horizontal walls) */
 /* top */
 .window .handle:nth-child(8) {
 	transform: scaleY(5) translate(0, -50%);
 	clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 100%, 0 100%);
 }
+
 /* bottom */
 .window .handle:nth-child(4) {
 	transform: scaleY(5) translate(0, 50%);
 	clip-path: polygon(20px 100%, calc(100% - 20px) 100%, 100% 0, 0 0);
 }
+
 /* all non-corner handles */
 .window .handle:nth-child(2n)::before {
-	background-size: 210px calc(210px / 3) !important; /* counteracting the scale */
+	background-size: 210px calc(210px / 3) !important;
+	/* counteracting the scale */
 }
+
 /* give each corner random texture offsets */
 .window .handle:nth-child(1)::before {
 	background-position: 52px -10px;
 }
+
 .window .handle:nth-child(2)::before {
 	background-position: -30px -10px;
 }
+
 .window .handle:nth-child(3)::before {
 	background-position: -10px -10px;
 }
+
 .window .handle:nth-child(4)::before {
 	background-position: -10px 82px;
 }
+
 .window .handle:nth-child(5)::before {
 	background-position: -10px -10px;
 }
+
 .window .handle:nth-child(6)::before {
 	background-position: 22px 40px;
 }
+
 .window .handle:nth-child(7)::before {
 	background-position: 46px 39px;
 }
+
 .window .handle:nth-child(8)::before {
 	background-position: 32px 23px;
 }
+
 .window .handle:nth-child(9)::before {
 	background-position: -10px 82px;
 }
@@ -221,6 +259,7 @@ kbd {
 	/* transform: scale(2); */
 	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
+
 .window-close-button:focus,
 .window-close-button:hover {
 	opacity: 1;
@@ -228,9 +267,11 @@ kbd {
 	transform: scale(1.1);
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
 }
+
 .window-close-button:active {
 	background: #aa0000;
 }
+
 .window-close-button::before,
 .window-close-button::after {
 	content: " ";
@@ -241,9 +282,11 @@ kbd {
 	width: 2px;
 	background-color: currentColor;
 }
+
 .window-close-button::before {
 	transform: translate(-50%, -50%) rotate(45deg);
 }
+
 .window-close-button::after {
 	transform: translate(-50%, -50%) rotate(-45deg);
 }
@@ -251,6 +294,7 @@ kbd {
 .window ::selection {
 	background: rgba(0, 200, 255, 0.5);
 }
+
 .window ::-moz-selection {
 	background: rgba(0, 200, 255, 0.5);
 }
@@ -263,19 +307,23 @@ kbd {
 	background: rgba(25, 0, 0, 0.5);
 	box-shadow: 0 0 5px rgba(25, 0, 0, 0.5), 0 0 5px rgba(25, 0, 0, 0.5);
 }
+
 ::-webkit-scrollbar-thumb {
 	background: url("wood-texture.jpg"), radial-gradient(circle, transparent 1%, rgba(0, 0, 0, 0.2) 100%), #fa8;
 	background-size: 210px;
 	background-blend-mode: multiply;
 	box-shadow: 0 2px 2px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
+
 ::-webkit-scrollbar-thumb:horizontal {
 	/* don't want the shadow to look like it's going over the walls of the sandbox (outside the scroll container) */
 	box-shadow: 0 0 2px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
+
 ::-webkit-scrollbar-thumb:hover {
 	background-color: aqua;
 }
+
 ::-webkit-scrollbar-corner {
 	background: rgba(25, 0, 0, 0.5);
 }
@@ -289,6 +337,7 @@ kbd {
 	--radioTiming: linear;
 	/* font-size: calc(16px + (24 - 16) * (100vw - 320px) / (1280 - 320)); */
 }
+
 /* body,
 button,
 .window-content input {
@@ -299,19 +348,22 @@ button,
 	display: flex;
 } */
 
-.window-content > button,
+.window-content>button,
 .window-content h2,
 .window-content .field-row {
 	margin-bottom: 0.6em;
 }
+
 .window-content button,
 .window-content label {
 	-webkit-tap-highlight-color: transparent;
 }
+
 .window-content button {
 	margin-left: auto;
 	margin-right: auto;
 }
+
 .window-content .field-row {
 	align-items: center;
 	flex-wrap: wrap;
@@ -323,16 +375,19 @@ button,
 .window-content input:focus {
 	outline: transparent;
 }
-.window-content input:focus + span {
+
+.window-content input:focus+span {
 	color: #db0b0b;
 	text-shadow: 0 0 0.25em #db0b0b44;
 }
+
 .window-content button,
 .window-content input[type=checkbox],
 .window-content input[type=radio],
 .window-content label {
 	cursor: pointer;
 }
+
 .window-content input[type=checkbox],
 .window-content input[type=checkbox]:before,
 .window-content input[type=checkbox]:after,
@@ -342,6 +397,7 @@ button,
 .window-content input[type=radio]:after {
 	width: 2.25rem;
 }
+
 .window-content button,
 .window-content input[type=checkbox],
 .window-content input[type=checkbox]:before,
@@ -351,12 +407,14 @@ button,
 .window-content input[type=radio]:after {
 	height: 2.25rem;
 }
+
 .window-content input[type=checkbox],
 .window-content input[type=radio] {
 	margin-right: 0.75em;
 	-webkit-appearance: none;
 	appearance: none;
 }
+
 .window-content input[type=checkbox]:before,
 .window-content input[type=checkbox]:after,
 
@@ -367,18 +425,20 @@ button,
 	top: 0;
 	left: 0;
 }
+
 .window-content input[type=checkbox]:before,
 
 .window-content input[type=radio]:before,
 .window-content input[type=radio]:after {
 	content: "";
 }
+
 /* Buttons */
 .window-content button {
 	background-color: #db0b0b;
 	background-image:
-		linear-gradient(180deg,#0000,#0002),
-		radial-gradient(90% 7% at 50% 8%,#fff7 25%,#fff0 50%);
+		linear-gradient(180deg, #0000, #0002),
+		radial-gradient(90% 7% at 50% 8%, #fff7 25%, #fff0 50%);
 	box-shadow:
 		0.25em 0.25em 0.5em #0007,
 		0 -0.1em 0 0.1em #0004,
@@ -396,20 +456,25 @@ button,
 	/* width: 100%; */
 	border: 0;
 }
+
 #always-available-controls button {
-	border-radius: 0.5em; /* reduced for somewhat more convincing collision detection */
+	border-radius: 0.5em;
+	/* reduced for somewhat more convincing collision detection */
 	/* make these buttons take up less space so they all fit in one row on mobile */
 	min-width: 3rem;
 	padding: 0 0.5em;
 }
+
 .window-content button span {
 	display: block;
 	padding: 0.5em;
 	transition: transform var(--transDur) var(--buttonTiming);
 }
+
 .window-content button:not(.selected):not(:active):not(:focus) {
 	transition-duration: 0.05s;
 }
+
 .window-content button:active,
 .window-content button.selected {
 	box-shadow:
@@ -421,13 +486,16 @@ button,
 		0.25rem 0 0.25rem #0004 inset,
 		0 -0.25rem 0.25rem #7a0606 inset;
 }
+
 .window-content button.selected {
 	/* background: #a00; */
 	filter: brightness(0.9);
 }
+
 .window-content button:active span {
 	transform: scale(0.95);
 }
+
 .window-content button.selected span {
 	transform: scale(0.95);
 	/* transform: scale(0.9); */
@@ -435,10 +503,12 @@ button,
 	/* transition-duration: 0; */
 	--transDur: 0;
 }
+
 .window-content button:focus {
 	color: #fbb7b7;
 	text-shadow: 0 0 0.25em #fbb7b777;
 }
+
 /* Checkboxes */
 .window-content input[type=checkbox] {
 	animation: checkboxFlipFalse var(--animDur) var(--checkboxTiming);
@@ -452,19 +522,22 @@ button,
 	margin-top: 0;
 	/* margin-right: 0.75em; */
 }
+
 .window-content input[type=checkbox]:checked {
 	animation: checkboxFlipTrue var(--animDur) var(--checkboxTiming);
 }
+
 .window-content input[type=checkbox]:before,
 .window-content input[type=checkbox]:after {
 	background-color: #db0b0b;
 }
+
 .window-content input[type=checkbox]:before {
 	animation: checkboxFlipFalseBefore var(--animDur) var(--checkboxTiming);
 	background-image:
-		linear-gradient(180deg,#0000,#0002),
-		radial-gradient(7% 7% at 8% 8%,#fff7 37.5%,#fff0 50%),
-		radial-gradient(90% 7% at 50% 8%,#fff7 25%,#fff0 50%);
+		linear-gradient(180deg, #0000, #0002),
+		radial-gradient(7% 7% at 8% 8%, #fff7 37.5%, #fff0 50%),
+		radial-gradient(90% 7% at 50% 8%, #fff7 25%, #fff0 50%);
 	box-shadow:
 		-0.25rem 0 0.25rem #920707 inset,
 		0 0.25rem 0.25rem #fff4 inset,
@@ -477,11 +550,13 @@ button,
 	text-shadow: 0 0 0.25rem #0000;
 	transform: translateZ(0.5rem);
 }
+
 .window-content input[type=checkbox]:checked:before {
 	animation: checkboxFlipTrueBefore var(--animDur) var(--checkboxTiming);
 	color: #fff;
 	text-shadow: 0 0 0.25rem #fffa;
 }
+
 .window-content input[type=checkbox]:after {
 	animation: checkboxFlipFalseAfter var(--animDur) var(--checkboxTiming);
 	box-shadow:
@@ -492,15 +567,18 @@ button,
 	height: 1rem;
 	transform: translateY(1rem) rotateX(-90deg) translateZ(1.5rem);
 }
+
 .window-content input[type=checkbox]:checked:after {
 	animation: checkboxFlipTrueAfter var(--animDur) var(--checkboxTiming);
 }
+
 /* Radios */
 .window-content input[type=radio],
 .window-content input[type=radio]:before,
 .window-content input[type=radio]:after {
 	border-radius: 50%;
 }
+
 .window-content input[type=radio] {
 	box-shadow:
 		0.25em 0.25em 0.5em #0007,
@@ -509,6 +587,7 @@ button,
 		0 0 1.5em #0004 inset;
 	transition: box-shadow var(--animDur) var(--radioTiming);
 }
+
 .window-content input[type=radio]:checked {
 	box-shadow:
 		0.25em 0.25em 1em #0000,
@@ -516,56 +595,62 @@ button,
 		0 0.1em 0 0.1em #fff7,
 		0 0 1.5em #0004 inset;
 }
+
 .window-content input[type=radio]:before,
 .window-content input[type=radio]:after {
 	backface-visibility: hidden;
 	-webkit-backface-visibility: hidden;
 }
+
 .window-content input[type=radio]:before {
 	animation: radioFlipFalseBefore var(--animDur) var(--radioTiming);
 	background:
-		linear-gradient(#0000 25%,#0004 75%),
-		radial-gradient(50% 100% at 15% 50%,#aa0909 8%,#aa090900 24%),
-		radial-gradient(50% 100% at 85% 50%,#aa0909 8%,#aa090900 24%),
-		radial-gradient(100% 100% at center,#e90b0b00 41%,#e90b0b 46%),
-		radial-gradient(100% 100% at center,#c20a0a00 36%,#c20a0a 38%),
-		radial-gradient(100% 100% at 22% 38%,#fff4 6%,#fff0 12%),
-		radial-gradient(100% 100% at 35% 25%,#fff4,#fff0 13%),
-		radial-gradient(120% 100% at 50% 20%,#fff2,#fff0 13%),
-		radial-gradient(100% 100% at 40% 40%,#fff4 4%,#fff0 12%),
-		radial-gradient(100% 100% at 65% 20%,#fff4 4%,#fff0 12%),
-		radial-gradient(100% 100% at 75% 33%,#fff4 6%,#fff0 12%),
-		radial-gradient(100% 100% at center,#ee0c0c 13%,#db0b0b 25% 49%,#db0b0b00 50%);
+		linear-gradient(#0000 25%, #0004 75%),
+		radial-gradient(50% 100% at 15% 50%, #aa0909 8%, #aa090900 24%),
+		radial-gradient(50% 100% at 85% 50%, #aa0909 8%, #aa090900 24%),
+		radial-gradient(100% 100% at center, #e90b0b00 41%, #e90b0b 46%),
+		radial-gradient(100% 100% at center, #c20a0a00 36%, #c20a0a 38%),
+		radial-gradient(100% 100% at 22% 38%, #fff4 6%, #fff0 12%),
+		radial-gradient(100% 100% at 35% 25%, #fff4, #fff0 13%),
+		radial-gradient(120% 100% at 50% 20%, #fff2, #fff0 13%),
+		radial-gradient(100% 100% at 40% 40%, #fff4 4%, #fff0 12%),
+		radial-gradient(100% 100% at 65% 20%, #fff4 4%, #fff0 12%),
+		radial-gradient(100% 100% at 75% 33%, #fff4 6%, #fff0 12%),
+		radial-gradient(100% 100% at center, #ee0c0c 13%, #db0b0b 25% 49%, #db0b0b00 50%);
 	background-position: 0 0;
 	background-repeat: no-repeat;
 	background-size: 2.25em 2.25em;
 }
+
 .window-content input[type=radio]:checked:before {
 	animation: radioFlipTrueBefore var(--animDur) var(--radioTiming);
 	border-radius: 50% 50% 50% 50% / 100% 100% 0% 0%;
 	height: 1.125em;
 }
+
 .window-content input[type=radio]:after {
 	animation: radioFlipFalseAfter var(--animDur) var(--radioTiming);
 	background-color: #fff;
 	background-image:
-		radial-gradient(2.25rem 2.25rem at 1.125rem 1.175rem,#fff0 0.905rem,#fff1 0.925rem),
-		radial-gradient(2.25rem 2.25rem at 1.125rem 1.075rem,#0000 0.905rem,#0003 0.925rem),
-		radial-gradient(2.25rem 2.25rem at center,#db0b0b00 0.605rem,#db0b0b 0.625rem),
-		radial-gradient(2.25rem 2.25rem at 1.125rem 1.225rem,#0000 0.555rem,#0003 0.575rem),
-		radial-gradient(2.25rem 2.25rem at 1.125rem 1.025rem,#fff0 0.555rem,#fff3 0.575rem),
-		radial-gradient(2.25rem 2.25rem at center,#db0b0b00 0.455rem,#db0b0b 0.475rem),
-		radial-gradient(2.25rem 2.25rem at 1.325rem 1.325rem,#0000 0.475rem,#0003 0.675rem);
+		radial-gradient(2.25rem 2.25rem at 1.125rem 1.175rem, #fff0 0.905rem, #fff1 0.925rem),
+		radial-gradient(2.25rem 2.25rem at 1.125rem 1.075rem, #0000 0.905rem, #0003 0.925rem),
+		radial-gradient(2.25rem 2.25rem at center, #db0b0b00 0.605rem, #db0b0b 0.625rem),
+		radial-gradient(2.25rem 2.25rem at 1.125rem 1.225rem, #0000 0.555rem, #0003 0.575rem),
+		radial-gradient(2.25rem 2.25rem at 1.125rem 1.025rem, #fff0 0.555rem, #fff3 0.575rem),
+		radial-gradient(2.25rem 2.25rem at center, #db0b0b00 0.455rem, #db0b0b 0.475rem),
+		radial-gradient(2.25rem 2.25rem at 1.325rem 1.325rem, #0000 0.475rem, #0003 0.675rem);
 	filter: brightness(0.1);
 	-webkit-filter: brightness(0.1);
 	transform: rotateX(-180deg);
 }
+
 .window-content input[type=radio]:checked:after {
 	animation: radioFlipTrueAfter var(--animDur) var(--radioTiming);
 	filter: brightness(1);
 	-webkit-filter: brightness(1);
 	transform: rotateX(0);
 }
+
 .window-content input[type=checkbox].pristine,
 .window-content input[type=checkbox].pristine:before,
 .window-content input[type=checkbox].pristine:after,
@@ -573,15 +658,19 @@ button,
 .window-content input[type=radio].pristine:after {
 	animation-name: none;
 }
+
 /* Animations */
 @keyframes checkboxFlipTrue {
-	from, to {
+
+	from,
+	to {
 		box-shadow:
 			0.25em 0.25em 0.5em #0007,
 			0 -0.1em 0 0.1em #0004,
 			0 0.75em 0.5em 0.25em #0003 inset,
 			0 0.1em 0 0.1em #fff4;
 	}
+
 	50% {
 		box-shadow:
 			0.25em 0.25em 1em #0000,
@@ -590,14 +679,18 @@ button,
 			0 0.1em 0 0.1em #fff4;
 	}
 }
+
 @keyframes checkboxFlipFalse {
-	from, to {
+
+	from,
+	to {
 		box-shadow:
 			0.25em 0.25em 0.5em #0007,
 			0 -0.1em 0 0.1em #0004,
 			0 0.75em 0.5em 0.25em #0003 inset,
 			0 0.1em 0 0.1em #fff4;
 	}
+
 	50% {
 		box-shadow:
 			0.25em 0.25em 1em #0000,
@@ -606,6 +699,7 @@ button,
 			0 0.1em 0 0.1em #fff4;
 	}
 }
+
 @keyframes checkboxFlipTrueBefore {
 	from {
 		color: #0000;
@@ -614,6 +708,7 @@ button,
 		text-shadow: 0 0 0.25rem #0000;
 		transform: rotateX(0deg) translateZ(0.5rem);
 	}
+
 	50% {
 		color: #0000;
 		filter: brightness(0.55);
@@ -621,6 +716,7 @@ button,
 		text-shadow: 0 0 0.25rem #0000;
 		transform: rotateX(90deg) translateZ(0.5rem);
 	}
+
 	50.1% {
 		color: #fff;
 		filter: brightness(0.55);
@@ -628,6 +724,7 @@ button,
 		text-shadow: 0 0 0.25rem #fffa;
 		transform: rotateX(-90deg) translateZ(0.5rem);
 	}
+
 	to {
 		color: #fff;
 		filter: brightness(1);
@@ -636,6 +733,7 @@ button,
 		transform: rotateX(0deg) translateZ(0.5rem);
 	}
 }
+
 @keyframes checkboxFlipFalseBefore {
 	from {
 		color: #fff;
@@ -644,6 +742,7 @@ button,
 		text-shadow: 0 0 0.25rem #fffa;
 		transform: rotateX(0deg) translateZ(0.5rem);
 	}
+
 	50% {
 		color: #fff;
 		filter: brightness(0.55);
@@ -651,6 +750,7 @@ button,
 		text-shadow: 0 0 0.25rem #fffa;
 		transform: rotateX(90deg) translateZ(0.5rem);
 	}
+
 	50.1% {
 		color: #0000;
 		filter: brightness(0.55);
@@ -658,6 +758,7 @@ button,
 		text-shadow: 0 0 0.25rem #0000;
 		transform: rotateX(-90deg) translateZ(0.5rem);
 	}
+
 	to {
 		color: #0000;
 		filter: brightness(1);
@@ -666,57 +767,70 @@ button,
 		transform: rotateX(0deg) translateZ(0.5rem);
 	}
 }
+
 @keyframes checkboxFlipTrueAfter {
 	from {
 		filter: brightness(0.775);
 		-webkit-filter: brightness(0.775);
 		transform: translateY(0.625rem) rotateX(-90deg) translateZ(1.125rem);
 	}
+
 	50% {
 		filter: brightness(1);
 		-webkit-filter: brightness(1);
 		transform: translateY(0.625rem) rotateX(0deg) translateZ(1.125rem);
 	}
+
 	to {
 		filter: brightness(0.775);
 		-webkit-filter: brightness(0.775);
 		transform: translateY(0.625rem) rotateX(90deg) translateZ(1.125rem);
 	}
 }
+
 @keyframes checkboxFlipFalseAfter {
 	from {
 		filter: brightness(0.775);
 		-webkit-filter: brightness(0.775);
 		transform: translateY(0.625rem) rotateX(-90deg) translateZ(1.125rem);
 	}
+
 	50% {
 		filter: brightness(1);
 		-webkit-filter: brightness(1);
 		transform: translateY(0.625rem) rotateX(0deg) translateZ(1.125rem);
 	}
+
 	to {
 		filter: brightness(0.775);
 		-webkit-filter: brightness(0.775);
 		transform: translateY(0.625rem) rotateX(90deg) translateZ(1.125rem);
 	}
 }
+
 @keyframes radioFlipTrueBefore {
 	from {
 		border-radius: 50%;
 		height: 2.25rem;
 	}
-	50%, to {
+
+	50%,
+	to {
 		border-radius: 50% 50% 50% 50% / 100% 100% 0% 0%;
 		height: 1.125rem;
 	}
 }
+
 @keyframes radioFlipFalseBefore {
-	from, 50% {
+
+	from,
+	50% {
 		background-position: 0 100%;
 		border-radius: 50% 50% 50% 50% / 0% 0% 100% 100%;
 		height: 1.125rem;
 		transform: translateY(1.125rem);
 	}
+
 	to {
 		background-position: 0 100%;
 		border-radius: 50%;
@@ -724,24 +838,28 @@ button,
 		transform: translateY(0);
 	}
 }
+
 @keyframes radioFlipTrueAfter {
 	from {
 		filter: brightness(0.1);
 		-webkit-filter: brightness(0.1);
 		transform: rotateX(-180deg);
 	}
+
 	to {
 		filter: brightness(1);
 		-webkit-filter: brightness(1);
 		transform: rotateX(0);
 	}
 }
+
 @keyframes radioFlipFalseAfter {
 	from {
 		filter: brightness(1);
 		-webkit-filter: brightness(1);
 		transform: rotateX(0);
 	}
+
 	to {
 		filter: brightness(0.1);
 		-webkit-filter: brightness(0.1);

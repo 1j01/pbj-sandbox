@@ -1,7 +1,7 @@
-gravity = 0
+gravity = 0;
 document.getElementById("gravity-input").value = gravity;
 
-blueprint = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+blueprint = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
 var sym_point_arrays = [];
 var ship_points = [];

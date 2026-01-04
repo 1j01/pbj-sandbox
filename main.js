@@ -938,9 +938,9 @@ function step() {
 				const c = connections[j];
 				// record which side of the line the point is on
 				const signedDistToLine = (c.p1.x - c.p2.x) * (p.y - c.p2.y) - (c.p1.y - c.p2.y) * (p.x - c.p2.x);
-				
+
 				// if (!lineSides.get(p).has(c) || point passed beside line / is no longer near it) {
-					lineSides.get(p).set(c, signedDistToLine);
+				lineSides.get(p).set(c, signedDistToLine);
 				// }
 			}
 		}
@@ -1282,21 +1282,21 @@ function step() {
 				if (p == c.p1 || p == c.p2) continue;
 				if (areConnected(p, c.p1)) continue;
 				// if (areConnected(p, c.p2)) continue; // assuming the connectedness works, this is unnecessary
-				
+
 				const sideBeforeStep = lineSides.get(p).get(c);
 				const sideAfterStep = (c.p1.x - c.p2.x) * (p.y - c.p2.y) - (c.p1.y - c.p2.y) * (p.x - c.p2.x);
 				// console.log("sideBeforeStep", sideBeforeStep, "sideAfterStep", sideAfterStep);
 				if (sideBeforeStep * sideAfterStep < 0) {
 					// collision
-					
+
 					// record position so we can make/fake an impulse from the change in position
 					const prevX = p.x;
 					const prevY = p.y;
-					
+
 					// bring point onto the line
 					// sideAfterStep is the signed distance to the line
 					// we could combine some calculations, but whatever
-					
+
 					const pOnLine = projectPointOntoLineSegment(c.p1, c.p2, p);
 					// console.log("collision", pOnLine);
 					// TODO: account for segments with only one fixed point
@@ -1708,7 +1708,7 @@ function intersectLineQuad(line_x1, line_y1, line_x2, line_y2, quad_x1, quad_y1,
 	}
 	// if (pointInQuad(line_x1, line_y1, quad_x1, quad_y1, quad_x2, quad_y2, quad_x3, quad_y3, quad_x4, quad_y4)) {
 }
-function projectPointOntoLineSegment (p0, p1, q) {
+function projectPointOntoLineSegment(p0, p1, q) {
 
 	// p0 and p1 define the line segment
 	// q is the reference point
@@ -1723,7 +1723,7 @@ function projectPointOntoLineSegment (p0, p1, q) {
 	const r = {
 		x: p0.x + (u * (p1.x - p0.x)),
 		y: p0.y + (u * (p1.y - p0.y))
-	}
+	};
 
 	const min_x = Math.min(p0.x, p1.x);
 	const max_x = Math.max(p0.x, p1.x);
@@ -2190,7 +2190,7 @@ const windowToggles = {
 	todo: { button: document.querySelector("#todo-button"), createWindow: createTodoWindow },
 	about: { button: document.querySelector("#about-button"), createWindow: createAboutWindow },
 	help: { button: document.querySelector("#help-button"), createWindow: createHelpWindow },
-}
+};
 for (const [key, obj] of Object.entries(windowToggles)) {
 	const { button, createWindow } = obj;
 	obj.createWindow = () => { throw new Error("Did you mean openWindow?"); };
@@ -2390,7 +2390,7 @@ function add_doll(options) {
 
 // Test scene: Throw two balls at each other
 add_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
-add_ball({ x: innerWidth * 2/3, y: innerHeight / 2, vx: -5, vy: -3 });
+add_ball({ x: innerWidth * 2 / 3, y: innerHeight / 2, vx: -5, vy: -3 });
 
 // Test scene: collision false negatives
 // add_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
