@@ -2429,8 +2429,8 @@ function add_doll(options) {
 // }
 
 // Test scene: Throw two balls at each other
-add_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
-add_ball({ x: innerWidth * 2 / 3, y: innerHeight / 2, vx: -5, vy: -3 });
+// add_ball({ x: innerWidth / 3, y: innerHeight / 2, vx: 5, vy: -3 });
+// add_ball({ x: innerWidth * 2 / 3, y: innerHeight / 2, vx: -5, vy: -3 });
 
 // Test scene: collision false negatives
 // add_ball({ x: innerWidth / 2, y: innerHeight / 2 - 150, numPoints: 3, size: 60 });
