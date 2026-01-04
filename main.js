@@ -1299,28 +1299,48 @@ function step() {
 					
 					const pOnLine = projectPointOntoLineSegment(c.p1, c.p2, p);
 					// console.log("collision", pOnLine);
+					// TODO: account for segments with only one fixed point
+					// and distribute force according to distance along the segment, introducing torque
+					const segmentMovementFraction = (c.p1.fixed || c.p2.fixed) ? 0 : (p.fixed ? 1 : 1 / 3);
 					if (pOnLine) {
+						const fudge = 1.01;
 						if (!p.fixed) {
-							p.x = pOnLine.x;
-							p.y = pOnLine.y;
-							p.x += (p.x - prevX) * 0.05;
-							p.y += (p.y - prevY) * 0.05;
-
-							// apply fake impulse
-							const f = 0.66;
-							// not using fx because that will be overwritten on the next iteration, right?
-							p.vx += (p.x - prevX) * f;
-							p.vy += (p.y - prevY) * f;
+							p.x += (pOnLine.x - p.x) * (1 - segmentMovementFraction) * fudge;
+							p.y += (pOnLine.y - p.y) * (1 - segmentMovementFraction) * fudge;
+							p.vx += (pOnLine.x - p.x) * (1 - segmentMovementFraction) * fudge;
+							p.vy += (pOnLine.y - p.y) * (1 - segmentMovementFraction) * fudge;
 						}
+						c.p1.x += (prevX - pOnLine.x) * segmentMovementFraction * fudge;
+						c.p1.y += (prevY - pOnLine.y) * segmentMovementFraction * fudge;
+						c.p2.x += (prevX - pOnLine.x) * segmentMovementFraction * fudge;
+						c.p2.y += (prevY - pOnLine.y) * segmentMovementFraction * fudge;
+						c.p1.vx += (prevX - pOnLine.x) * segmentMovementFraction * fudge;
+						c.p1.vy += (prevY - pOnLine.y) * segmentMovementFraction * fudge;
+						c.p2.vx += (prevX - pOnLine.x) * segmentMovementFraction * fudge;
+						c.p2.vy += (prevY - pOnLine.y) * segmentMovementFraction * fudge;
 					}
-					if (pOnLine) {
-						// apply force to the line
-						const f = 0.33;
-						c.p1.vx += (prevX - pOnLine.x) * f;
-						c.p1.vy += (prevY - pOnLine.y) * f;
-						c.p2.vx += (prevX - pOnLine.x) * f;
-						c.p2.vy += (prevY - pOnLine.y) * f;
-					}
+					// if (pOnLine) {
+					// 	if (!p.fixed) {
+					// 		p.x = pOnLine.x;
+					// 		p.y = pOnLine.y;
+					// 		p.x += (p.x - prevX) * 0.05;
+					// 		p.y += (p.y - prevY) * 0.05;
+
+					// 		// apply fake impulse
+					// 		const f = 0.66;
+					// 		// not using fx because that will be overwritten on the next iteration, right?
+					// 		p.vx += (p.x - prevX) * f;
+					// 		p.vy += (p.y - prevY) * f;
+					// 	}
+					// }
+					// if (pOnLine) {
+					// 	// apply force to the line
+					// 	const f = 0.33;
+					// 	c.p1.vx += (prevX - pOnLine.x) * f;
+					// 	c.p1.vy += (prevY - pOnLine.y) * f;
+					// 	c.p2.vx += (prevX - pOnLine.x) * f;
+					// 	c.p2.vy += (prevY - pOnLine.y) * f;
+					// }
 				}
 
 				/*
