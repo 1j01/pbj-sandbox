@@ -328,6 +328,10 @@ function main() {
 				break;
 			}
 		}
+		if (e.code === "Slash") {
+			// avoid the Quick Find feature in Firefox
+			e.preventDefault();
+		}
 		// if (!matched) {
 		// 	console.log("No shortcut matched:", e);
 		// }
