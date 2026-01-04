@@ -143,7 +143,14 @@ const autoConnectMaxDist = 50;
 
 // options
 var play = true;
-var collision = true;
+const collisionModes = {
+	"BOUNDS_ONLY": "Bounds Only",
+	// "POINT_LINE": "Point-Line (naive)",
+	"LINE_QUAD": "Line-Quad (phases and sticks, can break gravity)", // (point-line over time = line-quad)
+	"REMEMBERED_SIDES": "Remembered Sides (less phasing, but can explode on impact)",
+	// "AIR_MESH": "Air Mesh [M. Müller et al.]",
+};
+var collisionMode = "BOUNDS_ONLY";
 var slowmo = false; // TODO: generalize to a time scale
 var autoConnect = false;
 var gravity = 0.1;
@@ -1281,197 +1288,198 @@ function step() {
 			connections.splice(j,1);
 			continue;
 		}*/
-		if (collision && play) {
+		if (collisionMode !== "BOUNDS_ONLY" && play) {
 			for (var i = points.length - 1; i >= 0; i--) {
 				var p = points[i];
 				if (p == c.p1 || p == c.p2) continue;
 				if (areConnected(p, c.p1)) continue;
 				// if (areConnected(p, c.p2)) continue; // assuming the connectedness works, this is unnecessary
 
-				const sideBeforeStep = lineSides.get(p).get(c) ?? 0;
-				const sideAfterStep = (c.p1.x - c.p2.x) * (p.y - c.p2.y) - (c.p1.y - c.p2.y) * (p.x - c.p2.x);
-				// console.log("sideBeforeStep", sideBeforeStep, "sideAfterStep", sideAfterStep);
-				if (sideBeforeStep * sideAfterStep < 0) {
-					// collision
+				if (collisionMode === "REMEMBERED_SIDES") {
+					const sideBeforeStep = lineSides.get(p).get(c) ?? 0;
+					const sideAfterStep = (c.p1.x - c.p2.x) * (p.y - c.p2.y) - (c.p1.y - c.p2.y) * (p.x - c.p2.x);
+					// console.log("sideBeforeStep", sideBeforeStep, "sideAfterStep", sideAfterStep);
+					if (sideBeforeStep * sideAfterStep < 0) {
+						// collision
 
-					// record position so we can make/fake an impulse from the change in position
-					const prevX = p.x;
-					const prevY = p.y;
+						// record position so we can make/fake an impulse from the change in position
+						const prevX = p.x;
+						const prevY = p.y;
 
-					// bring point onto the line
-					// sideAfterStep is the signed distance to the line
-					// we could combine some calculations, but whatever
+						// bring point onto the line
+						// sideAfterStep is the signed distance to the line
+						// we could combine some calculations, but whatever
 
-					const pOnLine = projectPointOntoLineSegment(c.p1, c.p2, p);
-					// console.log("collision", pOnLine);
-					if (pOnLine) {
-						const diffX = c.p2.x - c.p1.x;
-						const diffY = c.p2.y - c.p1.y;
-						const lenSq = diffX * diffX + diffY * diffY;
-						const alongLineFraction = lenSq > 0
-							? ((pOnLine.x - c.p1.x) * diffX + (pOnLine.y - c.p1.y) * diffY) / lenSq
-							: 0;
+						const pOnLine = projectPointOntoLineSegment(c.p1, c.p2, p);
+						// console.log("collision", pOnLine);
+						if (pOnLine) {
+							const diffX = c.p2.x - c.p1.x;
+							const diffY = c.p2.y - c.p1.y;
+							const lenSq = diffX * diffX + diffY * diffY;
+							const alongLineFraction = lenSq > 0
+								? ((pOnLine.x - c.p1.x) * diffX + (pOnLine.y - c.p1.y) * diffY) / lenSq
+								: 0;
 
-						const rodMass = 3; // 2 points plus some for the segment
-						const rodMovementFraction = (c.p1.fixed && c.p2.fixed) ? 0 : (p.fixed ? 1 : 1 / rodMass);
-						const pMovementFraction = 1 - rodMovementFraction;
-						// distribute force according to distance along the segment, introducing torque
-						// (in some way - not assumed to be physically accurate)
-						const rodP1MovementFraction = (c.p1.fixed) ? 0 : (c.p2.fixed ? 1 : (1 - alongLineFraction) * rodMovementFraction);
-						const rodP2MovementFraction = (c.p2.fixed) ? 0 : (c.p1.fixed ? 1 : alongLineFraction * rodMovementFraction);
-						// TODO: check the line is moved such that p stays on it;
-						// it probably doesn't, if we're moving the ends differently
-						// (and the fact that I had to increase the fudge factor supports that hypothesis)
-						const moveX = pOnLine.x - prevX;
-						const moveY = pOnLine.y - prevY;
-						const moveDist = Math.sqrt(moveX * moveX + moveY * moveY);
-						const dirX = moveDist > 0 ? moveX / moveDist : 0;
-						const dirY = moveDist > 0 ? moveY / moveDist : 0;
-						const velFudge = 1; // factor (1 = neutral)
-						const posFudge = 1; // factor (1 = neutral)
-						const posFudge2 = 1; // absolute world units (0 = neutral)
-						if (!p.fixed) {
-							p.x += (pOnLine.x - prevX) * pMovementFraction * posFudge + dirX * posFudge2;
-							p.y += (pOnLine.y - prevY) * pMovementFraction * posFudge + dirY * posFudge2;
-							p.vx += (pOnLine.x - prevX) * pMovementFraction * velFudge;
-							p.vy += (pOnLine.y - prevY) * pMovementFraction * velFudge;
+							const rodMass = 3; // 2 points plus some for the segment
+							const rodMovementFraction = (c.p1.fixed && c.p2.fixed) ? 0 : (p.fixed ? 1 : 1 / rodMass);
+							const pMovementFraction = 1 - rodMovementFraction;
+							// distribute force according to distance along the segment, introducing torque
+							// (in some way - not assumed to be physically accurate)
+							const rodP1MovementFraction = (c.p1.fixed) ? 0 : (c.p2.fixed ? 1 : (1 - alongLineFraction) * rodMovementFraction);
+							const rodP2MovementFraction = (c.p2.fixed) ? 0 : (c.p1.fixed ? 1 : alongLineFraction * rodMovementFraction);
+							// TODO: check the line is moved such that p stays on it;
+							// it probably doesn't, if we're moving the ends differently
+							// (and the fact that I had to increase the fudge factor supports that hypothesis)
+							const moveX = pOnLine.x - prevX;
+							const moveY = pOnLine.y - prevY;
+							const moveDist = Math.sqrt(moveX * moveX + moveY * moveY);
+							const dirX = moveDist > 0 ? moveX / moveDist : 0;
+							const dirY = moveDist > 0 ? moveY / moveDist : 0;
+							const velFudge = 1; // factor (1 = neutral)
+							const posFudge = 1; // factor (1 = neutral)
+							const posFudge2 = 1; // absolute world units (0 = neutral)
+							if (!p.fixed) {
+								p.x += (pOnLine.x - prevX) * pMovementFraction * posFudge + dirX * posFudge2;
+								p.y += (pOnLine.y - prevY) * pMovementFraction * posFudge + dirY * posFudge2;
+								p.vx += (pOnLine.x - prevX) * pMovementFraction * velFudge;
+								p.vy += (pOnLine.y - prevY) * pMovementFraction * velFudge;
+							}
+							if (!c.p1.fixed) {
+								c.p1.x += (prevX - pOnLine.x) * rodP1MovementFraction * posFudge - dirX * posFudge2;
+								c.p1.y += (prevY - pOnLine.y) * rodP1MovementFraction * posFudge - dirY * posFudge2;
+								c.p1.vx += (prevX - pOnLine.x) * rodP1MovementFraction * velFudge;
+								c.p1.vy += (prevY - pOnLine.y) * rodP1MovementFraction * velFudge;
+							}
+							if (!c.p2.fixed) {
+								c.p2.x += (prevX - pOnLine.x) * rodP2MovementFraction * posFudge - dirX * posFudge2;
+								c.p2.y += (prevY - pOnLine.y) * rodP2MovementFraction * posFudge - dirY * posFudge2;
+								c.p2.vx += (prevX - pOnLine.x) * rodP2MovementFraction * velFudge;
+								c.p2.vy += (prevY - pOnLine.y) * rodP2MovementFraction * velFudge;
+							}
 						}
+						// if (pOnLine) {
+						// 	if (!p.fixed) {
+						// 		p.x = pOnLine.x;
+						// 		p.y = pOnLine.y;
+						// 		p.x += (p.x - prevX) * 0.05;
+						// 		p.y += (p.y - prevY) * 0.05;
+
+						// 		// apply fake impulse
+						// 		const f = 0.66;
+						// 		// not using fx because that will be overwritten on the next iteration, right?
+						// 		p.vx += (p.x - prevX) * f;
+						// 		p.vy += (p.y - prevY) * f;
+						// 	}
+						// }
+						// if (pOnLine) {
+						// 	// apply force to the line
+						// 	const f = 0.33;
+						// 	c.p1.vx += (prevX - pOnLine.x) * f;
+						// 	c.p1.vy += (prevY - pOnLine.y) * f;
+						// 	c.p2.vx += (prevX - pOnLine.x) * f;
+						// 	c.p2.vy += (prevY - pOnLine.y) * f;
+						// }
+					}
+				} else if (collisionMode === "LINE_QUAD") {
+
+					// GONNA DO SEPARATE MOVEMENT QUAD AND STATIC "THICK LINE" QUAD
+					var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
+					if (!is) {
+						const normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
+						const nudge_amount = 1;
+						const qx1 = c.p1.x + Math.sin(normal) * nudge_amount;
+						const qy1 = c.p1.y + Math.cos(normal) * nudge_amount;
+						const qx2 = c.p2.x + Math.sin(normal) * nudge_amount;
+						const qy2 = c.p2.y + Math.cos(normal) * nudge_amount;
+						const qx3 = c.p2.x - Math.sin(normal) * nudge_amount;
+						const qy3 = c.p2.y - Math.cos(normal) * nudge_amount;
+						const qx4 = c.p1.x - Math.sin(normal) * nudge_amount;
+						const qy4 = c.p1.y - Math.cos(normal) * nudge_amount;
+						is = intersectLineQuad(p.x, p.y, p.px, p.py, qx1, qy1, qx2, qy2, qx3, qy3, qx4, qy4, ctx);
+					}
+
+					if (is) {
+						// Note: normal can point either way
+						// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
+						// hence the negation when rendering the normal’s arrow
+						// THIS IS NOT INTENTIONAL, it’s just bad math.
+						// I tried flipping the signs and sines and cosines for a while
+						// but didn’t get it to work while being more sensible.
+						// Maybe later I’ll go at it again.
+						// (Keep in mind, the drawArrow function is also arbitrary in its base angle)
+						var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
+						var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy; // normal-aligned space
+						var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
+						var p1_vx_connection_space = Math.sin(normal) * c.p1.vx + Math.cos(normal) * c.p1.vy;
+						var p2_vx_connection_space = Math.sin(normal) * c.p2.vx + Math.cos(normal) * c.p2.vy;
+						var p_bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
+						var p_bounce_angle = p_bounce_angle_connection_space - normal;
+						// TODO: determine this from positions instead of velocities?
+						var on_one_side_of_line = p_vx_connection_space > 0 ? false : p_vx_connection_space < 0 ? true :
+							// for points that are fixed/unmoving, determine the side the point is on from the line’s velocity
+							// FIXME: this doesn’t make sense if the line is rotating
+							(p1_vx_connection_space + p2_vx_connection_space) / 2 > 0;
+
+						// apply a force to the line from the particle
+						const p1_dist = Math.hypot(p.x - c.p1.x, p.y - c.p1.y);
+						const p2_dist = Math.hypot(p.x - c.p2.x, p.y - c.p2.y);
+						const f = 1 / 2 / (p1_dist + p2_dist);
+						c.p1.fx += p.vx * p2_dist * f;
+						c.p1.fy += p.vy * p2_dist * f;
+						c.p2.fx += p.vx * p1_dist * f;
+						c.p2.fy += p.vy * p1_dist * f;
+
+						const line_bounce_force = 2;
+						c.p1.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
+						c.p1.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
+						c.p2.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
+						c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
+
+						// move the line so it doesn’t collide immediately again
+						var hack = 1;
+						// which side the particle is further away from, move the line to that side
+						var towards_a_side_x = Math.sin(normal + (on_one_side_of_line ? Math.PI : 0));
+						var towards_a_side_y = Math.cos(normal + (on_one_side_of_line ? Math.PI : 0));
+						var p1_x_off = c.p1.x + towards_a_side_x * hack;
+						var p1_y_off = c.p1.y + towards_a_side_y * hack;
+						var p2_x_off = c.p2.x + towards_a_side_x * hack;
+						var p2_y_off = c.p2.y + towards_a_side_y * hack;
 						if (!c.p1.fixed) {
-							c.p1.x += (prevX - pOnLine.x) * rodP1MovementFraction * posFudge - dirX * posFudge2;
-							c.p1.y += (prevY - pOnLine.y) * rodP1MovementFraction * posFudge - dirY * posFudge2;
-							c.p1.vx += (prevX - pOnLine.x) * rodP1MovementFraction * velFudge;
-							c.p1.vy += (prevY - pOnLine.y) * rodP1MovementFraction * velFudge;
+							c.p1.x = p1_x_off;
+							c.p1.y = p1_y_off;
 						}
 						if (!c.p2.fixed) {
-							c.p2.x += (prevX - pOnLine.x) * rodP2MovementFraction * posFudge - dirX * posFudge2;
-							c.p2.y += (prevY - pOnLine.y) * rodP2MovementFraction * posFudge - dirY * posFudge2;
-							c.p2.vx += (prevX - pOnLine.x) * rodP2MovementFraction * velFudge;
-							c.p2.vy += (prevY - pOnLine.y) * rodP2MovementFraction * velFudge;
+							c.p2.x = p2_x_off;
+							c.p2.y = p2_y_off;
 						}
-					}
-					// if (pOnLine) {
-					// 	if (!p.fixed) {
-					// 		p.x = pOnLine.x;
-					// 		p.y = pOnLine.y;
-					// 		p.x += (p.x - prevX) * 0.05;
-					// 		p.y += (p.y - prevY) * 0.05;
+						// debugLines.push({
+						// 	p1: { x: p1_x_off, y: p1_y_off },
+						// 	p2: { x: p2_x_off, y: p2_y_off },
+						// 	color: on_one_side_of_line ? "#00afff" : "#ff00ff",
+						// });
 
-					// 		// apply fake impulse
-					// 		const f = 0.66;
-					// 		// not using fx because that will be overwritten on the next iteration, right?
-					// 		p.vx += (p.x - prevX) * f;
-					// 		p.vy += (p.y - prevY) * f;
-					// 	}
-					// }
-					// if (pOnLine) {
-					// 	// apply force to the line
-					// 	const f = 0.33;
-					// 	c.p1.vx += (prevX - pOnLine.x) * f;
-					// 	c.p1.vy += (prevY - pOnLine.y) * f;
-					// 	c.p2.vx += (prevX - pOnLine.x) * f;
-					// 	c.p2.vy += (prevY - pOnLine.y) * f;
-					// }
+						// more accurate bounce, right? if we use the intersection point
+						p.x = is.x;
+						p.y = is.y;
+						// move the point so it doesn’t collide immediately again
+						var hack = 1;
+						if (!p.fixed) {
+							p.x -= towards_a_side_x * hack;
+							p.y -= towards_a_side_y * hack;
+						}
+						// apply the bounce angle to the particle
+						var original_speed = Math.hypot(p.vx, p.vy);
+						var speed = original_speed * 0.7;
+						p.vx = -Math.sin(-p_bounce_angle) * speed;
+						p.vy = -Math.cos(-p_bounce_angle) * speed;
+
+						// some debug
+						// ctx.strokeStyle = "aqua";
+						// drawArrow(ctx, is.x, is.y, -normal, 50);
+						// ctx.strokeStyle = "red";
+						// drawArrow(ctx, is.x, is.y, p_bounce_angle, 50);
+					}
 				}
-
-				/*
-				// GONNA DO SEPARATE MOVEMENT QUAD AND STATIC "THICK LINE" QUAD
-				var is = intersectLineQuad(p.x, p.y, p.px, p.py, c.p1.x, c.p1.y, c.p1.px, c.p1.py, c.p2.px, c.p2.py, c.p2.x, c.p2.y, ctx);
-				if (!is) {
-					const normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
-					const nudge_amount = 1;
-					const qx1 = c.p1.x + Math.sin(normal) * nudge_amount;
-					const qy1 = c.p1.y + Math.cos(normal) * nudge_amount;
-					const qx2 = c.p2.x + Math.sin(normal) * nudge_amount;
-					const qy2 = c.p2.y + Math.cos(normal) * nudge_amount;
-					const qx3 = c.p2.x - Math.sin(normal) * nudge_amount;
-					const qy3 = c.p2.y - Math.cos(normal) * nudge_amount;
-					const qx4 = c.p1.x - Math.sin(normal) * nudge_amount;
-					const qy4 = c.p1.y - Math.cos(normal) * nudge_amount;
-					is = intersectLineQuad(p.x, p.y, p.px, p.py, qx1, qy1, qx2, qy2, qx3, qy3, qx4, qy4, ctx);
-				}
-
-				if (is) {
-					// Note: normal can point either way
-					// IMPORTANT NOTE: normal is not in the same coordinate system as bounce_angle,
-					// hence the negation when rendering the normal’s arrow
-					// THIS IS NOT INTENTIONAL, it’s just bad math.
-					// I tried flipping the signs and sines and cosines for a while
-					// but didn’t get it to work while being more sensible.
-					// Maybe later I’ll go at it again.
-					// (Keep in mind, the drawArrow function is also arbitrary in its base angle)
-					var normal = Math.atan2(c.p1.x - c.p2.x, c.p1.y - c.p2.y) + Math.PI / 2;
-					var p_vx_connection_space = Math.sin(normal) * p.vx + Math.cos(normal) * p.vy; // normal-aligned space
-					var p_vy_connection_space = Math.cos(normal) * p.vx - Math.sin(normal) * p.vy;
-					var p1_vx_connection_space = Math.sin(normal) * c.p1.vx + Math.cos(normal) * c.p1.vy;
-					var p2_vx_connection_space = Math.sin(normal) * c.p2.vx + Math.cos(normal) * c.p2.vy;
-					var p_bounce_angle_connection_space = Math.atan2(p_vy_connection_space, p_vx_connection_space);
-					var p_bounce_angle = p_bounce_angle_connection_space - normal;
-					// TODO: determine this from positions instead of velocities?
-					var on_one_side_of_line = p_vx_connection_space > 0 ? false : p_vx_connection_space < 0 ? true :
-						// for points that are fixed/unmoving, determine the side the point is on from the line’s velocity
-						// FIXME: this doesn’t make sense if the line is rotating
-						(p1_vx_connection_space + p2_vx_connection_space) / 2 > 0;
-
-					// apply a force to the line from the particle
-					const p1_dist = Math.hypot(p.x - c.p1.x, p.y - c.p1.y);
-					const p2_dist = Math.hypot(p.x - c.p2.x, p.y - c.p2.y);
-					const f = 1 / 2 / (p1_dist + p2_dist);
-					c.p1.fx += p.vx * p2_dist * f;
-					c.p1.fy += p.vy * p2_dist * f;
-					c.p2.fx += p.vx * p1_dist * f;
-					c.p2.fy += p.vy * p1_dist * f;
-
-					const line_bounce_force = 2;
-					c.p1.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
-					c.p1.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
-					c.p2.vx -= (c.p1.vx + c.p2.vx) / 2 * line_bounce_force;
-					c.p2.vy -= (c.p1.vy + c.p2.vy) / 2 * line_bounce_force;
-
-					// move the line so it doesn’t collide immediately again
-					var hack = 1;
-					// which side the particle is further away from, move the line to that side
-					var towards_a_side_x = Math.sin(normal + (on_one_side_of_line ? Math.PI : 0));
-					var towards_a_side_y = Math.cos(normal + (on_one_side_of_line ? Math.PI : 0));
-					var p1_x_off = c.p1.x + towards_a_side_x * hack;
-					var p1_y_off = c.p1.y + towards_a_side_y * hack;
-					var p2_x_off = c.p2.x + towards_a_side_x * hack;
-					var p2_y_off = c.p2.y + towards_a_side_y * hack;
-					if (!c.p1.fixed) {
-						c.p1.x = p1_x_off;
-						c.p1.y = p1_y_off;
-					}
-					if (!c.p2.fixed) {
-						c.p2.x = p2_x_off;
-						c.p2.y = p2_y_off;
-					}
-					// debugLines.push({
-					// 	p1: { x: p1_x_off, y: p1_y_off },
-					// 	p2: { x: p2_x_off, y: p2_y_off },
-					// 	color: on_one_side_of_line ? "#00afff" : "#ff00ff",
-					// });
-
-					// more accurate bounce, right? if we use the intersection point
-					p.x = is.x;
-					p.y = is.y;
-					// move the point so it doesn’t collide immediately again
-					var hack = 1;
-					if (!p.fixed) {
-						p.x -= towards_a_side_x * hack;
-						p.y -= towards_a_side_y * hack;
-					}
-					// apply the bounce angle to the particle
-					var original_speed = Math.hypot(p.vx, p.vy);
-					var speed = original_speed * 0.7;
-					p.vx = -Math.sin(-p_bounce_angle) * speed;
-					p.vy = -Math.cos(-p_bounce_angle) * speed;
-
-					// some debug
-					// ctx.strokeStyle = "aqua";
-					// drawArrow(ctx, is.x, is.y, -normal, 50);
-					// ctx.strokeStyle = "red";
-					// drawArrow(ctx, is.x, is.y, p_bounce_angle, 50);
-				}
-				*/
 			}
 		}
 		/**
@@ -1596,7 +1604,7 @@ function step() {
 	// Not possible to click buttons in the middle of step(), don’t worry. :)
 	selectedTool = prevTool;
 
-	if (play && collision && !groupsComputedThisFrame) {
+	if (play && collisionMode !== "BOUNDS_ONLY" && !groupsComputedThisFrame) {
 		computeGroups();
 		groupsComputedThisFrame = true;
 	}
@@ -1925,9 +1933,11 @@ function createOptionsWindow() {
 			</label>
 		</div>
 		<div class="field-row">
-			<input type="checkbox" id="collision-checkbox"/>
-			<label for="collision-checkbox" title="The collision system needs a lot of work.">
-				Poor, Broken Collision
+			<label for="collision-dropdown" title="Change how collisions between objects are handled.">
+				<span style="padding-right: 0.5em;">Collision Mode:</span>
+				<div class="select-wrapper"><select id="collision-dropdown" style="max-width: 150px;">
+					${Object.entries(collisionModes).map(([id, name]) => `<option value="${id}" ${id === collisionMode ? "selected" : ""}>${name}</option>`).join("")}
+				</select></div>
 			</label>
 		</div>
 		<div class="field-row">
@@ -2042,9 +2052,9 @@ function createOptionsWindow() {
 	findEl("#play-checkbox").onchange = function () {
 		play = this.checked;
 	};
-	findEl("#collision-checkbox").checked = collision;
-	findEl("#collision-checkbox").onchange = function () {
-		collision = this.checked;
+	findEl("#collision-dropdown").value = collisionMode;
+	findEl("#collision-dropdown").onchange = function () {
+		collisionMode = this.value;
 	};
 	findEl("#auto-connect-checkbox").checked = autoConnect;
 	findEl("#auto-connect-checkbox").onchange = function () {
