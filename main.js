@@ -1318,24 +1318,31 @@ function step() {
 						// TODO: check the line is moved such that p stays on it;
 						// it probably doesn't, if we're moving the ends differently
 						// (and the fact that I had to increase the fudge factor supports that hypothesis)
-						const fudge = 1.5;
+						const moveX = pOnLine.x - prevX;
+						const moveY = pOnLine.y - prevY;
+						const moveDist = Math.sqrt(moveX * moveX + moveY * moveY);
+						const dirX = moveDist > 0 ? moveX / moveDist : 0;
+						const dirY = moveDist > 0 ? moveY / moveDist : 0;
+						const velFudge = 1; // factor (1 = neutral)
+						const posFudge = 1; // factor (1 = neutral)
+						const posFudge2 = 1; // absolute world units (0 = neutral)
 						if (!p.fixed) {
-							p.x += (pOnLine.x - prevX) * pMovementFraction * fudge;
-							p.y += (pOnLine.y - prevY) * pMovementFraction * fudge;
-							p.vx += (pOnLine.x - prevX) * pMovementFraction * fudge;
-							p.vy += (pOnLine.y - prevY) * pMovementFraction * fudge;
+							p.x += (pOnLine.x - prevX) * pMovementFraction * posFudge + dirX * posFudge2;
+							p.y += (pOnLine.y - prevY) * pMovementFraction * posFudge + dirY * posFudge2;
+							p.vx += (pOnLine.x - prevX) * pMovementFraction * velFudge;
+							p.vy += (pOnLine.y - prevY) * pMovementFraction * velFudge;
 						}
 						if (!c.p1.fixed) {
-							c.p1.x += (prevX - pOnLine.x) * rodP1MovementFraction * fudge;
-							c.p1.y += (prevY - pOnLine.y) * rodP1MovementFraction * fudge;
-							c.p1.vx += (prevX - pOnLine.x) * rodP1MovementFraction * fudge;
-							c.p1.vy += (prevY - pOnLine.y) * rodP1MovementFraction * fudge;
+							c.p1.x += (prevX - pOnLine.x) * rodP1MovementFraction * posFudge - dirX * posFudge2;
+							c.p1.y += (prevY - pOnLine.y) * rodP1MovementFraction * posFudge - dirY * posFudge2;
+							c.p1.vx += (prevX - pOnLine.x) * rodP1MovementFraction * velFudge;
+							c.p1.vy += (prevY - pOnLine.y) * rodP1MovementFraction * velFudge;
 						}
 						if (!c.p2.fixed) {
-							c.p2.x += (prevX - pOnLine.x) * rodP2MovementFraction * fudge;
-							c.p2.y += (prevY - pOnLine.y) * rodP2MovementFraction * fudge;
-							c.p2.vx += (prevX - pOnLine.x) * rodP2MovementFraction * fudge;
-							c.p2.vy += (prevY - pOnLine.y) * rodP2MovementFraction * fudge;
+							c.p2.x += (prevX - pOnLine.x) * rodP2MovementFraction * posFudge - dirX * posFudge2;
+							c.p2.y += (prevY - pOnLine.y) * rodP2MovementFraction * posFudge - dirY * posFudge2;
+							c.p2.vx += (prevX - pOnLine.x) * rodP2MovementFraction * velFudge;
+							c.p2.vy += (prevY - pOnLine.y) * rodP2MovementFraction * velFudge;
 						}
 					}
 					// if (pOnLine) {
