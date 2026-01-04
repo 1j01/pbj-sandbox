@@ -1,4 +1,57 @@
 {
+	// .----------------------------.
+	// | Filtering                  |
+	// '----------------------------'
+	// This hides files from the file tree as well as search results.
+	"files.exclude": {
+		"**/node_modules": true,
+		"**/dist": true,
+	},
+	// This affects Find In Files (Ctrl+Shift+F) but also Go To File (Ctrl+P) and
+	// the new Quick Search (experimental), which I've been using a lot since it was released.
+	"search.exclude": {
+		"**/images": true,
+		"**/lib": true,
+		"**/dist": true,
+		// The package lock files contain a lot of repetition, and are usually noise in search results.
+		// You can often search with `npm ls` if you want to check if a package is installed,
+		// and what depends on what.
+		"**/package-lock.json": true,
+	},
+	// Prevent accidental editing.
+	// This can always be overridden with the command "File: Toggle Active Editor Read-only in Session"
+	"files.readonlyInclude": {
+		"**/dist/**": true,
+		// Node.js
+		"**/node_modules/**": true,
+		"**/package-lock.json": true,
+	},
+	// .----------------------------.
+	// | Formatting                 |
+	// '----------------------------'
+	"editor.formatOnSave": true,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": "always",
+	},
+	"javascript.preferences.importModuleSpecifierEnding": "js",
+	"typescript.preferences.importModuleSpecifierEnding": "js",
+	"javascript.format.semicolons": "insert",
+	"typescript.format.semicolons": "insert",
+	"html.format.unformattedContentDelimiter": "<!--no_format-->",
+	"files.insertFinalNewline": true,
+	// .----------------------------.
+	// | Theming                    |
+	// '----------------------------'
+	// "workbench.colorTheme": "someTheme",
+	// "workbench.colorCustomizations": {
+	// 	"[someTheme]": {
+	// 	}
+	// },
+	// .------------------------- - .
+	// | Uncategorised settings
+	// '------------------------- - .
 	"cSpell.words": [
 		"actx",
 		"Backquote",
